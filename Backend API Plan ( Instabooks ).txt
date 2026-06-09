@@ -1,0 +1,233 @@
+Backend Data Schema ( Instabooks )
+
+user
+- name
+- email
+- addresses: [string]
+- photo
+- cart []
+    - book id
+    - order quantity
+    - format
+- id
+
+
+books
+- title
+- description
+- pages
+- author
+- price
+- format
+- cover photo
+- quantity
+- genre
+- id
+
+
+orders
+- user_id
+- products
+    - book id
+    - order quantity
+    - format
+- id
+- status ( shipped | pending | cancelled )
+- price at purchase
+- created at
+- shipping address
+- payment status
+
+
+-----------------------------------------------------------------------
+
+
+Backend API Plan ( Instabooks )
+
+
+Auth 
+
+GET /auth/google  ( redirect to google auth page )
+
+Request body: none
+Request Header: none
+Response: none ( redirects to google auth page )
+Response Header: none
+
+
+GET /auth/google/callback  ( callback endpoint for google auth )
+
+Request body: none
+Request Header: none
+Response Header: none
+Response: 
+- Redirect to frontend with JWT token in query parameters and refresh token 
+    in cookies (e.g. /auth/success?token=<JWT token>&refreshToken=<refresh token>)
+
+
+GET /auth/logout  ( logout endpoint )
+
+Request body: none
+Request Header: 
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response: 
+- JSON object confirming logout
+
+
+GET /auth/me  ( get current user information )
+
+Request body: none
+Request Header
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing user information
+
+
+POST /auth/refresh  ( refresh JWT token )
+
+Request body: none
+Request Header:
+- Authorization: Bearer <JWT refresh token>
+Response Header: none
+Response:
+- JSON object containing new JWT token
+
+
+POST /auth/update?deletePhoto={boolean}  ( update user information )
+
+Request body:
+- FormData object containing updated user information (e.g. name, email)
+Request Header:
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing updated user information
+
+
+Books
+
+GET /books?limit={number}  ( get all books )
+
+Request body: none
+Request Header: none
+Response Header: none
+Response:
+- JSON array of book objects
+
+
+GET /books/{id}  ( get book by id )
+
+Request body: none
+Request Header: none
+Response Header: none
+Response:
+- JSON object containing book information
+
+
+POST /books  ( create a new book ) [admin only]
+
+Request body:
+- FormData object containing book information (e.g. title, author, price, cover photo file)
+Request Header: 
+- Authorization: Bearer < admin key >
+Response Header: none
+Response:
+- JSON object containing created book information
+
+
+PUT /books/{id}  ( update book information ) [admin only]
+
+Request body:
+- FormData object containing updated book information (e.g. title, author, price, cover photo file)
+Request Header:
+- Authorization: Bearer < admin key >
+Response Header: none
+Response:
+- JSON object containing updated book information
+
+
+DELETE /books/{id}  ( delete a book ) [admin only]
+
+Request body: none
+Request Header:
+- Authorization: Bearer < admin key >
+Response Header: none
+Response:
+- JSON object confirming deletion with message
+
+
+Orders
+
+POST /orders/checkout  ( create a new order )
+
+Request body:
+- JSON object containing order information (e.g. products, shipping address)
+Request Header: 
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- Redirect to payment gateway with order details
+
+
+GET /orders/confirm?reference={order_id}  ( confirm order after successful redirect from payment gateway )
+
+Request body: none
+Request Header: none
+Response Header: none
+Response:
+- Redirect to order confirmation frontend page with order details
+
+
+GET /orders?limit={number}  ( get all orders for current user )
+
+Request body: none
+Request Header:
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON array of order objects for the current user
+
+
+GET /orders/{id}  ( get order by id for current user )
+
+Request body: none
+Request Header
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing order information if the order belongs to the current user
+
+
+GET /orders/admin?limit={number}  ( get all orders for admin )[admin only]
+
+Request body: none
+Request Header:
+- Authorization: Bearer < admin key >
+Response Header: none
+Response:
+- JSON array of all order objects
+
+
+
+
+
+Footnote:
+- logging and observability design should include user_id on 
+  protected endpoints for better traceability, request_id on all endpoints for better correlation, 
+  , error logging with stack traces for easier debugging, order_id on order related endpoints 
+  for better traceability of order processing and summarized logs to prevent log flooding 
+  while still capturing important events and errors.
+
+
+Backend Git Commit Scopes
+- auth
+- books
+- orders
+- server
+- database
+- logging
+- config
+- middleware
+- utils
