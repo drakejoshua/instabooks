@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import logger from '../utils/winston.js';
 
 export async function connectDB() {
     try {
@@ -6,9 +7,17 @@ export async function connectDB() {
             serverSelectionTimeoutMS: 5000
         })
 
-        console.log("DB connected successfully")
+        logger.info({
+            event: "db_connection_success",
+            message: "Successfully connected to the database."
+        })
     } catch( err ) {
-        console.log("DB connection error: ", err )
+        logger.error({
+            event: "db_connection_error",
+            message: err?.message,
+            stack: err?.stack,
+            code: err?.code
+        })
 
         process.exit(1)
     }
