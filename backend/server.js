@@ -1,6 +1,9 @@
 import express from 'express';
+import { connectDB } from './database/connectDB.js';
 
 const server = express();
+
+await connectDB();
 
 server.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello, world!' });
