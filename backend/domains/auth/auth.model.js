@@ -26,9 +26,28 @@ const UserSchema = new mongoose.Schema({
         type: [{
             book_id: mongoose.Schema.Types.ObjectId,
             quantity: Number
-        }]
+        }],
+        ref: "Books"
+    },
+    google_auth_id: {
+        type: String,
+        default: ""
+    },
+    refresh_token: {
+        type: String,
+        default: ""
     }
 })
 
-const User = mongoose.model('User', UserSchema)
+UserSchema.methods.getProfileData = function() {
+    return {
+        name: this.name,
+        email: this.email,
+        photo_url: this.photo_url,
+        addresses: this.addresses,
+        cart: this.cart
+    }
+}
+
+const User = mongoose.model('Users', UserSchema)
 export default User
