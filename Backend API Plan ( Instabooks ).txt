@@ -59,8 +59,44 @@ Request body: none
 Request Header: none
 Response Header: none
 Response: 
-- Redirect to frontend with JWT token in query parameters and refresh token 
-    in cookies (e.g. /auth/success?token=<JWT token>&refreshToken=<refresh token>)
+- 200: Redirect to frontend with auth id in query parameters (e.g. 
+    /auth/success?id=<auth id>)
+
+
+GET /auth/google/verify  ( verify google auth callback for frontend )
+
+Request query parameters:
+- authId: string ( auth id from google auth callback )
+Request body: none
+Request Header: none
+Response Header: none
+Response: 
+- 200: {
+    "status":"success",
+    "data":{
+        "name": < user's name >,
+        "email": < user's email >,
+        "photo_url": < user's photo url >,
+        "addresses":[],
+        "cart":[],
+        "access_token": < JWT token >,
+        "expires_in": < JWT token expiration time in seconds >,
+    }
+} ( refresh token is set in httpOnly cookie )
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
+- 404: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
 
 
 GET /auth/logout  ( logout endpoint )
