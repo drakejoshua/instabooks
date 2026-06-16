@@ -24,3 +24,10 @@ export function generateRefreshToken( user ) {
         }
     )
 }
+
+export function verifyJWT( token ) {
+    return jwt.verify(
+        token,
+        JWT_SECRET
+    )
+}

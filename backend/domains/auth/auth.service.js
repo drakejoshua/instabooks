@@ -1,6 +1,6 @@
-import { UserNotFoundError } from "../../utils/errors.js";
+import { InvalidAuthorizationTokenError, UserNotFoundError } from "../../utils/errors.js";
 import User from "./auth.model.js";
-import { generateAccessToken, generateRefreshToken } from "./auth.utils.js";
+import { generateAccessToken, generateRefreshToken, verifyJWT } from "./auth.utils.js";
 import crypto from 'crypto'
 
 export async function googleAuthService( authUser ) {
@@ -60,5 +60,31 @@ export async function logoutAuthService( user ) {
 
     return {
         message: "user logged out successfully"
+    }
+}
+
+export async function refreshAuthService( token ) {
+    try {
+        // check if the token is valid JWT and not expired
+        const user = verifyJWT( token )
+    } catch( err ) {
+        throw InvalidAuthorizationTokenError
+    }
+
+    // get user with refresh_token stored in their name from
+    // the database
+    let authUser = await User.findOne({ refresh_token: token })
+
+    // check if user with refresh_token exists,
+    // if user is found, generate access token using user data and 
+    // return data
+    if ( authUser ) {
+        let accessToken = generateAccessToken( authUser )
+        let accessTokenExpiry = 15 * 60   // 15 mins
+
+        return { accessToken, accessTokenExpiry }
+    } else {
+        // if no user is found, return a user not found error
+        throw UserNotFoundError
     }
 }

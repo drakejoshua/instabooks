@@ -1,4 +1,4 @@
-import { query, validationResult, header } from 'express-validator'
+import { query, validationResult, header, cookie } from 'express-validator'
 import { ERROR_CODES, reportInvalidAuthIdError, reportInvalidAuthorizationTokenError } from '../../utils/errors.js'
 
 export let googleAuthVerifyValidationRules = [
@@ -50,3 +50,13 @@ export function bearerAuthValidationFunction( req, res, next ) {
 
     next() 
 }
+
+export let refreshAuthValidationRules = [
+    cookie("refresh_token")
+        .exists()
+        .withMessage( ERROR_CODES.INVALID_AUTHORIZATION_TOKEN )
+        .bail()
+        .notEmpty()
+        .withMessage( ERROR_CODES.INVALID_AUTHORIZATION_TOKEN )
+        .bail()
+]

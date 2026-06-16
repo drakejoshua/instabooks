@@ -1,6 +1,7 @@
 import { 
     googleAuthService, 
     logoutAuthService, 
+    refreshAuthService, 
     verifyGoogleAuthService 
 } from "./auth.service.js"
 
@@ -87,4 +88,26 @@ export async function profileAuthController( req, res, next ) {
             }
         }
     })
+}
+
+export async function refreshAuthController( req, res, next ) {
+    // get cookie containing the refresh token from the request object
+    const refreshToken = req.cookies.refresh_token
+
+    try {
+        // invoke the refresh service with refresh token to generate
+        // new access token
+        let { accessToken, accessTokenExpiry } = await refreshAuthService( refreshToken )
+
+        // return generated access token in response
+        res.json({
+            status: "success",
+            data: {
+                access_token: accessToken,
+                expires_in: accessTokenExpiry
+            }
+        })
+    } catch( err ) {
+        next( err )
+    }
 }

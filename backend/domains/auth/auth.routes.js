@@ -4,16 +4,26 @@ import {
     googleAuthController, 
     logoutAuthController, 
     profileAuthController, 
+    refreshAuthController, 
     verifyGoogleAuthController 
 } from './auth.controller.js';
 import { 
     googleAuthVerifyValidationFunction, 
     googleAuthVerifyValidationRules, 
     bearerAuthValidationFunction,
-    bearerAuthValidationRules
+    bearerAuthValidationRules,
+    refreshAuthValidationRules
 } from './auth.validators.js';
+import cookieParser from 'cookie-parser'
+
 
 const router = express.Router();
+
+
+// initialize cookie parser on router in order to allow
+// child routes have access to cookies
+router.use( cookieParser() )
+
 
 router.get("/google", 
     passport.authenticate( "google", { scope: ['email', 'profile']} )
@@ -43,5 +53,12 @@ router.get("/me",
     passport.authenticate("jwt", { session: false }),
     profileAuthController
 )
+
+router.post("/refresh",
+    refreshAuthValidationRules,
+    bearerAuthValidationFunction,
+    refreshAuthController
+)
+
 
 export default router;
