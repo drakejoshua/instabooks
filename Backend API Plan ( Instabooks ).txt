@@ -128,7 +128,25 @@ Request Header
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response:
-- JSON object containing user information
+- 200: {
+    "status":"success",
+    "data": {
+        "user": {
+            "name": < user's name: "Joshua Ligron" >,
+            "email": < user's email: "joshuanathan086@gmail.com" >,
+            "photo_url": < user's photo URL: "https://lh3.googleusercontent.com/a/***" >,
+            "addresses": < user's addresses: [] >,
+            "cart": < user's cart: [] >
+        }
+    }
+}
+- 401: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+} or "Unauthorized" if token is invalid ( based on passport middleware )
 
 
 POST /auth/refresh  ( refresh JWT token )

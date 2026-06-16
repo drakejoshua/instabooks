@@ -1,7 +1,17 @@
 import express from 'express';
 import passport from 'passport'
-import { googleAuthController, logoutAuthController, verifyGoogleAuthController } from './auth.controller.js';
-import { googleAuthVerifyValidationFunction, googleAuthVerifyValidationRules, logoutValidationFunction, logoutValidationRules } from './auth.validators.js';
+import { 
+    googleAuthController, 
+    logoutAuthController, 
+    profileAuthController, 
+    verifyGoogleAuthController 
+} from './auth.controller.js';
+import { 
+    googleAuthVerifyValidationFunction, 
+    googleAuthVerifyValidationRules, 
+    bearerAuthValidationFunction,
+    bearerAuthValidationRules
+} from './auth.validators.js';
 
 const router = express.Router();
 
@@ -21,10 +31,17 @@ router.get("/google/verify",
 )
 
 router.get("/logout",
-    logoutValidationRules,
-    logoutValidationFunction,
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
     passport.authenticate("jwt", { session: false }),
     logoutAuthController
+)
+
+router.get("/me",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
+    passport.authenticate("jwt", { session: false }),
+    profileAuthController
 )
 
 export default router;

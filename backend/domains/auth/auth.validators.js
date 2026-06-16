@@ -21,7 +21,7 @@ export function googleAuthVerifyValidationFunction( req, res, next ) {
     next()
 }
 
-export let logoutValidationRules = [
+export let bearerAuthValidationRules = [
     header("Authorization")
         .exists()
         .withMessage( ERROR_CODES.INVALID_AUTHORIZATION_TOKEN )
@@ -41,7 +41,7 @@ export let logoutValidationRules = [
         .withMessage( ERROR_CODES.INVALID_AUTHORIZATION_TOKEN )
 ]
 
-export function logoutValidationFunction( req, res, next ) {
+export function bearerAuthValidationFunction( req, res, next ) {
     let errors = validationResult( req )
 
     if ( !errors.isEmpty() ) {
