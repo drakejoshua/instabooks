@@ -31,6 +31,10 @@ export async function verifyGoogleAuthService( authId ) {
     let refreshToken = generateRefreshToken( authUser )
     let accessToken = generateAccessToken( authUser )
 
+    // remove google auth id from user data to prevent 
+    // deuplication and security risks
+    authUser.google_auth_id = null
+
     // update user data in database with refresh token and
     // for further authentication
     authUser.refresh_token = refreshToken;
@@ -44,5 +48,17 @@ export async function verifyGoogleAuthService( authId ) {
             access_token: accessToken,
             expires_in: 15 * 60    // access token expires in 15 mins
         }
+    }
+}
+
+export async function logoutAuthService( user ) {
+    // clear refresh_token from user data on the database
+    user.refresh_token = null;
+
+    // save user document to reflect changes
+    await user.save()
+
+    return {
+        message: "user logged out successfully"
     }
 }

@@ -1,6 +1,8 @@
 import passport from 'passport'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
-import User from "../domains/auth/auth.model.js"
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt'
+import Users from "../domains/auth/auth.model.js"
+import { UserNotFoundError } from '../utils/errors.js'
 
 export default async function initializePassport( passport ) {
     passport.use( new GoogleStrategy(
@@ -13,13 +15,13 @@ export default async function initializePassport( passport ) {
             try {
                 // get existing user in the database if any using the email 
                 // provided by google profile
-                let user = await User.findOne({ email: profile.emails[0].value })
+                let user = await Users.findOne({ email: profile.emails[0].value })
 
                 // if user does not exist, create a new user in the 
                 // database using the information provided by google 
                 // profile
                 if (!user) {
-                    user = await User.create({
+                    user = await Users.create({
                         name: profile.displayName,
                         email: profile.emails[0].value,
                         photo_url: profile.photos[0].value
@@ -36,4 +38,24 @@ export default async function initializePassport( passport ) {
             }
         }
     ) )
+
+    passport.use( new JWTStrategy(
+        {
+            secretOrKey: process.env.JWT_SECRET,
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+        },
+        async function( payload, done ) {
+            try {
+                const authenticatedUser = await Users.findById( payload.userId )
+
+                if ( !authenticatedUser ) {
+                    return done( UserNotFoundError, false )
+                }
+
+                return done( null, authenticatedUser )
+            } catch( err ) {
+                done( err, false )
+            }
+        }
+    ))
 }

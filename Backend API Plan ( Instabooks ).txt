@@ -74,13 +74,13 @@ Response:
 - 200: {
     "status":"success",
     "data":{
-        "name": < user's name >,
-        "email": < user's email >,
-        "photo_url": < user's photo url >,
-        "addresses":[],
+        "name": < user's name: "John Doe" >,
+        "email": < user's email: "john.doe@example.com" >,
+        "photo_url": < user's photo url: "https://example.com/photo.jpg" >,
+        "addresses":[] ( array of user's saved addresses ),
         "cart":[],
-        "access_token": < JWT token >,
-        "expires_in": < JWT token expiration time in seconds >,
+        "access_token": < JWT token: "erdrd.yyfytfyu.uyfytfy" >,
+        "expires_in": < JWT token expiration time in seconds: 3600 >,
     }
 } ( refresh token is set in httpOnly cookie )
 - 400: {
@@ -106,7 +106,19 @@ Request Header:
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response: 
-- JSON object confirming logout
+- 200: {
+    "status": "success",
+    "data":{
+        "message": "user logged out successfully"
+    }
+}
+- 401: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+} or "Unauthorized" if token is invalid ( based on passport middleware )
 
 
 GET /auth/me  ( get current user information )

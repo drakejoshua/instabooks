@@ -1,4 +1,17 @@
-import { googleAuthService, verifyGoogleAuthService } from "./auth.service.js"
+import { 
+    googleAuthService, 
+    logoutAuthService, 
+    verifyGoogleAuthService 
+} from "./auth.service.js"
+
+let refreshTokenCookieConfig = {
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7  // 7 days
+}
+
 
 export async function googleAuthController( req, res, next ) {
     // get user db model from request
@@ -25,13 +38,11 @@ export async function verifyGoogleAuthController( req, res, next ) {
         const { refresh_token, user } = await verifyGoogleAuthService( googleAuthId )
 
         // add refresh token as cookie in the response
-        res.cookie( 'refresh_token', refresh_token, {
-            secure: process.env.NODE_ENV === "production",
-            path: "/",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 7  // 7 days
-        })
+        res.cookie( 
+            'refresh_token', 
+            refresh_token, 
+            refreshTokenCookieConfig
+        )
 
         // return success response with authenticated user data
         res.json({
@@ -42,4 +53,38 @@ export async function verifyGoogleAuthController( req, res, next ) {
         next( err )
     }
 
+}
+
+export async function logoutAuthController( req, res, next ) {
+    try {
+        // call logout auth service to clear refresh token 
+        // from user in database
+        const { message } = await logoutAuthService( req.user )
+
+        // clear refresh_token http cookie in response
+        res.clearCookie( "refresh_token", refreshTokenCookieConfig )
+
+        // send response confirming logout action
+        res.json({
+            status: "success",
+            data: {
+                message
+            }
+        })
+    } catch( err ) {
+        next( err )
+    }
+}
+
+export async function profileAuthController( req, res, next ) {
+    // return profile details from authenticated user by passport
+    // in request
+    res.json({
+        status: "success",
+        data: {
+            user: {
+                ...req.user.getProfileData()
+            }
+        }
+    })
 }
