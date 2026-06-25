@@ -190,6 +190,29 @@ Response:
 - JSON object containing updated user information
 
 
+Users
+
+POST /user/cart             ( add book to cart )
+
+Request body:
+- JSON object containing book id and order quantity
+Request Header
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing updated cart information
+
+PUT /user/address          ( add new address )
+
+Request body:
+- JSON object containing new address information
+Request Header
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing updated addresses information
+
+
 Books
 
 GET /books?limit={number}  ( get all books )

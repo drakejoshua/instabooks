@@ -3,7 +3,10 @@ export const ERROR_CODES = {
     ROUTE_NOT_FOUND: 'ROUTE_NOT_FOUND',
     INVALID_AUTH_ID: 'INVALID_AUTH_ID',
     USER_NOT_FOUND: 'USER_NOT_FOUND',
-    INVALID_AUTHORIZATION_TOKEN: "INVALID_AUTHORIZATION_TOKEN"
+    INVALID_AUTHORIZATION_TOKEN: "INVALID_AUTHORIZATION_TOKEN",
+    INVALID_FILE_TYPE: "INVALID_FILE_TYPE",
+    INVALID_USER_NAME: "INVALID_USER_NAME",
+    INVALID_OPERATION: "INVALID_OPERATION"
 };
 
 export const RouteNotFoundError = new Error("The requested resource was not found.");
@@ -37,4 +40,40 @@ InvalidAuthorizationTokenError.status = 401
 
 export function reportInvalidAuthorizationTokenError( next ) {
     next( InvalidAuthorizationTokenError )
+}
+
+
+export const fileFilterError = new Error("Invalid File Type encountered during upload.")
+fileFilterError.status = 400
+fileFilterError.code = ERROR_CODES.INVALID_FILE_TYPE
+
+export function reportFileFilterError( next ) {
+    next( fileFilterError )
+}
+
+
+export const InvalidFileTypeError = new Error("Invalid File Type or size encountered during upload.")
+InvalidFileTypeError.status = 400
+InvalidFileTypeError.code = ERROR_CODES.INVALID_FILE_TYPE
+
+export function reportInvalidFileTypeError( next ) {
+    next( InvalidFileTypeError )
+}
+
+
+export const InvalidUsernameError = new Error("Invalid user name encoutered. Name must be at least 3 characters long.")
+InvalidUsernameError.status = 400
+InvalidUsernameError.code = ERROR_CODES.INVALID_USER_NAME
+
+export function reportInvalidUsernameError( next ) {
+    next( InvalidFileTypeError )
+}
+
+
+export const InvalidOperationError = new Error("Invalid operation encountered. Please check and try again.")
+InvalidOperationError.status = 400
+InvalidOperationError.code = ERROR_CODES.INVALID_OPERATION
+
+export function reportInvalidOperationError( next ) {
+    next( InvalidOperationError )
 }

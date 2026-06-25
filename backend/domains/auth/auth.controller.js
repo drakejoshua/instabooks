@@ -111,3 +111,26 @@ export async function refreshAuthController( req, res, next ) {
         next( err )
     }
 }
+
+export async function profileUpdateAuthController( req, res, next ) {
+    // get updated user data from request body and query params
+    const name = req.body.name
+    const deletePhoto = req.query.deletePhoto === "true" ? true : false
+    const photo = req.file
+    let updateData = { name, photo }
+
+    try {
+        // invoke auth service to update user profile with new data
+        const updatedUser = await profileUpdateAuthService( req.user, updateData, deletePhoto )
+
+        // return updated user data in response
+        res.json({
+            status: "success",
+            data: {
+                user: updatedUser
+            }
+        })
+    } catch( err ) {
+        next( err )
+    }
+}

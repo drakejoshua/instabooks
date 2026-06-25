@@ -4,6 +4,7 @@ import {
     googleAuthController, 
     logoutAuthController, 
     profileAuthController, 
+    profileUpdateAuthController, 
     refreshAuthController, 
     verifyGoogleAuthController 
 } from './auth.controller.js';
@@ -12,9 +13,12 @@ import {
     googleAuthVerifyValidationRules, 
     bearerAuthValidationFunction,
     bearerAuthValidationRules,
-    refreshAuthValidationRules
+    refreshAuthValidationRules,
+    profileUpdateAuthValidationRules,
+    profileUpdateAuthValidationFunction
 } from './auth.validators.js';
 import cookieParser from 'cookie-parser'
+import upload from '../../middleware/multer.js'
 
 
 const router = express.Router();
@@ -60,5 +64,14 @@ router.post("/refresh",
     refreshAuthController
 )
 
+router.post("/update",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
+    profileUpdateAuthValidationRules,
+    profileUpdateAuthValidationFunction,
+    passport.authenticate("jwt", { session: false }),
+    upload.single("photo"),
+    profileUpdateAuthController
+)
 
 export default router;

@@ -1,5 +1,5 @@
-import { query, validationResult, header, cookie } from 'express-validator'
-import { ERROR_CODES, reportInvalidAuthIdError, reportInvalidAuthorizationTokenError } from '../../utils/errors.js'
+import { query, validationResult, header, cookie, body } from 'express-validator'
+import { ERROR_CODES, reportInvalidAuthIdError, reportInvalidAuthorizationTokenError, reportInvalidUsernameError } from '../../utils/errors.js'
 
 export let googleAuthVerifyValidationRules = [
     query("authId")
@@ -60,3 +60,40 @@ export let refreshAuthValidationRules = [
         .withMessage( ERROR_CODES.INVALID_AUTHORIZATION_TOKEN )
         .bail()
 ]
+
+export let profileUpdateAuthValidationRules = [
+    body('name')
+        .exists()
+        .withMessage( ERROR_CODES.INVALID_USER_NAME )
+        .bail()
+        .notEmpty()
+        .withMessage( ERROR_CODES.INVALID_USER_NAME )
+        .bail()
+        .isLength({ min: 3 })
+        .withMessage( ERROR_CODES.INVALID_USER_NAME )
+        .bail(),
+    query("deletePhoto")
+        .optional()
+        .isBoolean()
+        .withMessage( ERROR_CODES.INVALID_OPERATION )
+]
+
+export function profileUpdateAuthValidationFunction( req, res, next ) {
+    // get validation errors from request object if any
+    const errors = validationResult( req )
+
+    // check if there are any validation errors and 
+    // report them if any
+    if ( !errors.isEmpty() ) {
+        switch( errors.array()[0].msg ) {
+            case ERROR_CODES.INVALID_USER_NAME:
+                return reportInvalidUsernameError( next )
+            case ERROR_CODES.INVALID_OPERATION:
+                return reportInvalidOperationError( next )
+        }
+    }
+
+    // if no errors proceed to next middleware or 
+    // controller
+    next()
+}

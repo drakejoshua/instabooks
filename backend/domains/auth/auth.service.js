@@ -88,3 +88,46 @@ export async function refreshAuthService( token ) {
         throw UserNotFoundError
     }
 }
+
+export async function profileUpdateAuthService( user, updateData, isDeletePhoto ) {
+    // check if user wants to update their profile name and
+    // update user name in database if true
+    if ( updateData.name ) {
+        user.name = updateData.name
+    }
+
+    // check if user wants to delete their profile photo
+    // and delete photo from cloudinary if true and save changes 
+    // to user document
+    if ( isDeletePhoto ) {
+        await cloudinaryDelete( user.photo_id )
+
+        user.photo_url = ""
+        user.photo_id = ""
+
+        await user.save()
+
+        return user.getProfileData()
+    }
+
+    // check if user wants to update their profile photo and
+    // upload new photo to cloudinary if true and save changes 
+    // to user document
+    if ( updateData.photo ) {
+        let uploadResult = await cloudinaryUpload( updateData.photo.buffer )
+
+        user.photo_url = uploadResult.secure_url
+        user.photo_id = uploadResult.public_id
+
+        await user.save()
+
+        return user.getProfileData()
+    }
+    
+    // if user does not want to update their profile photo,
+    // just save the changes to user document and return updated
+    // user data
+    await user.save()
+
+    return user.getProfileData()
+}
