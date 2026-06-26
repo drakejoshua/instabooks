@@ -1,3 +1,4 @@
+import { cloudinaryDelete, cloudinaryUpload } from "../../utils/cloudinary.js";
 import { InvalidAuthorizationTokenError, UserNotFoundError } from "../../utils/errors.js";
 import User from "./auth.model.js";
 import { generateAccessToken, generateRefreshToken, verifyJWT } from "./auth.utils.js";

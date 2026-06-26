@@ -65,12 +65,12 @@ router.post("/refresh",
 )
 
 router.post("/update",
+    upload.single("photo"),
     bearerAuthValidationRules,
     bearerAuthValidationFunction,
     profileUpdateAuthValidationRules,
     profileUpdateAuthValidationFunction,
     passport.authenticate("jwt", { session: false }),
-    upload.single("photo"),
     profileUpdateAuthController
 )
 

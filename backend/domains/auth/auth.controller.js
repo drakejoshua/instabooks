@@ -1,6 +1,7 @@
 import { 
     googleAuthService, 
     logoutAuthService, 
+    profileUpdateAuthService, 
     refreshAuthService, 
     verifyGoogleAuthService 
 } from "./auth.service.js"

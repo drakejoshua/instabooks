@@ -1,5 +1,5 @@
 import multer from 'multer'
-import { fileFilterError } from '../utils/errors'
+import { fileFilterError } from '../utils/errors.js'
 
 
 // fileFilter()
@@ -22,3 +22,5 @@ const upload = multer({
         fileSize: 1024 * 1024 * 2       // 2 MB
     }
 })
+
+export default upload

@@ -1,5 +1,5 @@
 import { query, validationResult, header, cookie, body } from 'express-validator'
-import { ERROR_CODES, reportInvalidAuthIdError, reportInvalidAuthorizationTokenError, reportInvalidUsernameError } from '../../utils/errors.js'
+import { ERROR_CODES, reportInvalidAuthIdError, reportInvalidAuthorizationTokenError, reportInvalidOperationError, reportInvalidUsernameError } from '../../utils/errors.js'
 
 export let googleAuthVerifyValidationRules = [
     query("authId")
