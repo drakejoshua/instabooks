@@ -187,7 +187,32 @@ Request Header:
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response:
-- JSON object containing updated user information
+- 200: {
+    "status": "success",
+    "data":{
+        "user": {
+            "name": < user's name: "Joshua Nathan Ligron" >,
+            "email": < user's email: "joshuanathan086@gmail.com" >,
+            "photo_url": < user's photo URL: "http://example.com/photo.jpg" >,
+            "addresses": < user's addresses: [ "123 Main St, Anytown, USA", ... ] >,
+            "cart": < user's cart: [] >
+        }
+    }
+}
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
+- 401: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+} or "Unauthorized" if token is invalid ( based on passport middleware )
 
 
 Users

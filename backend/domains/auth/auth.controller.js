@@ -115,7 +115,7 @@ export async function refreshAuthController( req, res, next ) {
 
 export async function profileUpdateAuthController( req, res, next ) {
     // get updated user data from request body and query params
-    const name = req.body.name
+    const name = req.body?.name
     const deletePhoto = req.query.deletePhoto === "true" ? true : false
     const photo = req.file
     let updateData = { name, photo }

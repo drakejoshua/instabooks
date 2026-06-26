@@ -63,9 +63,7 @@ export let refreshAuthValidationRules = [
 
 export let profileUpdateAuthValidationRules = [
     body('name')
-        .exists()
-        .withMessage( ERROR_CODES.INVALID_USER_NAME )
-        .bail()
+        .optional()
         .notEmpty()
         .withMessage( ERROR_CODES.INVALID_USER_NAME )
         .bail()

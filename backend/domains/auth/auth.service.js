@@ -100,7 +100,7 @@ export async function profileUpdateAuthService( user, updateData, isDeletePhoto 
     // check if user wants to delete their profile photo
     // and delete photo from cloudinary if true and save changes 
     // to user document
-    if ( isDeletePhoto ) {
+    if ( isDeletePhoto && user.photo_id ) {
         await cloudinaryDelete( user.photo_id )
 
         user.photo_url = ""
