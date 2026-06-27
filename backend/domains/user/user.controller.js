@@ -1,7 +1,7 @@
 import { addToCartService } from "./user.service.js"
 
 export async function addToCartController( req, res, next ) {
-    let bookId = req.body.book_id
+    let bookId = req.body.book_id || req.params.book_id
     let quantity = req.body.quantity
 
     try {

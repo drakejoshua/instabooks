@@ -6,7 +6,8 @@ import {
 import passport from 'passport'
 import { 
     addToCartValidationFunction, 
-    addToCartValidationRules 
+    addToCartValidationRules, 
+    updateCartValidationRules
 } from './user.validators.js'
 import { addToCartController } from './user.controller.js'
 
@@ -21,5 +22,13 @@ router.post("/cart",
     addToCartController
 )
 
+router.put("/cart/:book_id",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
+    updateCartValidationRules,
+    addToCartValidationFunction,
+    passport.authenticate("jwt", { session: false }),
+    addToCartController
+)
 
 export default router

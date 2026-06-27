@@ -182,7 +182,10 @@ Response:
 POST /auth/update?deletePhoto={boolean}  ( update user information )
 
 Request body:
-- FormData object containing updated user information (e.g. name, email)
+- FormData: {
+    name: < user's name: "Joshua Nathan Ligron" >,
+    photo: < user's photo file > ( optional, only if user wants to update photo )
+}
 Request Header:
 - Authorization: Bearer <JWT token>
 Response Header: none
@@ -220,7 +223,10 @@ Users
 POST /user/cart             ( add book to cart )
 
 Request body:
-- JSON object containing book id and order quantity
+- JSON: {
+    "book_id": < book id e.g. "ashjsd123" >,
+    "quantity": < order quantity e.g. 2 >
+}
 Request Header
 - Authorization: Bearer <JWT token>
 Response Header: none

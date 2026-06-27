@@ -25,10 +25,12 @@ const UserSchema = new mongoose.Schema({
     },
     cart: {
         type: [{
-            book_id: mongoose.Schema.Types.ObjectId,
+            book_id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Books"
+            },
             quantity: Number
         }],
-        ref: "Books"
     },
     google_auth_id: {
         type: String,
@@ -40,7 +42,9 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
-UserSchema.methods.getProfileData = function() {
+UserSchema.methods.getProfileData = async function() {
+    await this.populate("cart.book_id")
+
     return {
         name: this.name,
         email: this.email,
@@ -59,7 +63,7 @@ UserSchema.methods.addToCart = async function( book_id, quantity ) {
         // if a valid book index was returned, update cart with
         // new quantity of the book, if not, add new book to user's
         // cart
-        if ( bookIndex > 0 ) {
+        if ( bookIndex >= 0 ) {
             this.cart[ bookIndex ].quantity = quantity
         } else {
             this.cart.unshift({
@@ -70,6 +74,10 @@ UserSchema.methods.addToCart = async function( book_id, quantity ) {
 
         // save updated user document to the database
         await this.save()
+
+        // populate user document before sending it back to the 
+        // service
+        await this.populate()
     } catch( err ) {
         // if any errors occured during cart updates, tag the
         // error as a db operation error and throw it to the
