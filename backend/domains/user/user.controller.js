@@ -45,3 +45,18 @@ export async function addAddressController( req, res, next ) {
         next( err )
     }
 }
+
+export async function deleteAddressController( req, res, next ) {
+    let addressToDelete = req.body.address
+
+    try {
+        let updatedAddresses = await deleteAddressService( req.user, address )
+
+        res.json({
+            status: "success",
+            data: updatedAddresses
+        })
+    } catch( err ) {
+        next( err )
+    }
+}

@@ -54,4 +54,12 @@ router.post("/address",
     addAddressController
 )
 
+router.delete("/address",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
+    addressValidationRules,
+    addressValidationFunction,
+    deleteAddressController
+)
+
 export default router

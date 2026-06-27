@@ -15,3 +15,9 @@ export async function addAddressService( user, newAddress ) {
 
     return user.addresses
 }
+
+export async function deleteAddressService( user, newAddress ) {
+    await user.deleteAddress( newAddress )
+
+    return user.addresses
+}

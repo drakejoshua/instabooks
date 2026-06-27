@@ -123,5 +123,11 @@ UserSchema.methods.addAddress = function( newAddress ) {
     await this.save()
 }
 
+UserSchema.methods.deleteAddress = function( newAddress ) {
+    this.addresses.pull( newAddress )
+
+    await this.save()
+}
+
 const User = mongoose.model('Users', UserSchema)
 export default User
