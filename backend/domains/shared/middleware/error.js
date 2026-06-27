@@ -1,5 +1,6 @@
 import logger from '../utils/winston.js';
 import generateURLFromReq from '../utils/generateURLFromReq.js';
+import { ERROR_CODES } from '../utils/errors.js';
 
 export default function errorHandler( err, req, res, next ) {
     logger.error({
@@ -24,7 +25,7 @@ export default function errorHandler( err, req, res, next ) {
             status: "error",
             error: {
                 message: `A fatal error occurred on the server: ${ err.message }` || "A fatal error occurred on the server.",
-                code: err.code || "SERVER_ERROR"
+                code: err.code || ERROR_CODES.INTERNAL_SERVER_ERROR
             }
         })
     }

@@ -1,12 +1,15 @@
 export const ERROR_CODES = {
     INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+    DB_OPERATION_ERROR: "DB_OPERATION_ERROR",
     ROUTE_NOT_FOUND: 'ROUTE_NOT_FOUND',
     INVALID_AUTH_ID: 'INVALID_AUTH_ID',
     USER_NOT_FOUND: 'USER_NOT_FOUND',
     INVALID_AUTHORIZATION_TOKEN: "INVALID_AUTHORIZATION_TOKEN",
     INVALID_FILE_TYPE: "INVALID_FILE_TYPE",
     INVALID_USER_NAME: "INVALID_USER_NAME",
-    INVALID_OPERATION: "INVALID_OPERATION"
+    INVALID_OPERATION: "INVALID_OPERATION",
+    INVALID_BOOK_ID: "INVALID_BOOK_ID",
+    INVALID_ORDER_QUANTITY: "INVALID_ORDER_QUANTITY"
 };
 
 export const RouteNotFoundError = new Error("The requested resource was not found.");
@@ -76,4 +79,22 @@ InvalidOperationError.code = ERROR_CODES.INVALID_OPERATION
 
 export function reportInvalidOperationError( next ) {
     next( InvalidOperationError )
+}
+
+
+export const InvalidBookIdError = new Error("The book id provided is invalid, Please check book id and try again")
+InvalidBookIdError.status = 400
+InvalidBookIdError.code = ERROR_CODES.INVALID_BOOK_ID
+
+export function reportInvalidBookIdError( next ) {
+    next( InvalidBookIdError )
+}
+
+
+export const InvalidOrderQuantityError = new Error("The order quantity is invalid, Please check and try again")
+InvalidOrderQuantityError.status = 400
+InvalidOrderQuantityError.code = ERROR_CODES.INVALID_ORDER_QUANTITY
+
+export function reportInvalidOrderQuantityError( next ) {
+    next( InvalidOrderQuantityError )
 }
