@@ -37,7 +37,7 @@ export let addToCartValidationRules = [
         .bail()
 ]
 
-export function addToCartValidationFunction( req, res, next ) {
+export function cartValidationFunction( req, res, next ) {
     // get validation errors from the request 
     // if any
     let errors = validationResult( req )
@@ -83,4 +83,19 @@ export let updateCartValidationRules = [
         .isInt({ min: 1 })
         .withMessage( ERROR_CODES.INVALID_ORDER_QUANTITY )
         .bail()
+]
+
+export let deleteFromCartValidationRules = [
+    // check if book_id exists in the request param, is not
+    // not empty and is a valid MongoDb ID string
+    param("book_id")
+        .exists()
+        .withMessage( ERROR_CODES.INVALID_BOOK_ID )
+        .bail()
+        .notEmpty()
+        .withMessage( ERROR_CODES.INVALID_BOOK_ID )
+        .bail()
+        .isMongoId()
+        .withMessage( ERROR_CODES.INVALID_BOOK_ID )
+        .bail(),
 ]

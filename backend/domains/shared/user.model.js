@@ -88,5 +88,34 @@ UserSchema.methods.addToCart = async function( book_id, quantity ) {
     }
 }
 
+UserSchema.methods.removeFromCart = async function( book_id ) {
+    try {
+        // get index of book with book_id if it has already been 
+        // added to the cart
+        let bookIndex = this.cart.findIndex( ( book ) => book.book_id === book_id )
+
+        // if a valid book index was returned, update cart with
+        // new quantity of the book, if not, add new book to user's
+        // cart
+        if ( bookIndex >= 0 ) {
+            this.cart.pull({ book_id })
+            
+            // save updated user document to the database
+            await this.save()
+    
+            // populate user document before sending it back to the 
+            // service
+            await this.populate()
+        } 
+    } catch( err ) {
+        // if any errors occured during cart updates, tag the
+        // error as a db operation error and throw it to the
+        // higher try/catch block in the controller
+        err.code = ERROR_CODES.DB_OPERATION_ERROR
+
+        throw err
+    }
+}
+
 const User = mongoose.model('Users', UserSchema)
 export default User

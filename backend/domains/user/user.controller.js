@@ -15,3 +15,18 @@ export async function addToCartController( req, res, next ) {
         next( err )
     }
 }
+
+export async function removeFromCartController( req, res, next ) {
+    let bookId = req.params.book_id
+
+    try {
+        let updatedCart = await removeFromCartService( req.user, bookId )
+
+        res.json({
+            status: "success",
+            data: updatedCart
+        })
+    } catch( err ) {
+        next( err )
+    }
+}
