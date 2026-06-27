@@ -1,4 +1,4 @@
-import { addToCartService } from "./user.service.js"
+import { addToCartService, deleteFromCartService } from "./user.service.js"
 
 export async function addToCartController( req, res, next ) {
     let bookId = req.body.book_id || req.params.book_id
@@ -16,15 +16,30 @@ export async function addToCartController( req, res, next ) {
     }
 }
 
-export async function removeFromCartController( req, res, next ) {
+export async function deleteFromCartController( req, res, next ) {
     let bookId = req.params.book_id
 
     try {
-        let updatedCart = await removeFromCartService( req.user, bookId )
+        let updatedCart = await deleteFromCartService( req.user, bookId )
 
         res.json({
             status: "success",
             data: updatedCart
+        })
+    } catch( err ) {
+        next( err )
+    }
+}
+
+export async function addAddressController( req, res, next ) {
+    let addressToAdd = req.body.address
+
+    try {
+        let updatedAddresses = await addAddressService( req.user, address )
+
+        res.json({
+            status: "success",
+            data: updatedAddresses
         })
     } catch( err ) {
         next( err )

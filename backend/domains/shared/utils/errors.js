@@ -9,7 +9,8 @@ export const ERROR_CODES = {
     INVALID_USER_NAME: "INVALID_USER_NAME",
     INVALID_OPERATION: "INVALID_OPERATION",
     INVALID_BOOK_ID: "INVALID_BOOK_ID",
-    INVALID_ORDER_QUANTITY: "INVALID_ORDER_QUANTITY"
+    INVALID_ORDER_QUANTITY: "INVALID_ORDER_QUANTITY",
+    INVALID_ADDRESS: "INVALID_ADDRESS"
 };
 
 export const RouteNotFoundError = new Error("The requested resource was not found.");
@@ -97,4 +98,13 @@ InvalidOrderQuantityError.code = ERROR_CODES.INVALID_ORDER_QUANTITY
 
 export function reportInvalidOrderQuantityError( next ) {
     next( InvalidOrderQuantityError )
+}
+
+
+export const InvalidAddressError = new Error("The provided address is invalid, Please check and try again")
+InvalidAddressError.status = 400
+InvalidAddressError.code = ERROR_CODES.INVALID_ADDRESS
+
+export function reportInvalidAddressError( next ) {
+    next( InvalidAddressError )
 }

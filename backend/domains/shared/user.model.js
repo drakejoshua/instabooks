@@ -117,5 +117,11 @@ UserSchema.methods.removeFromCart = async function( book_id ) {
     }
 }
 
+UserSchema.methods.addAddress = function( newAddress ) {
+    this.addresses.push( newAddress )
+
+    await this.save()
+}
+
 const User = mongoose.model('Users', UserSchema)
 export default User

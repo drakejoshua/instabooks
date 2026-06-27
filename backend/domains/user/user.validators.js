@@ -5,6 +5,7 @@ import {
 } from 'express-validator'
 import { 
     ERROR_CODES, 
+    reportInvalidAddressError, 
     reportInvalidBookIdError, 
     reportInvalidOrderQuantityError 
 } from '../shared/utils/errors.js'
@@ -99,3 +100,35 @@ export let deleteFromCartValidationRules = [
         .withMessage( ERROR_CODES.INVALID_BOOK_ID )
         .bail(),
 ]
+
+export let addressValidationRules = [
+    // check if address exists in request body, is not empty
+    // and is a string of at least 5 chars ( dummy check but most 
+    // address usually more than 5 chars long )
+    body("address")
+        .exists()
+        .withMessage( ERROR_CODES.INVALID_ADDRESS )
+        .bail()
+        .notEmpty()
+        .withMessage( ERROR_CODES.INVALID_ADDRESS )
+        .bail()
+        .isLength({ min: 5 })
+        .withMessage( ERROR_CODES.INVALID_ADDRESS )
+        .bail()
+]
+
+export async function addressValidationFunction( req, res, next ) {
+    // get invalid address error from the request if it
+    // was encountered
+    let errors = validationResult( req )
+
+    // report the invalid address error if it was encountered 
+    // from teh request
+    if ( !errors.isEmpty() ) {
+        return reportInvalidAddressError( next )
+    }
+
+    // if no error was encountered, move to the next middleware
+    // or route handler
+    next()
+}
