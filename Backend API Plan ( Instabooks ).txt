@@ -227,10 +227,43 @@ Response Header: none
 Response:
 - JSON object containing updated cart information
 
-PUT /user/address          ( add new address )
+
+PUT /user/cart/<book_id>             ( update book quantity in cart )
+
+Request body:
+- JSON object containing updated book quantity
+Request Header
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing updated cart information
+
+
+DELETE /user/cart/<book_id>          ( remove book from cart )
+
+Request body: none
+Request Header
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing updated cart information
+
+
+POST /user/address          ( add new address )
 
 Request body:
 - JSON object containing new address information
+Request Header
+- Authorization: Bearer <JWT token>
+Response Header: none
+Response:
+- JSON object containing updated addresses information
+
+
+DELETE /user/address            ( remove address )
+
+Request body:
+- JSON object containing address to be removed
 Request Header
 - Authorization: Bearer <JWT token>
 Response Header: none
@@ -363,3 +396,4 @@ Backend Git Commit Scopes
 - config
 - middleware
 - utils
+- backend
