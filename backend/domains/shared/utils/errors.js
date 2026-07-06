@@ -1,3 +1,12 @@
+// This file defines a set of error codes and corresponding error 
+// objects for handling various error scenarios in the application. 
+// Each error object has a message, a status code, and an associated 
+// error code. The file also provides utility functions to report these 
+// errors to the next middleware in the Express.js request-response cycle.
+
+
+// Define a library of error codes for different error scenarios in the 
+// application
 export const ERROR_CODES = {
     INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
     DB_OPERATION_ERROR: "DB_OPERATION_ERROR",
@@ -12,6 +21,7 @@ export const ERROR_CODES = {
     INVALID_ORDER_QUANTITY: "INVALID_ORDER_QUANTITY",
     INVALID_ADDRESS: "INVALID_ADDRESS"
 };
+
 
 export const RouteNotFoundError = new Error("The requested resource was not found.");
 RouteNotFoundError.code = ERROR_CODES.ROUTE_NOT_FOUND;

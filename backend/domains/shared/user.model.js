@@ -42,6 +42,11 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
+
+// getProfileData()
+// This method retrieves the user's profile data, including their 
+// name, email, photo URL, addresses, and cart. It populates the 
+// cart with book details before returning the data.
 UserSchema.methods.getProfileData = async function() {
     await this.populate("cart.book_id")
 
@@ -54,6 +59,12 @@ UserSchema.methods.getProfileData = async function() {
     }
 }
 
+
+// addToCart()
+// This method adds a book to the user's cart. It checks if the 
+// book is already in the cart and updates the quantity if it is, 
+// or adds a new entry if it isn't. It saves the updated user 
+// document to the database and populates it before returning.
 UserSchema.methods.addToCart = async function( book_id, quantity ) {
     try {
         // get index of book with book_id if it has already been 
@@ -88,6 +99,12 @@ UserSchema.methods.addToCart = async function( book_id, quantity ) {
     }
 }
 
+
+// removeFromCart()
+// This method removes a book from the user's cart. It checks if 
+// the book is in the cart and removes it if it is. It saves the 
+// updated user document to the database and populates it before 
+// returning.
 UserSchema.methods.removeFromCart = async function( book_id ) {
     try {
         // get index of book with book_id if it has already been 
@@ -117,17 +134,32 @@ UserSchema.methods.removeFromCart = async function( book_id ) {
     }
 }
 
+
+// addAddress()
+// This method adds a new address to the user's account. It pushes 
+// the new address to the addresses array, saves the updated user 
+// document to the database, and returns the updated list of 
+// addresses.
 UserSchema.methods.addAddress = async function( newAddress ) {
     this.addresses.push( newAddress )
 
     await this.save()
 }
 
+
+// deleteAddress()
+// This method removes an address from the user's account. It 
+// pulls the specified address from the addresses array, saves the 
+// updated user document to the database, and returns the updated 
+// list of addresses.
 UserSchema.methods.deleteAddress = async function( newAddress ) {
     this.addresses.pull( newAddress )
 
     await this.save()
 }
 
+
+// create a User model using the UserSchema and export it for use 
+// in other parts of the application
 const User = mongoose.model('Users', UserSchema)
 export default User

@@ -1,109 +1,160 @@
+// import express-validator for validating request parameters, 
+// headers, cookies, and body in the authentication domain
 import {
-  query,
-  validationResult,
-  header,
-  cookie,
-  body,
+    query,
+    validationResult,
+    header,
+    cookie,
+    body,
 } from "express-validator";
+
+// import error reporting functions and error codes for handling
+// validation errors in the authentication domain
 import {
-  ERROR_CODES,
-  reportInvalidAuthIdError,
-  reportInvalidAuthorizationTokenError,
-  reportInvalidOperationError,
-  reportInvalidUsernameError,
+    ERROR_CODES,
+    reportInvalidAuthIdError,
+    reportInvalidAuthorizationTokenError,
+    reportInvalidOperationError,
+    reportInvalidUsernameError,
 } from "../shared/utils/errors.js";
 
+
+// googleAuthVerifyValidationRules - This array of validation rules 
+// is used to validate the query parameters for the Google OAuth2 
+// authentication verification endpoint. It checks for the existence 
+// and non-emptiness of the "authId" query parameter, ensuring that 
+// it is provided and valid.
 export let googleAuthVerifyValidationRules = [
-  query("authId")
-    .exists()
-    .withMessage(ERROR_CODES.INVALID_AUTH_ID)
-    .bail()
-    .notEmpty()
-    .withMessage(ERROR_CODES.INVALID_AUTH_ID)
-    .bail(),
+    query("authId")
+        .exists()
+        .withMessage(ERROR_CODES.INVALID_AUTH_ID)
+        .bail()
+        .notEmpty()
+        .withMessage(ERROR_CODES.INVALID_AUTH_ID)
+        .bail(),
 ];
 
+
+// googleAuthVerifyValidationFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the googleAuthVerifyValidationRules.
+// If there are any validation errors, it reports an invalid auth ID error.
+// If there are no errors, it proceeds to the next middleware or controller.
 export function googleAuthVerifyValidationFunction(req, res, next) {
-  const errors = validationResult(req);
+    // get validation errors from request object if any
+    const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return reportInvalidAuthIdError(next);
-  }
-
-  next();
-}
-
-export let bearerAuthValidationRules = [
-  header("Authorization")
-    .exists()
-    .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
-    .bail()
-    .notEmpty()
-    .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
-    .bail()
-    .custom(function (value) {
-      const token = value.split(" ")[1];
-
-      if (!token) {
-        throw new Error();
-      }
-
-      return true;
-    })
-    .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN),
-];
-
-export function bearerAuthValidationFunction(req, res, next) {
-  let errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return reportInvalidAuthorizationTokenError(next);
-  }
-
-  next();
-}
-
-export let refreshAuthValidationRules = [
-  cookie("refresh_token")
-    .exists()
-    .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
-    .bail()
-    .notEmpty()
-    .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
-    .bail(),
-];
-
-export let profileUpdateAuthValidationRules = [
-  body("name")
-    .optional()
-    .notEmpty()
-    .withMessage(ERROR_CODES.INVALID_USER_NAME)
-    .bail()
-    .isLength({ min: 3 })
-    .withMessage(ERROR_CODES.INVALID_USER_NAME)
-    .bail(),
-  query("deletePhoto")
-    .optional()
-    .isBoolean()
-    .withMessage(ERROR_CODES.INVALID_OPERATION),
-];
-
-export function profileUpdateAuthValidationFunction(req, res, next) {
-  // get validation errors from request object if any
-  const errors = validationResult(req);
-
-  // check if there are any validation errors and
-  // report them if any
-  if (!errors.isEmpty()) {
-    switch (errors.array()[0].msg) {
-      case ERROR_CODES.INVALID_USER_NAME:
-        return reportInvalidUsernameError(next);
-      case ERROR_CODES.INVALID_OPERATION:
-        return reportInvalidOperationError(next);
+    // check if there are any validation errors and report them if any
+    if (!errors.isEmpty()) {
+        return reportInvalidAuthIdError(next);
     }
-  }
 
-  // if no errors proceed to next middleware or
-  // controller
-  next();
+    // if no errors proceed to next middleware or controller
+    next();
+}
+
+
+// bearerAuthValidationRules - This array of validation rules is used to 
+// validate the "Authorization" header in requests that require bearer 
+// token authentication. It checks for the existence and non-emptiness 
+// of the header, and ensures that a token is provided in the correct 
+// format (i.e., "Bearer <token>").
+export let bearerAuthValidationRules = [
+    header("Authorization")
+        .exists()
+        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
+        .bail()
+        .notEmpty()
+        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
+        .bail()
+        .custom(function (value) {
+        const token = value.split(" ")[1];
+
+        if (!token) {
+            throw new Error();
+        }
+
+        return true;
+        })
+        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
+];
+
+
+// bearerAuthValidationFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the bearerAuthValidationRules.
+// If there are any validation errors, it reports an invalid authorization token error.
+// If there are no errors, it proceeds to the next middleware or controller.
+export function bearerAuthValidationFunction(req, res, next) {
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return reportInvalidAuthorizationTokenError(next);
+    }
+
+    next();
+}
+
+
+// refreshAuthValidationRules - This array of validation rules is used to
+// validate the "refresh_token" cookie in requests that require refresh 
+// token authentication. It checks for the existence and non-emptiness 
+// of the cookie, ensuring that a valid refresh token is provided.
+export let refreshAuthValidationRules = [
+    cookie("refresh_token")
+        .exists()
+        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
+        .bail()
+        .notEmpty()
+        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
+        .bail(),
+];
+
+
+// profileUpdateAuthValidationRules - This array of validation rules is used to
+// validate the request body and query parameters for profile update requests.
+// It checks for the optional "name" field in the request body, ensuring that
+// if provided, it is not empty and has a minimum length of 3 characters.
+// It also checks for the optional "deletePhoto" query parameter, ensuring
+// that if provided, it is a boolean value.
+export let profileUpdateAuthValidationRules = [
+    body("name")
+        .optional()
+        .notEmpty()
+        .withMessage(ERROR_CODES.INVALID_USER_NAME)
+        .bail()
+        .isLength({ min: 3 })
+        .withMessage(ERROR_CODES.INVALID_USER_NAME)
+        .bail(),
+    query("deletePhoto")
+        .optional()
+        .isBoolean()
+        .withMessage(ERROR_CODES.INVALID_OPERATION)
+];
+
+
+// profileUpdateAuthValidationFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the profileUpdateAuthValidationRules.
+// If there are any validation errors, it reports the corresponding error
+// based on the first validation error encountered. If there are no errors,
+// it proceeds to the next middleware or controller.
+export function profileUpdateAuthValidationFunction(req, res, next) {
+    // get validation errors from request object if any
+    const errors = validationResult(req);
+
+    // check if there are any validation errors and
+    // report them if any
+    if (!errors.isEmpty()) {
+        switch (errors.array()[0].msg) {
+        case ERROR_CODES.INVALID_USER_NAME:
+            return reportInvalidUsernameError(next);
+        case ERROR_CODES.INVALID_OPERATION:
+            return reportInvalidOperationError(next);
+        }
+    }
+
+    // if no errors proceed to next middleware or
+    // controller
+    next();
 }

@@ -1,3 +1,4 @@
+// import the necessary services from the auth service module
 import { 
     googleAuthService, 
     logoutAuthService, 
@@ -6,15 +7,23 @@ import {
     verifyGoogleAuthService 
 } from "./auth.service.js"
 
+
+// define the configuration for the refresh token cookie, 
+// including security settings and expiration time
 let refreshTokenCookieConfig = {
     secure: process.env.NODE_ENV === "production",
     path: "/",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7  // 7 days
+    maxAge: 1000 * 60 * 60 * 24 * 7             // 7 days
 }
 
 
+// googleAuthController()
+// This controller handles the Google OAuth2 authentication flow. 
+// It retrieves the authenticated user from the request, invokes 
+// the googleAuthService to process the user data, and redirects 
+// the user to the frontend with their Google auth ID.
 export async function googleAuthController( req, res, next ) {
     // get user db model from request
     const authUser = req.user
@@ -30,6 +39,11 @@ export async function googleAuthController( req, res, next ) {
     }
 }
 
+
+// verifyGoogleAuthController()
+// This controller handles the verification of Google OAuth2 authentication tokens.
+// It retrieves the Google auth ID from the request query parameters, invokes the
+// verifyGoogleAuthService to validate the token, and returns the authenticated user data.
 export async function verifyGoogleAuthController( req, res, next ) {
     // get google auth id from request query params
     const googleAuthId = req.query.authId
@@ -57,6 +71,12 @@ export async function verifyGoogleAuthController( req, res, next ) {
 
 }
 
+
+// logoutAuthController()
+// This controller handles the logout process for authenticated users. 
+// It invokes the logoutAuthService to clear the refresh token from the 
+// user's record in the database, clears the refresh token cookie in 
+// the response, and sends a confirmation message back to the client.
 export async function logoutAuthController( req, res, next ) {
     try {
         // call logout auth service to clear refresh token 
@@ -78,6 +98,11 @@ export async function logoutAuthController( req, res, next ) {
     }
 }
 
+
+// profileAuthController()
+// This controller retrieves the authenticated user's profile information. 
+// It extracts the user data from the request object, which is populated 
+// by Passport.js during authentication, and sends it back in the response.
 export async function profileAuthController( req, res, next ) {
     // return profile details from authenticated user by passport
     // in request
@@ -91,6 +116,12 @@ export async function profileAuthController( req, res, next ) {
     })
 }
 
+
+// refreshAuthController()
+// This controller handles the refresh of authentication tokens. 
+// It retrieves the refresh token from the request cookies, invokes 
+// the refreshAuthService to generate a new access token, and sends 
+// the new access token and its expiration time back in the response.
 export async function refreshAuthController( req, res, next ) {
     // get cookie containing the refresh token from the request object
     const refreshToken = req.cookies.refresh_token
@@ -113,6 +144,12 @@ export async function refreshAuthController( req, res, next ) {
     }
 }
 
+
+// profileUpdateAuthController()
+// This controller handles the update of the authenticated user's profile information. 
+// It retrieves the updated data from the request body and query parameters, invokes 
+// the profileUpdateAuthService to update the user's profile in the database, and 
+// returns the updated user data in the response.
 export async function profileUpdateAuthController( req, res, next ) {
     // get updated user data from request body and query params
     const name = req.body?.name
