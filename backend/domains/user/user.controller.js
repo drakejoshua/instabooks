@@ -1,4 +1,4 @@
-import { addToCartService, deleteFromCartService } from "./user.service.js"
+import { addAddressService, addToCartService, deleteAddressService, deleteFromCartService } from "./user.service.js"
 
 export async function addToCartController( req, res, next ) {
     let bookId = req.body.book_id || req.params.book_id
@@ -33,9 +33,10 @@ export async function deleteFromCartController( req, res, next ) {
 
 export async function addAddressController( req, res, next ) {
     let addressToAdd = req.body.address
+    console.log( "authenticated user: ", req.user )
 
     try {
-        let updatedAddresses = await addAddressService( req.user, address )
+        let updatedAddresses = await addAddressService( req.user, addressToAdd )
 
         res.json({
             status: "success",
@@ -50,7 +51,7 @@ export async function deleteAddressController( req, res, next ) {
     let addressToDelete = req.body.address
 
     try {
-        let updatedAddresses = await deleteAddressService( req.user, address )
+        let updatedAddresses = await deleteAddressService( req.user, addressToDelete )
 
         res.json({
             status: "success",

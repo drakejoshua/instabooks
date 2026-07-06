@@ -117,13 +117,13 @@ UserSchema.methods.removeFromCart = async function( book_id ) {
     }
 }
 
-UserSchema.methods.addAddress = function( newAddress ) {
+UserSchema.methods.addAddress = async function( newAddress ) {
     this.addresses.push( newAddress )
 
     await this.save()
 }
 
-UserSchema.methods.deleteAddress = function( newAddress ) {
+UserSchema.methods.deleteAddress = async function( newAddress ) {
     this.addresses.pull( newAddress )
 
     await this.save()

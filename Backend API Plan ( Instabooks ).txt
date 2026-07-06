@@ -290,23 +290,53 @@ Response:
 POST /user/address          ( add new address )
 
 Request body:
-- JSON object containing new address information
+- JSON: {
+    "address": < new address e.g. "123 Main St, Anytown, USA" >
+}
 Request Header
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response:
-- JSON object containing updated addresses information
+- 200: {
+    "status": "success",
+    "data": [
+            < updated user's addresses information e.g. 
+            ["123 Main St, Anytown, USA", "456 Elm St, Othertown, USA"]>
+        ]
+    }
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
 
 
 DELETE /user/address            ( remove address )
 
 Request body:
-- JSON object containing address to be removed
+- JSON: {
+    "address": < address to be removed e.g. "123 Main St, Anytown, USA" >
+}
 Request Header
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response:
-- JSON object containing updated addresses information
+- 200: {
+    "status": "success",
+    "data": [
+            < updated user's addresses information e.g. 
+            ["123 Main St, Anytown, USA", "456 Elm St, Othertown, USA"]>
+        ]
+    }
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
 
 
 Books

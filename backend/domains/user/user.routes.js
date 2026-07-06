@@ -13,7 +13,9 @@ import {
     updateCartValidationRules
 } from './user.validators.js'
 import { 
+    addAddressController,
     addToCartController, 
+    deleteAddressController, 
     deleteFromCartController,
 } from './user.controller.js'
 
@@ -51,6 +53,7 @@ router.post("/address",
     bearerAuthValidationFunction,
     addressValidationRules,
     addressValidationFunction,
+    passport.authenticate( "jwt", { session: false } ),
     addAddressController
 )
 
@@ -59,6 +62,7 @@ router.delete("/address",
     bearerAuthValidationFunction,
     addressValidationRules,
     addressValidationFunction,
+    passport.authenticate( "jwt", { session: false } ),
     deleteAddressController
 )
 
