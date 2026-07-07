@@ -218,6 +218,7 @@ Response:
 } or "Unauthorized" if token is invalid ( based on passport middleware )
 
 
+
 Users
 
 POST /user/cart             ( add book to cart )
@@ -337,6 +338,7 @@ Response:
         "code": < error code >
     }
 }
+
 
 
 Books

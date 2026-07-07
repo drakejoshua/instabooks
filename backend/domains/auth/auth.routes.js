@@ -30,7 +30,7 @@ import {
 import cookieParser from "cookie-parser";
 
 // import multer middleware to handle file uploads in the request
-import upload from "../shared/middleware/multer.js";
+import upload from "../../infra/middleware/multer.js";
 
 
 

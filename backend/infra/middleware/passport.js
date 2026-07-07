@@ -1,8 +1,8 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
-import Users from "../user.model.js";
-import { UserNotFoundError } from "../utils/errors.js";
+import Users from "../../domains/shared/user.model.js";
+import { UserNotFoundError } from "../../domains/shared/utils/errors.js";
 
 export default async function initializePassport(passport) {
     // initialize passport with Google OAuth2 strategy for authentication

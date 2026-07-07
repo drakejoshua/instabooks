@@ -3,7 +3,7 @@
 import {
     cloudinaryDelete,
     cloudinaryUpload,
-} from "../shared/utils/cloudinary.js";
+} from "../../infra/utils/cloudinary.js";
 
 // import error objects for handling error occurences in the
 // authentication service functions
