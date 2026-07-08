@@ -49,3 +49,18 @@ export function verifyJWT( token ) {
         JWT_SECRET
     )
 }
+
+
+// hydrateUserToModel()
+// This utility function checks if the provided user object is a 
+// plain object (e.g., retrieved from cache) and hydrates it into 
+// a Mongoose model instance.
+// If the user is already a Mongoose model instance, it returns it as is.
+export function hydrateUserToModel( user ) {
+    if ( !( user instanceof Document ) ) {
+        // hydrate the plain object gotten from the cache during 
+        user = Users.hydrate( user )
+    }
+
+    return user;
+}

@@ -2,6 +2,7 @@
 import { 
     googleAuthService, 
     logoutAuthService, 
+    profileDataAuthService, 
     profileUpdateAuthService, 
     refreshAuthService, 
     verifyGoogleAuthService 
@@ -30,7 +31,7 @@ export async function googleAuthController( req, res, next ) {
 
     try {
         // invoke auth service with user data and get respData
-        const respData = await googleAuthService( authUser )
+        const respData = await googleAuthService( authUser, req )
 
         // return redirect to frontend URL
         res.redirect(`${ process.env.FRONTEND_URL }/auth/google?id=${ respData.google_auth_id }`)
@@ -51,7 +52,7 @@ export async function verifyGoogleAuthController( req, res, next ) {
     try {
         // invoke auth service to verify googleAuthId from database
         // and return response data
-        const { refresh_token, user } = await verifyGoogleAuthService( googleAuthId )
+        const { refresh_token, user } = await verifyGoogleAuthService( googleAuthId, req )
 
         // add refresh token as cookie in the response
         res.cookie( 
@@ -81,7 +82,7 @@ export async function logoutAuthController( req, res, next ) {
     try {
         // call logout auth service to clear refresh token 
         // from user in database
-        const { message } = await logoutAuthService( req.user )
+        const { message } = await logoutAuthService( req.user, req )
 
         // clear refresh_token http cookie in response
         res.clearCookie( "refresh_token", refreshTokenCookieConfig )
@@ -99,18 +100,19 @@ export async function logoutAuthController( req, res, next ) {
 }
 
 
-// profileAuthController()
-// This controller retrieves the authenticated user's profile information. 
-// It extracts the user data from the request object, which is populated 
-// by Passport.js during authentication, and sends it back in the response.
+
 export async function profileAuthController( req, res, next ) {
+    // get profile details from hydrated user model from
+    // the corresponding service method
+    let profileData = await profileDataAuthService( req.user )
+
     // return profile details from authenticated user by passport
     // in request
     res.json({
         status: "success",
         data: {
             user: {
-                ...req.user.getProfileData()
+                ...profileData
             }
         }
     })
@@ -129,7 +131,7 @@ export async function refreshAuthController( req, res, next ) {
     try {
         // invoke the refresh service with refresh token to generate
         // new access token
-        let { accessToken, accessTokenExpiry } = await refreshAuthService( refreshToken )
+        let { accessToken, accessTokenExpiry } = await refreshAuthService( refreshToken, req )
 
         // return generated access token in response
         res.json({
@@ -159,7 +161,7 @@ export async function profileUpdateAuthController( req, res, next ) {
 
     try {
         // invoke auth service to update user profile with new data
-        const updatedUser = await profileUpdateAuthService( req.user, updateData, deletePhoto )
+        const updatedUser = await profileUpdateAuthService( req.user, updateData, deletePhoto, req )
 
         // return updated user data in response
         res.json({

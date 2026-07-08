@@ -3,6 +3,8 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
 import Users from "../../domains/shared/user.model.js";
 import { UserNotFoundError } from "../../domains/shared/utils/errors.js";
+import { getOrSetCache } from "../../cache/utils.js";
+import redisClient from "../../cache/setup.js";
 
 export default async function initializePassport(passport) {
     // initialize passport with Google OAuth2 strategy for authentication
@@ -15,22 +17,54 @@ export default async function initializePassport(passport) {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             callbackURL: "/auth/google/callback",
+            passReqToCallback: true
         },
-        async (accessToken, refreshToken, profile, done) => {
+        async ( req, accessToken, refreshToken, profile, done) => {
             try {
-                // get existing user in the database if any using the email
-                // provided by google profile
-                let user = await Users.findOne({ email: profile.emails[0].value });
+                // get existing user id in the cache if any using the 
+                // email provided by google profile
+                let userId = await getOrSetCache(
+                    req,
+                    `user:email:${ profile.emails[0].value }`,
+                    async function() {
+                        const userData = await Users.findOne({ email: profile.emails[0].value });
 
-                // if user does not exist, create a new user in the
-                // database using the information provided by google
-                // profile
-                if (!user) {
+                        return userData._id
+                    },
+                    5 * 60          // cache expiration time in 5 mins 
+                )
+                
+
+                // if user id does not exist, create a new user in the
+                // database and cache using the information provided by 
+                // google profile, else, get the user data using the 
+                // retrieved user id from cache
+                let user = null
+
+                if (!userId) {
+                    // create user in database using google profile info
                     user = await Users.create({
-                    name: profile.displayName,
-                    email: profile.emails[0].value,
-                    photo_url: profile.photos[0].value,
+                        name: profile.displayName,
+                        email: profile.emails[0].value,
+                        photo_url: profile.photos[0].value,
                     });
+
+                    // populate redis cache with email key to index the 
+                    // user's id and a user:id key to contain actual profile
+                    // info
+                    await redisClient.setEx(
+                        `user:id:${ user._id }`,
+                        60 * 60,        // cache expiration time in 60 mins
+                        user
+                    )
+                } else {
+                    user = await getOrSetCache(
+                        req,
+                        `user:id:${ userId }`,
+                        async function() {
+                            return Users.findById( userId );
+                        }
+                    )
                 }
 
                 // return the user object to the passport
@@ -55,10 +89,17 @@ export default async function initializePassport(passport) {
         {
             secretOrKey: process.env.JWT_SECRET,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            passReqToCallback: true
         },
-        async function (payload, done) {
+        async function ( req, payload, done) {
             try {
-                const authenticatedUser = await Users.findById(payload.userId);
+                let authenticatedUser = await getOrSetCache(
+                    req,
+                    `user:id:${ payload.userId }`,
+                    async function() {
+                        return Users.findById(payload.userId);
+                    }
+                )
 
                 if (!authenticatedUser) {
                     return done(UserNotFoundError, false);
