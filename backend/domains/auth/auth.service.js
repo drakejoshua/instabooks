@@ -26,9 +26,6 @@ import {
 // import crypto module for generating unique identifiers for Google auth IDs
 import crypto from "crypto";
 
-// import redisClient for perforing cache-related operations
-import redisClient from "../../cache/setup.js";
-
 import {
     CacheKeys,
     CacheOperations,
@@ -52,7 +49,7 @@ export async function googleAuthService(authUser, req = null) {
 
     // update user id cache info with updated user data
     // ( i.e google_auth_id ) for faster access in future requests
-    await CacheUpdate.updateUserByGoogleAuthId(authUser);
+    await CacheUpdate.updateUserByGoogleAuthId(authUser, req);
 
     // return user data for use in controller
     return authUser;
@@ -113,11 +110,11 @@ export async function verifyGoogleAuthService(authId, req = null) {
 
     // update user id cache info with updated user data ( i.e refresh
     // token and google_auth_id )
-    await CacheUpdate.updateUserById(authUser);
+    await CacheUpdate.updateUserById(authUser, req);
 
     // cache refresh token as an index key to point to the authenticated
     // user cache info
-    await CacheUpdate.updateUserByRefreshToken(authUser);
+    await CacheUpdate.updateUserByRefreshToken(authUser, req);
 
     // delete google auth id cache key to prevent duplicate indexes to
     // the same user
@@ -130,7 +127,7 @@ export async function verifyGoogleAuthService(authId, req = null) {
     return {
         refresh_token: refreshToken,
         user: {
-            ...authUser.getProfileData(),
+            ...( await authUser.getProfileData() ),
             access_token: accessToken,
             expires_in: 15 * 60, // access token expires in 15 mins
         },
@@ -206,6 +203,7 @@ export async function profileUpdateAuthService(
     user,
     updateData,
     isDeletePhoto,
+    req
 ) {
     // check if user wants to update their profile name and
     // update user name in database if true
@@ -226,9 +224,9 @@ export async function profileUpdateAuthService(
 
         // update user id cache info with updated user data ( i.e updated
         // user name or profile photo info )
-        await CacheUpdate.updateUserById(user);
+        await CacheUpdate.updateUserById(user, req);
 
-        return user.getProfileData();
+        return await user.getProfileData();
     }
 
     // check if user wants to update their profile photo and
@@ -244,9 +242,9 @@ export async function profileUpdateAuthService(
 
         // update user id cache info with updated user data ( i.e updated
         // user name or profile photo info )
-        await CacheUpdate.updateUserById(user);
+        await CacheUpdate.updateUserById(user, req);
 
-        return user.getProfileData();
+        return await user.getProfileData();
     }
 
     // if user does not want to update their profile photo,
@@ -254,5 +252,5 @@ export async function profileUpdateAuthService(
     // user data
     await user.save();
 
-    return user.getProfileData();
+    return await user.getProfileData();
 }

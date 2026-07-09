@@ -10,6 +10,9 @@ import redisClient from "./setup.js";
 // on the database
 import Users from "../database/models/user.model.js";
 
+
+
+
 // pendingRequests map to track in-flight requests and prevent
 // duplicate async/cache calls for the same async operation and
 // prevent cache stampeding
@@ -197,7 +200,7 @@ async function getAndHydrateUserById(userId, req = null) {
     // hydrate the plain object gotten from the cache during
     // the google auth process to a mongoose model instance if
     // it is not already a mongoose model instance
-    if (!(user instanceof Document)) {
+    if (!(user instanceof Users)) {
         user = Users.hydrate(user);
     }
 

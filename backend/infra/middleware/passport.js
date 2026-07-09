@@ -63,7 +63,7 @@ export default async function initializePassport(passport) {
                         // populate redis cache with email key to index the
                         // user's id and a user:id key to contain actual profile
                         // info
-                        await CacheUpdate.updateUserById(req, user);
+                        await CacheUpdate.updateUserById(user, req);
                     } else {
                         user = await CacheOperations.getAndHydrateUserById(
                             userId,
