@@ -4,7 +4,7 @@
 // the MONGO_URI environment variable to connect to the database and logs 
 // the connection status using a logger utility.
 import mongoose from "mongoose";
-import logger from "../domains/shared/utils/winston.js";
+import logger from "../infra/utils/winston.js";
 
 // connectDB()
 // This function connects to the MongoDB database using Mongoose. It 

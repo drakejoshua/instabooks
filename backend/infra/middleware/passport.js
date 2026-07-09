@@ -1,9 +1,13 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
-import Users from "../../domains/shared/user.model.js";
+import Users from "../../database/models/user.model.js";
 import { UserNotFoundError } from "../../domains/shared/utils/errors.js";
-import { getOrSetCache } from "../../cache/utils.js";
+import {
+    CacheKeys,
+    CacheOperations,
+    CacheUpdate
+} from "../../cache/utils.js";
 import redisClient from "../../cache/setup.js";
 
 export default async function initializePassport(passport) {
@@ -13,69 +17,69 @@ export default async function initializePassport(passport) {
     // profile to create or update user records in the database.
     passport.use(
         new GoogleStrategy(
-        {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: "/auth/google/callback",
-            passReqToCallback: true
-        },
-        async ( req, accessToken, refreshToken, profile, done) => {
-            try {
-                // get existing user id in the cache if any using the 
-                // email provided by google profile
-                let userId = await getOrSetCache(
-                    req,
-                    `user:email:${ profile.emails[0].value }`,
-                    async function() {
-                        const userData = await Users.findOne({ email: profile.emails[0].value });
-
-                        return userData._id
-                    },
-                    5 * 60          // cache expiration time in 5 mins 
-                )
-                
-
-                // if user id does not exist, create a new user in the
-                // database and cache using the information provided by 
-                // google profile, else, get the user data using the 
-                // retrieved user id from cache
-                let user = null
-
-                if (!userId) {
-                    // create user in database using google profile info
-                    user = await Users.create({
-                        name: profile.displayName,
-                        email: profile.emails[0].value,
-                        photo_url: profile.photos[0].value,
-                    });
-
-                    // populate redis cache with email key to index the 
-                    // user's id and a user:id key to contain actual profile
-                    // info
-                    await redisClient.setEx(
-                        `user:id:${ user._id }`,
-                        60 * 60,        // cache expiration time in 60 mins
-                        user
-                    )
-                } else {
-                    user = await getOrSetCache(
+            {
+                clientID: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                callbackURL: "/auth/google/callback",
+                passReqToCallback: true,
+            },
+            async (req, accessToken, refreshToken, profile, done) => {
+                try {
+                    // get existing user id in the cache if any using the
+                    // email provided by google profile
+                    let userId = await CacheOperations.getCache(
                         req,
-                        `user:id:${ userId }`,
-                        async function() {
-                            return Users.findById( userId );
-                        }
-                    )
-                }
+                        CacheKeys.userByEmail(profile.emails[0].value),
+                    );
+                    let user = null;
 
-                // return the user object to the passport
-                // middleware
-                return done(null, user);
-            } catch (err) {
-                // if there is an error during the process,
-                // return the error to the passport middleware
-                return done(err, null);
-            }
-        },
+                    // check if a valid user id was returned for the email, if not,
+                    // retrieve the user id and profile info from the database using the
+                    // email ( preventing a double query to the database if the user id
+                    // is already cached )
+                    if (!userId) {
+                        // if no user id is found in the cache, retrieve the user id
+                        // from the database
+                        let userData = await Users.findOne({
+                            email: profile.emails[0].value,
+                        });
+
+                        // if no user is found in the database, throw a user not
+                        // found error
+                        if (!userData) {
+                            // create user in database using google profile info
+                            userData = await Users.create({
+                                name: profile.displayName,
+                                email: profile.emails[0].value,
+                                photo_url: profile.photos[0].value,
+                            });
+                        }
+
+                        user = userData;
+                        userId = userData._id;
+                    }
+
+                    if (user) {
+                        // populate redis cache with email key to index the
+                        // user's id and a user:id key to contain actual profile
+                        // info
+                        await CacheUpdate.updateUserById(req, user);
+                    } else {
+                        user = await CacheOperations.getAndHydrateUserById(
+                            userId,
+                            req,
+                        );
+                    }
+
+                    // return the user object to the passport
+                    // middleware
+                    return done(null, user);
+                } catch (err) {
+                    // if there is an error during the process,
+                    // return the error to the passport middleware
+                    return done(err, null);
+                }
+            },
         ),
     );
 
@@ -86,30 +90,28 @@ export default async function initializePassport(passport) {
     // the user information is retrieved from the database.
     passport.use(
         new JWTStrategy(
-        {
-            secretOrKey: process.env.JWT_SECRET,
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            passReqToCallback: true
-        },
-        async function ( req, payload, done) {
-            try {
-                let authenticatedUser = await getOrSetCache(
-                    req,
-                    `user:id:${ payload.userId }`,
-                    async function() {
-                        return Users.findById(payload.userId);
+            {
+                secretOrKey: process.env.JWT_SECRET,
+                jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+                passReqToCallback: true,
+            },
+            async function (req, payload, done) {
+                try {
+                    let authenticatedUser =
+                        await CacheOperations.getAndHydrateUserById(
+                            payload.userId,
+                            req,
+                        );
+
+                    if (!authenticatedUser) {
+                        return done(UserNotFoundError, false);
                     }
-                )
 
-                if (!authenticatedUser) {
-                    return done(UserNotFoundError, false);
+                    return done(null, authenticatedUser);
+                } catch (err) {
+                    return done(err, false);
                 }
-
-                return done(null, authenticatedUser);
-            } catch (err) {
-                return done(err, false);
-            }
-        },
+            },
         ),
     );
 }

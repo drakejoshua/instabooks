@@ -1,10 +1,10 @@
-import logger from '../utils/winston.js';
+import logger from '../../../infra/utils/winston.js';
 import generateURLFromReq from '../utils/generateURLFromReq.js';
 import { ERROR_CODES } from '../utils/errors.js';
 
 export default function errorHandler( err, req, res, next ) {
     logger.error({
-        event: 'error_occurred',
+        event: 'server_error',
         message: err?.message,
         stack: err?.stack,
         code: err?.code,

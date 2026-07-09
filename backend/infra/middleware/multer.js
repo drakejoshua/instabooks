@@ -1,5 +1,5 @@
 import multer from 'multer'
-import { fileFilterError } from '../utils/errors.js'
+import { fileFilterError } from '../../domains/shared/utils/errors.js'
 
 
 // fileFilter()
