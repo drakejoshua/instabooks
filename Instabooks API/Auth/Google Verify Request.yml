@@ -1,0 +1,19 @@
+info:
+  name: Google Verify Request
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:8000/auth/google/verify?authId=70c006a0-bd2e-4616-919d-13e8e68f8fc5
+  params:
+    - name: authId
+      value: 70c006a0-bd2e-4616-919d-13e8e68f8fc5
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

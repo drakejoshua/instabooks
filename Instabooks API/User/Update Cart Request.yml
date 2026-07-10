@@ -1,0 +1,22 @@
+info:
+  name: Update Cart Request
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: http://localhost:8000/user/cart/awwddnns
+  body:
+    type: form-urlencoded
+    data:
+      - name: quantity
+        value: "2"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODI1NjUzMzYsImV4cCI6MTc4MjU2NjIzNn0.s4Im5REzniCmhogaZVjkCFscTPtazUxyd1FBSS9AMXk
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

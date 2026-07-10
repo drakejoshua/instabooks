@@ -7,7 +7,7 @@ import express from 'express'
 import { 
     bearerAuthValidationFunction, 
     bearerAuthValidationRules 
-} from '../auth/auth.validators.js'
+} from '../shared/shared.validators.js'
 
 // import passport library to handle authentication
 import passport from 'passport'
@@ -27,60 +27,51 @@ import {
     deleteAddressController, 
     deleteFromCartController,
 } from './user.controller.js'
+import { authenticateJWT } from '../shared/middleware/shared.middleware.js'
 
 
 // create a router for user related routes
 let router = express.Router()
 
 
+// validate and check bearer auth for incoming requests on 
+// this route collection before procession actual data
+router.use( authenticateJWT )
+
+
 // POST /user/cart - add a book to the user's cart
 router.post("/cart",
-    bearerAuthValidationRules,
-    bearerAuthValidationFunction,
     addToCartValidationRules,
     cartValidationFunction,
-    passport.authenticate("jwt", { session: false }),
     addToCartController
 )
 
 // PUT /user/cart/:book_id - update the quantity of a book in the 
 // user's cart
 router.put("/cart/:book_id",
-    bearerAuthValidationRules,
-    bearerAuthValidationFunction,
     updateCartValidationRules,
     cartValidationFunction,
-    passport.authenticate("jwt", { session: false }),
     addToCartController
 )
 
 // DELETE /user/cart/:book_id - remove a book from the user's cart
 router.delete("/cart/:book_id",
-    bearerAuthValidationRules,
-    bearerAuthValidationFunction,
     deleteFromCartValidationRules,
     cartValidationFunction,
-    passport.authenticate("jwt", { session: false }),
     deleteFromCartController
 )
 
 // POST /user/address - add a new address to the user's account
 router.post("/address",
-    bearerAuthValidationRules,
-    bearerAuthValidationFunction,
     addressValidationRules,
     addressValidationFunction,
-    passport.authenticate( "jwt", { session: false } ),
     addAddressController
 )
 
 // DELETE /user/address - delete an address from the user's account
 router.delete("/address",
-    bearerAuthValidationRules,
-    bearerAuthValidationFunction,
     addressValidationRules,
     addressValidationFunction,
-    passport.authenticate( "jwt", { session: false } ),
     deleteAddressController
 )
 

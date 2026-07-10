@@ -1,9 +1,17 @@
+import { CacheOperations, CacheUpdate } from "../../cache/utils.js"
+
+
+
 // addToCartService()
 // This service function adds a book to the user's cart. It takes 
 // the user object, book ID, and quantity as parameters, calls the 
 // addToCart method on the user object, and returns the updated cart.
-export async function addToCartService( user, bookId, quantity ) {
+export async function addToCartService( user, bookId, quantity, req = null ) {
     await user.addToCart( bookId, quantity )
+
+    // update user data in cache to maintain data 
+    // consistency
+    await CacheUpdate.updateUserById( user, req )
 
     return user.cart 
 }
@@ -14,8 +22,12 @@ export async function addToCartService( user, bookId, quantity ) {
 // takes the user object and book ID as parameters, calls the 
 // removeFromCart method on the user object, and returns the 
 // updated cart.
-export async function deleteFromCartService( user, bookId ) {
+export async function deleteFromCartService( user, bookId, req ) {
     await user.removeFromCart( bookId )
+
+    // update user data in cache to maintain data 
+    // consistency
+    await CacheUpdate.updateUserById( user, req )
 
     return user.cart
 }
@@ -29,6 +41,10 @@ export async function deleteFromCartService( user, bookId ) {
 export async function addAddressService( user, newAddress ) {
     await user.addAddress( newAddress )
 
+    // update user data in cache to maintain data 
+    // consistency
+    await CacheUpdate.updateUserById( user, req )
+
     return user.addresses
 }
 
@@ -40,6 +56,10 @@ export async function addAddressService( user, newAddress ) {
 // object, and returns the updated list of addresses.
 export async function deleteAddressService( user, newAddress ) {
     await user.deleteAddress( newAddress )
+
+    // update user data in cache to maintain data 
+    // consistency
+    await CacheUpdate.updateUserById( user, req )
 
     return user.addresses
 }

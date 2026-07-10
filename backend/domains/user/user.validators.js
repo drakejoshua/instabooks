@@ -21,7 +21,7 @@ export let addToCartValidationRules = [
         .notEmpty()
         .withMessage( ERROR_CODES.INVALID_BOOK_ID )
         .bail()
-        .isMongoId()
+        .isLength({ min: 2 })
         .withMessage( ERROR_CODES.INVALID_BOOK_ID )
         .bail(),
     // check if the quantity exists in the request body, is not

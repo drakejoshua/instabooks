@@ -1,0 +1,32 @@
+info:
+  name: Profile Update Request
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: http://localhost:8000/auth/update?deletePhoto=true
+  params:
+    - name: deletePhoto
+      value: "true"
+      type: query
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: Joshua Nathan Ligron
+        disabled: true
+      - name: photo
+        type: file
+        value: []
+        disabled: true
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODI1MDk1NzEsImV4cCI6MTc4MjUxMDQ3MX0.Lg1Vz5IUWEMcJId3sBguCWBlS8-9SR5ToIJHU_fuO5A
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

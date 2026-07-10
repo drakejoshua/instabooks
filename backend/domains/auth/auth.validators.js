@@ -54,48 +54,6 @@ export function googleAuthVerifyValidationFunction(req, res, next) {
 }
 
 
-// bearerAuthValidationRules - This array of validation rules is used to 
-// validate the "Authorization" header in requests that require bearer 
-// token authentication. It checks for the existence and non-emptiness 
-// of the header, and ensures that a token is provided in the correct 
-// format (i.e., "Bearer <token>").
-export let bearerAuthValidationRules = [
-    header("Authorization")
-        .exists()
-        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
-        .bail()
-        .notEmpty()
-        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
-        .bail()
-        .custom(function (value) {
-        const token = value.split(" ")[1];
-
-        if (!token) {
-            throw new Error();
-        }
-
-        return true;
-        })
-        .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
-];
-
-
-// bearerAuthValidationFunction()
-// This function is a middleware that checks for validation errors
-// in the request object after applying the bearerAuthValidationRules.
-// If there are any validation errors, it reports an invalid authorization token error.
-// If there are no errors, it proceeds to the next middleware or controller.
-export function bearerAuthValidationFunction(req, res, next) {
-    let errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return reportInvalidAuthorizationTokenError(next);
-    }
-
-    next();
-}
-
-
 // refreshAuthValidationRules - This array of validation rules is used to
 // validate the "refresh_token" cookie in requests that require refresh 
 // token authentication. It checks for the existence and non-emptiness 

@@ -22,7 +22,7 @@ export async function addToCartController( req, res, next ) {
     try {
         // call the service function to add the book to the user's 
         // cart and send success response with the updated cart
-        let updatedCart = await addToCartService( req.user, bookId, quantity )
+        let updatedCart = await addToCartService( req.user, bookId, quantity, req )
 
         res.json({
             status: "success",
@@ -49,7 +49,7 @@ export async function deleteFromCartController( req, res, next ) {
     try {
         // call the service function to remove the book from the user's
         // cart and send success response with the updated cart
-        let updatedCart = await deleteFromCartService( req.user, bookId )
+        let updatedCart = await deleteFromCartService( req.user, bookId, req )
 
         res.json({
             status: "success",
@@ -78,7 +78,7 @@ export async function addAddressController( req, res, next ) {
         // call the service function to add the address to the 
         // user's account and send success response with the updated 
         // list of addresses
-        let updatedAddresses = await addAddressService( req.user, addressToAdd )
+        let updatedAddresses = await addAddressService( req.user, addressToAdd, req )
 
         res.json({
             status: "success",
@@ -106,7 +106,7 @@ export async function deleteAddressController( req, res, next ) {
         // call the service function to delete the address from the
         // user's account and send success response with the updated 
         // list of addresses
-        let updatedAddresses = await deleteAddressService( req.user, addressToDelete )
+        let updatedAddresses = await deleteAddressService( req.user, addressToDelete, req )
 
         res.json({
             status: "success",
