@@ -13,13 +13,22 @@ export const ERROR_CODES = {
     ROUTE_NOT_FOUND: 'ROUTE_NOT_FOUND',
     INVALID_AUTH_ID: 'INVALID_AUTH_ID',
     USER_NOT_FOUND: 'USER_NOT_FOUND',
+    BOOK_NOT_FOUND: 'BOOK_NOT_FOUND',
     INVALID_AUTHORIZATION_TOKEN: "INVALID_AUTHORIZATION_TOKEN",
     INVALID_FILE_TYPE: "INVALID_FILE_TYPE",
     INVALID_USER_NAME: "INVALID_USER_NAME",
     INVALID_OPERATION: "INVALID_OPERATION",
     INVALID_BOOK_ID: "INVALID_BOOK_ID",
     INVALID_ORDER_QUANTITY: "INVALID_ORDER_QUANTITY",
-    INVALID_ADDRESS: "INVALID_ADDRESS"
+    INVALID_ADDRESS: "INVALID_ADDRESS",
+    INVALID_BOOK_TITLE: "INVALID_BOOK_TITLE",
+    INVALID_BOOK_DESCRIPTION: "INVALID_BOOK_DESCRIPTION",
+    INVALID_BOOK_PAGES: "INVALID_BOOK_PAGES",
+    INVALID_BOOK_AUTHOR: "INVALID_BOOK_AUTHOR",
+    INVALID_BOOK_PRICE: "INVALID_BOOK_PRICE",
+    INVALID_BOOK_QUANTITY: "INVALID_BOOK_QUANTITY",
+    INVALID_BOOK_GENRE: "INVALID_BOOK_GENRE",
+    INVALID_BOOK_COVER_PHOTO: "INVALID_BOOK_COVER_PHOTO",
 };
 
 
@@ -117,4 +126,94 @@ InvalidAddressError.code = ERROR_CODES.INVALID_ADDRESS
 
 export function reportInvalidAddressError( next ) {
     next( InvalidAddressError )
+}
+
+
+export const InvalidBookTitleError = new Error("The provided book title is invalid, Please check" + 
+    " the title and try again")
+InvalidBookTitleError.status = 400
+InvalidBookTitleError.code = ERROR_CODES.INVALID_BOOK_TITLE
+
+export function reportInvalidBookTitleError( next ) {
+    next( InvalidBookTitleError )
+}
+
+
+export const InvalidBookDescriptionError = new Error("The provided book description is invalid, Please check" + 
+    " the description and try again")
+InvalidBookDescriptionError.status = 400
+InvalidBookDescriptionError.code = ERROR_CODES.INVALID_BOOK_DESCRIPTION
+
+export function reportInvalidBookDescriptionError( next ) {
+    next( InvalidBookDescriptionError )
+}
+
+
+export const InvalidBookPagesError = new Error("The provided book page length is invalid, Please check" + 
+    " the number of pages and try again")
+InvalidBookPagesError.status = 400
+InvalidBookPagesError.code = ERROR_CODES.INVALID_BOOK_PAGES
+
+export function reportInvalidBookPagesError( next ) {
+    next( InvalidBookPagesError )
+}
+
+
+export const InvalidBookAuthorError = new Error("The provided book author is invalid, Please check" + 
+    " the author details and try again")
+InvalidBookAuthorError.status = 400
+InvalidBookAuthorError.code = ERROR_CODES.INVALID_BOOK_AUTHOR
+
+export function reportInvalidBookAuthorError( next ) {
+    next( InvalidBookAuthorError )
+}
+
+
+export const InvalidBookPriceError = new Error("The provided book price is invalid, Please check" + 
+    " the price and try again")
+InvalidBookPriceError.status = 400
+InvalidBookPriceError.code = ERROR_CODES.INVALID_BOOK_PRICE
+
+export function reportInvalidBookPriceError( next ) {
+    next( InvalidBookPriceError )
+}
+
+
+export const InvalidBookQuantityError = new Error("The provided store quantity for the book is invalid, Please check" + 
+    " the quantity and try again")
+InvalidBookQuantityError.status = 400
+InvalidBookQuantityError.code = ERROR_CODES.INVALID_BOOK_QUANTITY
+
+export function reportInvalidBookQuantityError( next ) {
+    next( InvalidBookQuantityError )
+}
+
+
+export const InvalidBookGenreError = new Error("The provided book genre is invalid, Please check" + 
+    " the genre and try again")
+InvalidBookGenreError.status = 400
+InvalidBookGenreError.code = ERROR_CODES.INVALID_BOOK_PRICE
+
+export function reportInvalidBookGenreError( next ) {
+    next( InvalidBookGenreError )
+}
+
+
+export const InvalidBookCoverPhotoError = new Error("A cover photo must be provided for a book, Please check" + 
+    " the cover photo file and try again")
+InvalidBookCoverPhotoError.status = 400
+InvalidBookCoverPhotoError.code = ERROR_CODES.INVALID_BOOK_COVER_PHOTO
+
+export function reportInvalidBookCoverPhotoError( next ) {
+    next( InvalidBookCoverPhotoError )
+}
+
+
+export const BookNotFoundError = new Error("The book with the specified id could not be found, Please check" + 
+    " the book id and try again")
+BookNotFoundError.status = 404
+BookNotFoundError.code = ERROR_CODES.BOOK_NOT_FOUND
+
+export function reportBookNotFoundError( next ) {
+    next( BookNotFoundError )
 }

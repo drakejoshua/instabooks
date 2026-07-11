@@ -10,6 +10,7 @@ import generateURLFromReq from "./domains/shared/utils/generateURLFromReq.js";
 import notFound from "./domains/shared/middleware/notFound.js";
 import errorHandler from "./domains/shared/middleware/error.js";
 import redisClient from "./cache/setup.js";
+import bookRouter from "./domains/books/books.routes.js";
 
 const server = express();
 
@@ -68,8 +69,11 @@ server.use(function (req, res, next) {
 // attach the routes from the auth domains to the server
 server.use("/auth", authRouter);
 
-// attach the routes from the users domains to the server
+// attach the routes from the user domains to the server
 server.use("/user", usersRouter);
+
+// attach the routes from the books domains to the server
+server.use("/books", bookRouter);
 
 // not-found/catch-all middleware to handle requests to
 // undefined routes

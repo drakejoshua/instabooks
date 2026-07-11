@@ -223,6 +223,7 @@ export const CacheOperations = {
 // keys used in this application, specifying how long each type of cached
 // data should be retained in Redis before expiring.
 export const CacheTTL = {
+    bookById: 5 * 60, // 5 mins
     userById: 60 * 60, // 60 mins
     userByGoogleAuthId: 5 * 60, // 5 mins
     userByEmail: 5 * 60, // 5 mins
@@ -232,7 +233,7 @@ export const CacheTTL = {
 
 // CacheKeys Repository
 // This object defines the methods used for generating cache keys for
-// storing and retrieving user data in Redis.
+// storing and retrieving data in Redis.
 export const CacheKeys = {
     // Generates a cache key for storing user data by user ID.
     userById: function (userId) {
@@ -250,12 +251,47 @@ export const CacheKeys = {
     userByRefreshToken: function (refreshToken) {
         return `user:refresh:${refreshToken}`;
     },
+    // Generates a cache key for retrieving book data by book ID
+    bookById: function( bookId ) {
+        return `book:id:${bookId}`
+    }
 };
 
 // CacheUpdate Repository
 // This object defines the methods used for updating cache entries for
 // different scenarios in redis for this application.
 export const CacheUpdate = {
+    // Updates the cache entry for a user by their ID.
+    updateBookById: async function (book, req = null) {
+        try {
+            // log a "cache_set" event for tracking cache updates
+            logger.info({
+                event: "cache_set",
+                cacheKey: CacheKeys.bookById(book._id),
+                requestId: req?.requestId || "N/A",
+                expiration: CacheTTL.bookById,
+            });
+
+            await redisClient.setEx(
+                CacheKeys.bookById(user._id),
+                CacheTTL.bookById,
+                JSON.stringify(book),
+            );
+        } catch (err) {
+            // if any errors occur during the cache update operation,
+            // log the error and rethrow it to be handled up in the execution
+            // chain
+            logger.error({
+                event: "cache_error",
+                message: `Cache error: ${err.message || "Unknown error"}`,
+                stack: err.stack,
+                cacheKey: CacheKeys.userById(user._id),
+                requestId: req?.requestId || "N/A",
+            });
+
+            throw err;
+        }
+    },
     // Updates the cache entry for a user by their ID.
     updateUserById: async function (user, req = null) {
         try {
