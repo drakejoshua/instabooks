@@ -10,8 +10,9 @@ import redisClient from "./setup.js";
 // on the database
 import Users from "../database/models/user.model.js";
 
-
-
+// import the Books model for interacting with the books
+// collection on the databse
+import Books from "../database/models/book.model.js";
 
 // pendingRequests map to track in-flight requests and prevent
 // duplicate async/cache calls for the same async operation and
@@ -207,6 +208,60 @@ async function getAndHydrateUserById(userId, req = null) {
     return user;
 }
 
+// hydrateBookById()
+// This helper function retrieves a book by it's ID from the cache
+// or database, and returns a hydrated book model instance. It first
+// attempts to get the book from the cache, and if not found, retrieves
+// it from the database and caches it.
+async function getAndHydrateBookById(bookId, req = null) {
+    let book = await getOrSetCache(
+        req,
+        CacheKeys.bookById(bookId),
+        async function () {
+            return await Books.findById(bookId);
+        },
+        60 * 60, // cache expiration time in 60 mins
+    );
+
+    // hydrate the plain object gotten from the cache during
+    // the google auth process to a mongoose model instance if
+    // it is not already a mongoose model instance
+    if (!(book instanceof Books)) {
+        book = Books.hydrate(book);
+    }
+
+    return book;
+}
+
+// getAndHydrateBooks()
+// This helper function retrieves books from the cache or database,
+// and returns a list of hydrated book model instances.
+async function getAndHydrateBooks(limit, req = null) {
+    let books = await getOrSetCache(
+        req,
+        CacheKeys.books(limit),
+        async function () {
+            return await Books.find()
+                .limit(limit)
+                .offset(
+                    ( limit > 10 ) ? 0 : limit - 10
+                );
+        },
+        60 * 60, // cache expiration time in 60 mins
+    );
+
+    // hydrate each book object to a mongoose model instance if
+    // it is not already a mongoose model instance
+    books = books.map((book) => {
+        if (!(book instanceof Books)) {
+            return Books.hydrate(book);
+        }
+        return book;
+    });
+
+    return books;
+}
+
 // CacheOperations Repository
 // This object defines the methods used for interacting with the cache
 // for this application, including getting, setting, deleting, and
@@ -216,6 +271,8 @@ export const CacheOperations = {
     getCache,
     deleteCache,
     getAndHydrateUserById,
+    getAndHydrateBookById,
+    getAndHydrateBooks,
 };
 
 // CacheTTL Repository
@@ -228,8 +285,7 @@ export const CacheTTL = {
     userByGoogleAuthId: 5 * 60, // 5 mins
     userByEmail: 5 * 60, // 5 mins
     userByRefreshToken: 120 * 60, // 120 mins
-}
-
+};
 
 // CacheKeys Repository
 // This object defines the methods used for generating cache keys for
@@ -252,9 +308,13 @@ export const CacheKeys = {
         return `user:refresh:${refreshToken}`;
     },
     // Generates a cache key for retrieving book data by book ID
-    bookById: function( bookId ) {
-        return `book:id:${bookId}`
-    }
+    bookById: function (bookId) {
+        return `book:id:${bookId}`;
+    },
+    // Generates a cache key for retrieving books data with a limit
+    books: function (limit) {
+        return `books:limit:${limit}`;
+    },
 };
 
 // CacheUpdate Repository
@@ -417,5 +477,3 @@ export const CacheUpdate = {
         }
     },
 };
-
-

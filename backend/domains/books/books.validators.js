@@ -10,6 +10,7 @@ import {
     reportInvalidBookPriceError,
     reportInvalidBookQuantityError,
     reportInvalidBookTitleError,
+    reportInvalidRequestInfoError,
 } from "../shared/utils/errors.js";
 
 export let addBookValidationRules = [
@@ -128,16 +129,6 @@ export function addBookValidationFunction(req, res, next) {
 }
 
 export let updateBookValidationRules = [
-    param("book_id")
-        .exists()
-        .withMessage(ERROR_CODES.INVALID_BOOK_ID)
-        .bail()
-        .notEmpty()
-        .withMessage(ERROR_CODES.INVALID_BOOK_ID)
-        .bail()
-        .isMongoId()
-        .withMessage(ERROR_CODES.INVALID_BOOK_ID)
-        .bail(),
     body("title")
         .optional()
         .notEmpty()
@@ -217,8 +208,6 @@ export function updateBookValidationFunction(req, res, next) {
     // the validation and report them
     if (!errors.isEmpty()) {
         switch (errors.array()[0].msg) {
-            case ERROR_CODES.INVALID_BOOK_ID:
-                return reportInvalidBookIdError(next);
             case ERROR_CODES.INVALID_BOOK_TITLE:
                 return reportInvalidBookTitleError(next);
             case ERROR_CODES.INVALID_BOOK_DESCRIPTION:
@@ -236,6 +225,68 @@ export function updateBookValidationFunction(req, res, next) {
             case ERROR_CODES.INVALID_BOOK_COVER_PHOTO:
                 return reportInvalidBookCoverPhotoError(next);
         }
+    }
+
+    // proceed to the next middleware or request handler
+    // since no errors were encountered
+    next();
+}
+
+
+export let bookIdValidationRule = [
+    param("book_id")
+        .exists()
+        .withMessage(ERROR_CODES.INVALID_BOOK_ID)
+        .bail()
+        .notEmpty()
+        .withMessage(ERROR_CODES.INVALID_BOOK_ID)
+        .bail()
+        .isMongoId()
+        .withMessage(ERROR_CODES.INVALID_BOOK_ID)
+        .bail(),
+]
+
+export function bookIdValidationFunction(req, res, next) {
+    // get validation errors from request if
+    // any
+    let errors = validationResult(req);
+
+    // check if any errors were encountered from
+    // the validation and report them
+    if (!errors.isEmpty()) {
+        switch (errors.array()[0].msg) {
+            case ERROR_CODES.INVALID_BOOK_ID:
+                return reportInvalidBookIdError(next);
+        }
+    }
+
+    // proceed to the next middleware or request handler
+    // since no errors were encountered
+    next();
+}
+
+
+export let getBooksValidationRule = [
+    query("limit")
+        .default( 10 )
+        .isInt()
+        .withMessage( ERROR_CODES.INVALID_REQUEST_INFO )
+        .bail()
+]
+
+export function getBooksValidationFunction( req, res, next ) {
+    // get validation errors from request if
+    // any
+    let errors = validationResult(req);
+
+    // check if any errors were encountered from
+    // the validation and report them
+    if (!errors.isEmpty()) {
+        return reportInvalidRequestInfoError( 
+            next,
+            "This request contains invalid information. " +
+            "Please check the limit query and try again"
+        )
     }
 
     // proceed to the next middleware or request handler

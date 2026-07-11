@@ -71,3 +71,45 @@ export async function updateBookService(
     // return updated book information
     return bookToUpdate.getBookDetails();
 }
+
+
+
+export async function deleteBookService( bookId, req ) {
+    // find and delete the book with book id in the 
+    // database
+    let bookToDelete = await Books.findByIdAndDelete(bookId);
+
+    // check if book was deleted in the database, else,
+    // report error stating book was not found
+    if (!bookToDelete) {
+        throw BookNotFoundError;
+    }
+
+    // delete former information in the cache in order to
+    // maintain data integrity
+    await CacheOperations.deleteCache( 
+        req, 
+        CacheKeys.bookById( bookToUpdate._id )
+    )
+}
+
+
+export async function getBookService( bookId, req ) {
+    // get the book details from cache or database
+    let book = await CacheOperations.getAndHydrateBookById( bookId, req )
+    
+    // return a lean version of the book details 
+    // from the database
+    return book.getBookDetails()
+}
+
+
+export async function getBooksService( limit, req ) {
+    // get the books from the database using the 
+    // limit specified
+    let books = await CacheOperations.getAndHydrateBooks( limit, req )
+
+    // return a lean version of the books details 
+    // from the database
+    return books.map( book => book.getBookDetails() )
+}

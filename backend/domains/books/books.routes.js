@@ -4,6 +4,12 @@ import express from "express";
 import {
     addBookValidationFunction,
     addBookValidationRules,
+    bookIdValidationFunction,
+    bookIdValidationRule,
+    deleteBookValidationFunction,
+    deleteBookValidationRules,
+    getBooksValidationFunction,
+    getBooksValidationRule,
     updateBookValidationFunction,
     updateBookValidationRules,
 } from "./books.validators.js";
@@ -15,8 +21,12 @@ import passport from "passport";
 import upload from "../../infra/middleware/multer.js";
 import {
     addBookController,
+    deleteBookController,
+    getBookController,
+    getBooksController,
     updateBookController,
 } from "./books.controllers.js";
+import bookModel from "../../database/models/book.model.js";
 
 const BookRouter = express.Router();
 
@@ -37,9 +47,35 @@ BookRouter.post(
 BookRouter.put(
     "/:book_id",
     upload.single("photo"),
+    bookIdValidationRule,
+    bookIdValidationFunction,
     updateBookValidationRules,
     updateBookValidationFunction,
     updateBookController,
+);
+
+
+BookRouter.delete(
+    "/:book_id",
+    bookIdValidationRule,
+    bookIdValidationFunction,
+    deleteBookController,
+);
+
+
+BookRouter.get(
+    "/:book_id",
+    bookIdValidationRule,
+    bookIdValidationFunction,
+    getBookController,
+);
+
+
+BookRouter.get(
+    "/",
+    getBooksValidationRule,
+    getBooksValidationFunction,
+    getBooksController,
 );
 
 export default BookRouter;
