@@ -12,7 +12,7 @@ export async function addBookController( req, res, next ) {
             req
         )
 
-        res.json({
+        res.status(201).json({
             status: "success",
             data: newBookDetails
         })
