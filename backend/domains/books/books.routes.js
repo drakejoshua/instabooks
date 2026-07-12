@@ -6,8 +6,6 @@ import {
     addBookValidationRules,
     bookIdValidationFunction,
     bookIdValidationRule,
-    deleteBookValidationFunction,
-    deleteBookValidationRules,
     getBooksValidationFunction,
     getBooksValidationRule,
     updateBookValidationFunction,
@@ -32,12 +30,12 @@ const BookRouter = express.Router();
 
 BookRouter.use(
     bearerAuthValidationRules,
-    bearerAuthValidationFunction,
-    passport.authenticate("jwt", { session: false }),
+    bearerAuthValidationFunction
 );
 
 BookRouter.post(
     "/",
+    passport.authenticate("admin-key", { session: false }),
     upload.single("photo"),
     addBookValidationRules,
     addBookValidationFunction,
@@ -46,6 +44,7 @@ BookRouter.post(
 
 BookRouter.put(
     "/:book_id",
+    passport.authenticate("admin-key", { session: false }),
     upload.single("photo"),
     bookIdValidationRule,
     bookIdValidationFunction,
@@ -57,6 +56,7 @@ BookRouter.put(
 
 BookRouter.delete(
     "/:book_id",
+    passport.authenticate("admin-key", { session: false }),
     bookIdValidationRule,
     bookIdValidationFunction,
     deleteBookController,
@@ -65,6 +65,7 @@ BookRouter.delete(
 
 BookRouter.get(
     "/:book_id",
+    passport.authenticate("jwt", { session: false }),
     bookIdValidationRule,
     bookIdValidationFunction,
     getBookController,
@@ -73,6 +74,7 @@ BookRouter.get(
 
 BookRouter.get(
     "/",
+    passport.authenticate("jwt", { session: false }),
     getBooksValidationRule,
     getBooksValidationFunction,
     getBooksController,

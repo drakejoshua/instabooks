@@ -41,10 +41,10 @@ const BookSchema = mongoose.Schema({
 
 
 BookSchema.methods.getBookDetails = function() {
-    let { cover_photo_id, ...bookDetails } = this
+    let { _id, __v, cover_photo_id, ...bookDetails } = this.toObject()
 
     return {
-        id: bookDetails._id,
+        id: this._id,
         ...bookDetails
     }
 }

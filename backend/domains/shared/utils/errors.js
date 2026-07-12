@@ -13,6 +13,7 @@ export const ERROR_CODES = {
     INVALID_AUTH_ID: "INVALID_AUTH_ID",
     USER_NOT_FOUND: "USER_NOT_FOUND",
     BOOK_NOT_FOUND: "BOOK_NOT_FOUND",
+    INVALID_ADMIN_KEY: "INVALID_ADMIN_KEY",
     INVALID_AUTHORIZATION_TOKEN: "INVALID_AUTHORIZATION_TOKEN",
     INVALID_FILE_TYPE: "INVALID_FILE_TYPE",
     INVALID_USER_NAME: "INVALID_USER_NAME",
@@ -239,6 +240,17 @@ BookNotFoundError.code = ERROR_CODES.BOOK_NOT_FOUND;
 export function reportBookNotFoundError(next) {
     next(BookNotFoundError);
 }
+
+
+export const InvalidAdminKeyError = new Error("The admin key provided is invalid"+
+    ", Please check the admin key and try again");
+InvalidAdminKeyError.status = 401;
+InvalidAdminKeyError.code = ERROR_CODES.INVALID_ADMIN_KEY
+
+export function reportInvalidAdminKeyError(next) {
+    next(InvalidAdminKeyError);
+}
+
 
 export const InvalidRequestInfoError = new Error(
     "This request contains invalid information, " +

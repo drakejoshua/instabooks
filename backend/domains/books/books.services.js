@@ -1,4 +1,4 @@
-import { cloudinaryUpload } from "../../infra/utils/cloudinary.js";
+import { cloudinaryDelete, cloudinaryUpload } from "../../infra/utils/cloudinary.js";
 import Books from "../../database/models/book.model.js";
 import { BookNotFoundError } from "../shared/utils/errors.js";
 import upload from "../../infra/middleware/multer.js";
@@ -7,7 +7,7 @@ import { CacheKeys, CacheOperations, CacheUpdate } from "../../cache/utils.js";
 export async function addBookService(bookDetails, bookCoverPhoto) {
     // upload the cover photo file to cloudinary and
     // store the upload results
-    let uploadResult = await cloudinaryUpload(bookCoverPhoto);
+    let uploadResult = await cloudinaryUpload(bookCoverPhoto.buffer);
 
     // create new book in the database using the book
     // details passed as an argument to the function
@@ -44,7 +44,11 @@ export async function updateBookService(
     // check if the book cover photo was updated and
     // upload the new cover photo to cloudinary
     if (updatedbookCoverPhoto) {
-        uploadResult = await cloudinaryUpload(updatedbookCoverPhoto);
+        // delete previous book cover photo in order
+        // to conserve cloud storage space
+        await cloudinaryDelete( bookToUpdate.cover_photo_id )
+
+        uploadResult = await cloudinaryUpload(updatedbookCoverPhoto.buffer);
 
         bookToUpdate.cover_photo_id = uploadResult.public_id;
         bookToUpdate.cover_photo_url = uploadResult.secure_url;
@@ -52,8 +56,8 @@ export async function updateBookService(
 
     // update the book details with the updated book
     // information
-    for (property in updatedbookDetails) {
-        bookToUpdate.property = updatedbookDetails.property;
+    for ( let property in updatedbookDetails) {
+        bookToUpdate[property] = updatedbookDetails[property];
     }
 
     // save the updated book information back to the
@@ -63,9 +67,9 @@ export async function updateBookService(
     // delete former information in the cache in order to
     // trigger new database retrieval maintaining data
     // integrity
-    await CacheOperations.deleteCache( 
-        req, 
-        CacheKeys.bookById( bookToUpdate._id )
+    await CacheUpdate.updateBookById( 
+        bookToUpdate, 
+        req
     )
 
     // return updated book information
@@ -85,11 +89,15 @@ export async function deleteBookService( bookId, req ) {
         throw BookNotFoundError;
     }
 
+    // delete book image from cloudinary in order to
+    // maintain data consistenct
+    await cloudinaryDelete( bookToDelete.cover_photo_id )
+
     // delete former information in the cache in order to
     // maintain data integrity
     await CacheOperations.deleteCache( 
         req, 
-        CacheKeys.bookById( bookToUpdate._id )
+        CacheKeys.bookById( bookToDelete._id )
     )
 }
 

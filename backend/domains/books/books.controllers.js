@@ -8,7 +8,8 @@ export async function addBookController( req, res, next ) {
 
         let newBookDetails = await addBookService( 
             bookDetails, 
-            bookCoverPhoto
+            bookCoverPhoto,
+            req
         )
 
         res.json({
@@ -30,7 +31,8 @@ export async function updateBookController( req, res, next ) {
         let updatedBook = await updateBookService(
             bookId,
             updatedBookDetails,
-            updatedBookCoverPhotoFile
+            updatedBookCoverPhotoFile,
+            req
         )
 
         res.json({

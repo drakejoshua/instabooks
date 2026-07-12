@@ -1,0 +1,20 @@
+info:
+    name: Delete Book Request
+    type: http
+    seq: 2
+
+http:
+    method: DELETE
+    url: http://localhost:8000/books/6a52dd9910d70533d201ad22
+    body:
+        type: multipart-form
+    auth:
+        type: bearer
+        token: instabooks-admin-key
+
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5
+​

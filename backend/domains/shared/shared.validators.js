@@ -1,10 +1,7 @@
+import { validationResult, header } from "express-validator";
 import {
-  validationResult,
-  header
-} from "express-validator";
-import {
-  ERROR_CODES,
-  reportInvalidAuthorizationTokenError
+    ERROR_CODES,
+    reportInvalidAuthorizationTokenError,
 } from "../shared/utils/errors.js";
 
 export let bearerAuthValidationRules = [
@@ -16,13 +13,13 @@ export let bearerAuthValidationRules = [
         .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN)
         .bail()
         .custom(function (value) {
-        const token = value.split(" ")[1];
+            const token = value.split(" ")[1];
 
-        if (!token) {
-            throw new Error();
-        }
+            if (!token) {
+                throw new Error();
+            }
 
-        return true;
+            return true;
         })
         .withMessage(ERROR_CODES.INVALID_AUTHORIZATION_TOKEN),
 ];

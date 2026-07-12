@@ -1,0 +1,24 @@
+info:
+    name: Update Book Request
+    type: http
+    seq: 3
+
+http:
+    method: PUT
+    url: http://localhost:8000/books/6a52e390f8d57538d01efcf9
+    body:
+        type: multipart-form
+        data:
+            - name: title
+              type: text
+              value: Rich Dad, Poor Dad
+    auth:
+        type: bearer
+        token: instabooks-admin-key
+
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5
+​

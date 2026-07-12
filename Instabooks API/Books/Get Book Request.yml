@@ -1,0 +1,19 @@
+info:
+    name: Get Book Request
+    type: http
+    seq: 4
+
+http:
+    method: GET
+    url: http://localhost:8000/books/6a52e390f8d57538d01efcf9
+    body:
+        type: multipart-form
+    auth:
+        type: bearer
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODM4MTc2NjMsImV4cCI6MTc4MzgxODU2M30.6koFDgcp9HRzzrcDbMIN57-g_S--8G61yDvCOnSfN7o
+
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5

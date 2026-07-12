@@ -1,14 +1,46 @@
 info:
-  name: Add Book Request
-  type: http
+    name: Add Book Request
+    type: http
+    seq: 1
 
 http:
-  method: POST
-  url: http://localhost:8000/books
-  auth: inherit
+    method: POST
+    url: http://localhost:8000/books
+    body:
+        type: multipart-form
+        data:
+            - name: title
+              type: text
+              value: Rich Dad, Poor Dad
+            - name: description
+              type: text
+              value: This is a book written by robert kiyosaki to help people gain financial intelligence and topmost priority
+            - name: author
+              type: text
+              value: robert kiyosaki
+            - name: price
+              type: text
+              value: "10.99"
+            - name: genre
+              type: text
+              value: finance
+            - name: pages
+              type: text
+              value: "203"
+            - name: quantity
+              type: text
+              value: "200"
+            - name: photo
+              type: file
+              value:
+                  - c:\Users\USER\Downloads\Joshua Docs - Development\Miscellaneous\instabooks\Instabooks API\Books\logoipsum-custom-logo.png
+    auth:
+        type: bearer
+        token: instabooks-admin-key
 
 settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5
+​

@@ -230,6 +230,7 @@ async function getAndHydrateBookById(bookId, req = null) {
         book = Books.hydrate(book);
     }
 
+
     return book;
 }
 
@@ -243,7 +244,7 @@ async function getAndHydrateBooks(limit, req = null) {
         async function () {
             return await Books.find()
                 .limit(limit)
-                .offset(
+                .skip(
                     ( limit > 10 ) ? 0 : limit - 10
                 );
         },
@@ -333,7 +334,7 @@ export const CacheUpdate = {
             });
 
             await redisClient.setEx(
-                CacheKeys.bookById(user._id),
+                CacheKeys.bookById(book._id),
                 CacheTTL.bookById,
                 JSON.stringify(book),
             );

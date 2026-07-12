@@ -1,8 +1,9 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as CustomStrategy } from 'passport-custom'
 import Users from "../../database/models/user.model.js";
-import { UserNotFoundError } from "../../domains/shared/utils/errors.js";
+import { InvalidAdminKeyError, UserNotFoundError } from "../../domains/shared/utils/errors.js";
 import {
     CacheKeys,
     CacheOperations,
@@ -114,4 +115,30 @@ export default async function initializePassport(passport) {
             },
         ),
     );
+
+
+    // initialize passport with custom strategy for admin key 
+    // authentication. This strategy allows users to authenticate 
+    // using a custom admin key, which is sent in the Authorization 
+    // header of the request. The key is verified against a predefined 
+    // value, and if valid, the user is granted access to admin-level 
+    // resources.
+    passport.use(
+        "admin-key",
+        new CustomStrategy(
+            async function( req, done ) {
+                let adminKey = req.headers.authorization.split(" ")[1]
+
+                if ( !adminKey ) {
+                    return done( InvalidAdminKeyError, false )
+                }
+
+                if ( adminKey !== process.env.ADMIN_KEY ) {
+                    return done( InvalidAdminKeyError, false )
+                }
+
+                return done( null, true )
+            }
+        )
+    )
 }
