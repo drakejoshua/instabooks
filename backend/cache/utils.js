@@ -198,6 +198,12 @@ async function getAndHydrateUserById(userId, req = null) {
         CacheTTL.userById, // cache expiration time
     );
 
+    // check if a valid book is found, else return
+    // null
+    if ( !user ) {
+        return null
+    }
+
     // hydrate the plain object gotten from the cache during
     // the google auth process to a mongoose model instance if
     // it is not already a mongoose model instance
@@ -222,6 +228,12 @@ async function getAndHydrateBookById(bookId, req = null) {
         },
         CacheTTL.bookById, // cache expiration time
     );
+
+    // check if a valid book is found, else return
+    // null
+    if ( !book ) {
+        return null
+    }
 
     // hydrate the plain object gotten from the cache during
     // the google auth process to a mongoose model instance if
@@ -251,14 +263,22 @@ async function getAndHydrateBooks(limit, page, req = null) {
         CacheTTL.books, // cache expiration time
     );
 
-    // hydrate each book object to a mongoose model instance if
-    // it is not already a mongoose model instance
-    books = books.map((book) => {
-        if (!(book instanceof Books)) {
-            return Books.hydrate(book);
-        }
-        return book;
-    });
+    // check if books is undefined or is an empty array
+    // and return an empty array
+    if ( !books || books.length === 0 ) {
+        return []
+    }
+
+    {
+        // hydrate each book object to a mongoose model instance if
+        // it is not already a mongoose model instance
+        books = books.map((book) => {
+            if (!(book instanceof Books)) {
+                return Books.hydrate(book);
+            }
+            return book;
+        });
+    }
 
     return books;
 }

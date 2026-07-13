@@ -105,6 +105,10 @@ export async function deleteBookService( bookId, req ) {
 export async function getBookService( bookId, req ) {
     // get the book details from cache or database
     let book = await CacheOperations.getAndHydrateBookById( bookId, req )
+
+    if ( !book ) {
+        throw BookNotFoundError
+    }
     
     // return a lean version of the book details 
     // from the database
