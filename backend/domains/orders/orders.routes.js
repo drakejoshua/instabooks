@@ -17,10 +17,13 @@ import {
     checkoutOrderValidationFunction,
     confirmOrderPaymentValidatorRules,
     confirmOrderPaymentValidationFunction,
+    getOrderValidationFunction,
+    getOrderValidatorRules,
 } from "./orders.validators.js";
 import { 
     checkoutOrderController, 
-    confirmOrderPaymentController 
+    confirmOrderPaymentController, 
+    getOrderController
 } from "./orders.controllers.js";
 
 orderRouter.post(
@@ -37,5 +40,14 @@ orderRouter.get(
     confirmOrderPaymentValidationFunction,
     confirmOrderPaymentController,
 )
+
+orderRouter.get(
+    "/:order_id",
+    passport.authenticate("jwt", { session: false }),
+    getOrderValidatorRules,
+    getOrderValidationFunction,
+    getOrderController
+);
+
 
 export default orderRouter;

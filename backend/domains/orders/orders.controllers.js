@@ -37,3 +37,24 @@ export async function confirmOrderPaymentController(req, res, next) {
         next(error);
     }
 } 
+
+
+export async function getOrderController(req, res, next) {
+    try {
+        // get the user id from the request user object
+        let userId = req.user._id;
+        let { order_id } = req.params;
+
+        // call the get order service to retrieve the order
+        // details for the user
+        let order = await getOrderService( userId, order_id );
+
+        // send the order details as a response
+        res.json({
+            status: "success",
+            data: order
+        });
+    } catch (error) {
+        next(error);
+    }
+}

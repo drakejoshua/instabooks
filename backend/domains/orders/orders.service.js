@@ -83,3 +83,17 @@ export async function confirmOrderPaymentService(reference) {
 
     return verificationData.data;
 }
+
+
+export async function getOrderService(userId, orderId) {
+    // find the order by user id and order id
+    let order = await Orders.findOne({ _id: orderId, user_id: userId });
+
+    // check if the order exists and throw an OrderNotFoundError
+    // if it doesn't
+    if ( !order ) {
+        throw OrderNotFoundError;
+    }
+
+    return order;
+}

@@ -1,5 +1,5 @@
 import { body, validationResult } from "express-validator";
-import { ERROR_CODES, reportInvalidAddressError } from "../shared/utils/errors";
+import { ERROR_CODES, reportInvalidAddressError, reportInvalidOrderReferenceError } from "../shared/utils/errors";
 
 export let checkoutOrderValidatorRules = [
     body("shipping_address")
@@ -56,6 +56,36 @@ export function confirmOrderPaymentValidationFunction(req, res, next) {
     if (!errors.isEmpty()) {
         let frontendURL = process.env.FRONTEND_URL
         return res.redirect(`${frontendURL}/orders/invalid`)
+    }
+
+    // proceed to the next middleware if there are no
+    // validation errors
+    next();
+}
+
+export let getOrderValidatorRules = [
+    params("order_id")
+        .exists()
+        .withMessage(ERROR_CODES.INVALID_ORDER_REFERENCE)
+        .bail()
+        .notEmpty()
+        .withMessage(ERROR_CODES.INVALID_ORDER_REFERENCE)
+        .bail()
+        .isMongoId()
+        .withMessage(ERROR_CODES.INVALID_ORDER_REFERENCE)
+        .bail()
+]
+
+export function getOrderValidationFunction(req, res, next) {
+    // get validation errors from the request
+    // if any
+    const errors = validationResult(req);
+
+    // check if there was invalid order reference
+    // in the request body and report an invalid order 
+    // reference error if there was
+    if (!errors.isEmpty()) {
+        return reportInvalidOrderReferenceError(next);
     }
 
     // proceed to the next middleware if there are no

@@ -216,7 +216,7 @@ export const InvalidBookGenreError = new Error(
         " the genre and try again",
 );
 InvalidBookGenreError.status = 400;
-InvalidBookGenreError.code = ERROR_CODES.INVALID_BOOK_PRICE;
+InvalidBookGenreError.code = ERROR_CODES.INVALID_BOOK_GENRE;
 
 export function reportInvalidBookGenreError(next) {
     next(InvalidBookGenreError);
