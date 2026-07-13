@@ -8,6 +8,8 @@ import {
     bookIdValidationRule,
     getBooksValidationFunction,
     getBooksValidationRule,
+    searchBooksValidationFunction,
+    searchBooksValidationRule,
     updateBookValidationFunction,
     updateBookValidationRules,
 } from "./books.validators.js";
@@ -22,6 +24,7 @@ import {
     deleteBookController,
     getBookController,
     getBooksController,
+    searchBooksController,
     updateBookController,
 } from "./books.controllers.js";
 import bookModel from "../../database/models/book.model.js";
@@ -82,6 +85,15 @@ BookRouter.get(
 
 
 BookRouter.get(
+    "/search",
+    passport.authenticate("jwt", { session: false }),
+    searchBooksValidationRule,
+    searchBooksValidationFunction,
+    searchBooksController,
+);
+
+
+BookRouter.get(
     "/admin/:book_id",
     passport.authenticate("admin-key", { session: false }),
     bookIdValidationRule,
@@ -96,6 +108,15 @@ BookRouter.get(
     getBooksValidationRule,
     getBooksValidationFunction,
     getBooksController,
+);
+
+
+BookRouter.get(
+    "/admin/search",
+    passport.authenticate("admin-key", { session: false }),
+    searchBooksValidationRule,
+    searchBooksValidationFunction,
+    searchBooksController,
 );
 
 export default BookRouter;

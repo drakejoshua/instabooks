@@ -307,3 +307,38 @@ export function getBooksValidationFunction( req, res, next ) {
     // since no errors were encountered
     next();
 }
+
+
+export let searchBooksValidationRule = [
+    query("query")
+        .exists()
+        .withMessage(ERROR_CODES.INVALID_REQUEST_INFO)
+        .bail()
+        .notEmpty()
+        .withMessage(ERROR_CODES.INVALID_REQUEST_INFO)
+        .bail()
+]
+
+
+export function searchBooksValidationFunction( req, res, next ) {
+    // get validation errors from request if
+    // any
+    let errors = validationResult(req);
+
+    // check if any errors were encountered from
+    // the validation and report them
+    if (!errors.isEmpty()) {
+        switch( errors.array()[0].param ) {
+            case "query":
+                reportInvalidRequestInfoError(
+                    next, 
+                    "This request has an invalid query value."+
+                    " The query value must not be empty." 
+                );
+        }
+    }
+
+    // proceed to the next middleware or request handler
+    // since no errors were encountered
+    next();
+}

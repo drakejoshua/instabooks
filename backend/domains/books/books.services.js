@@ -125,3 +125,10 @@ export async function getBooksService( limit, page, req ) {
         totalBooks: totalBooks
     }
 }
+
+
+export async function searchBooksService( query, req ) {
+    let searchResults = await CacheOperations.getAndHydrateSearchResults( query, req )
+
+    return searchResults.map( book => book.getBookDetails() )
+}

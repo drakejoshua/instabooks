@@ -89,3 +89,23 @@ export async function getBooksController( req, res, next ) {
         next( err )
     }
 }
+
+
+export async function searchBooksController( req, res, next ) {
+    try{
+        // extract the search query from the request 
+        // query parameters
+        let searchQuery = req.query.query || ""
+
+        // search for books in the database/cache using the
+        // search query provided
+        let searchResults = await searchBooksService( searchQuery, req )
+
+        res.json({
+            status: "success",
+            data: searchResults
+        })
+    } catch( err ) {
+        next( err )
+    }
+}

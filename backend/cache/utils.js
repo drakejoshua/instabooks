@@ -195,7 +195,7 @@ async function getAndHydrateUserById(userId, req = null) {
 
             return userData;
         },
-        60 * 60, // cache expiration time in 60 mins
+        CacheTTL.userById, // cache expiration time
     );
 
     // hydrate the plain object gotten from the cache during
@@ -220,7 +220,7 @@ async function getAndHydrateBookById(bookId, req = null) {
         async function () {
             return await Books.findById(bookId);
         },
-        60 * 60, // cache expiration time in 60 mins
+        CacheTTL.bookById, // cache expiration time
     );
 
     // hydrate the plain object gotten from the cache during
@@ -248,7 +248,7 @@ async function getAndHydrateBooks(limit, page, req = null) {
                     ( page > 1 ) ? ( page - 1 ) * limit : 0
                 );
         },
-        60 * 60, // cache expiration time in 60 mins
+        CacheTTL.books, // cache expiration time
     );
 
     // hydrate each book object to a mongoose model instance if
@@ -273,11 +273,47 @@ async function getTotalBooksCount(req = null) {
         async function () {
             return await Books.countDocuments();
         },
-        60 * 60, // cache expiration time in 60 mins
+        CacheTTL.bookCount, // cache expiration time in 60 mins
     );
-    
+
     return totalBooks;
 }
+
+
+// getAndHydrateSearchResults()
+async function getAndHydrateSearchResults(query, req = null) {
+    let searchResults = await getOrSetCache(
+        req,
+        CacheKeys.searchResults(query),
+        async function () {
+            return await Books.find({
+                title: {
+                    $regex: query,
+                    $options: "i" // case-insensitive
+                }
+            })
+        },
+        CacheTTL.searchResults, // cache expiration time in 10 mins
+    );
+
+    // check if search results are empty or null, if so, 
+    // return an empty array
+    if ( !searchResults || searchResults.length === 0  ) {
+        return [];
+    }
+
+    // hydrate each book object to a mongoose model instance if
+    // it is not already a mongoose model instance
+    searchResults = searchResults.map((book) => {
+        if (!(book instanceof Books)) {
+            return Books.hydrate(book);
+        }
+        return book;
+    });
+
+    return searchResults;
+}
+
 
 // CacheOperations Repository
 // This object defines the methods used for interacting with the cache
@@ -290,6 +326,8 @@ export const CacheOperations = {
     getAndHydrateUserById,
     getAndHydrateBookById,
     getAndHydrateBooks,
+    getTotalBooksCount,
+    getAndHydrateSearchResults,
 };
 
 // CacheTTL Repository
@@ -297,7 +335,9 @@ export const CacheOperations = {
 // keys used in this application, specifying how long each type of cached
 // data should be retained in Redis before expiring.
 export const CacheTTL = {
-    bookById: 5 * 60, // 5 mins
+    bookById: 10 * 60, // 5 mins
+    bookCount: 60 * 60, // 60 mins
+    searchResults: 3 * 60, // 3 mins
     userById: 60 * 60, // 60 mins
     userByGoogleAuthId: 5 * 60, // 5 mins
     userByEmail: 5 * 60, // 5 mins
@@ -334,6 +374,9 @@ export const CacheKeys = {
     },
     bookCount: function () {
         return `books:count`;
+    },
+    searchResults: function (query) {
+        return `books:search:${query}`;
     }
 };
 
@@ -365,7 +408,7 @@ export const CacheUpdate = {
                 event: "cache_error",
                 message: `Cache error: ${err.message || "Unknown error"}`,
                 stack: err.stack,
-                cacheKey: CacheKeys.userById(user._id),
+                cacheKey: CacheKeys.bookById(book._id),
                 requestId: req?.requestId || "N/A",
             });
 
