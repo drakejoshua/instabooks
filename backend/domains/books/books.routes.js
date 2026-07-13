@@ -80,4 +80,22 @@ BookRouter.get(
     getBooksController,
 );
 
+
+BookRouter.get(
+    "/admin/:book_id",
+    passport.authenticate("admin-key", { session: false }),
+    bookIdValidationRule,
+    bookIdValidationFunction,
+    getBookController,
+);
+
+
+BookRouter.get(
+    "/admin",
+    passport.authenticate("admin-key", { session: false }),
+    getBooksValidationRule,
+    getBooksValidationFunction,
+    getBooksController,
+);
+
 export default BookRouter;

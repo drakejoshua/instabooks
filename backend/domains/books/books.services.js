@@ -112,12 +112,16 @@ export async function getBookService( bookId, req ) {
 }
 
 
-export async function getBooksService( limit, req ) {
+export async function getBooksService( limit, page, req ) {
     // get the books from the database using the 
     // limit specified
-    let books = await CacheOperations.getAndHydrateBooks( limit, req )
+    let books = await CacheOperations.getAndHydrateBooks( limit, page, req )
+    let totalBooks = await CacheOperations.getTotalBooksCount( req )
 
     // return a lean version of the books details 
     // from the database
-    return books.map( book => book.getBookDetails() )
+    return {
+        books: books.map( book => book.getBookDetails() ),
+        totalBooks: totalBooks
+    }
 }

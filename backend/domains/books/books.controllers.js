@@ -77,12 +77,13 @@ export async function getBookController( req, res, next ) {
 export async function getBooksController( req, res, next ) {
     try {
         let fetchLimit = req.query.limit || 10
+        let fetchPage = req.query.page || 1
 
-        const books = await getBooksService( fetchLimit, req )
+        const bookData = await getBooksService( fetchLimit, fetchPage, req )
 
         res.json({
             status: "success",
-            data: books
+            data: bookData
         })
     } catch( err ) {
         next( err )

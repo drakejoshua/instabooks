@@ -271,6 +271,11 @@ export let getBooksValidationRule = [
         .default( 10 )
         .isInt()
         .withMessage( ERROR_CODES.INVALID_REQUEST_INFO )
+        .bail(),
+    query("page")
+        .default( 1 )
+        .isInt()
+        .withMessage( ERROR_CODES.INVALID_REQUEST_INFO )
         .bail()
 ]
 
@@ -282,11 +287,20 @@ export function getBooksValidationFunction( req, res, next ) {
     // check if any errors were encountered from
     // the validation and report them
     if (!errors.isEmpty()) {
-        return reportInvalidRequestInfoError( 
-            next,
-            "This request contains invalid information. " +
-            "Please check the limit query and try again"
-        )
+        switch( errors.array()[0].param ) {
+            case "limit":
+                reportInvalidRequestInfoError(
+                    next, 
+                    "This request has an invalid limit value."+
+                    " The limit value must be a positive integer." 
+                );
+            case "page":
+                reportInvalidRequestInfoError(
+                    next, 
+                    "This request has an invalid page value."+
+                    " The page value must be a positive integer." 
+                );
+        }
     }
 
     // proceed to the next middleware or request handler

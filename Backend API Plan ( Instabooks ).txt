@@ -381,7 +381,96 @@ Response:
 
 Books
 
-GET /books?limit={number}  ( get all books )
+GET /books/admin?limit={number}&page={number}  ( get all books ) [admin only]
+
+Request body: none
+Request Header: 
+- Authorization: Bearer < admin key >
+Response Header: none
+Response:
+- 200: {
+    status: "success",
+    data: [
+        {
+            "id": < book id e.g. "6a52e390f8d57538d01efcf9">,
+            "title": < book title e.g. "Rich Dad, Poor Dad" >,
+            "description": < book description e.g. "This is a book written by robert kiyosaki to help people gain financial intelligence and topmost priority" >,
+            "pages": < number of pages e.g. 203 >,
+            "author": < author name e.g. "robert kiyosaki" >,
+            "price": < price e.g. 10.99 >,
+            "cover_photo_url": < cover photo URL e.g. "https://res.cloudinary.com/dv5eejhou/image/upload/v1783817429/j6t4x7icpy95plielrnf.png" >,
+            "quantity": < book quantity in store e.g. 200 >,
+            "genre": < book genre e.g. "finance">
+        },
+        ...
+    ]
+}
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
+
+
+GET /books/admin/search?query={text}  ( search for a book ) [ admin only]
+
+Request body: none
+Request Header: 
+- Authorization: Bearer < admin key >
+Response Header: none
+Response:
+- 200: {
+    status: "success",
+    data: [
+        {
+            "id": < book id e.g. "6a52e390f8d57538d01efcf9">,
+            "title": < book title e.g. "Rich Dad, Poor Dad" >,
+            "description": < book description e.g. "This is a book written by robert kiyosaki to help people gain financial intelligence and topmost priority" >,
+            "pages": < number of pages e.g. 203 >,
+            "author": < author name e.g. "robert kiyosaki" >,
+            "price": < price e.g. 10.99 >,
+            "cover_photo_url": < cover photo URL e.g. "https://res.cloudinary.com/dv5eejhou/image/upload/v1783817429/j6t4x7icpy95plielrnf.png" >,
+            "quantity": < book quantity in store e.g. 200 >,
+            "genre": < book genre e.g. "finance">
+        },
+        ...
+    ]
+}
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
+
+
+GET /books/admin/{id}  ( get book by id ) [admin only]
+
+Request body: none
+Request Header: 
+- Authorization: Bearer < admin key >
+Response Header: none
+Response:
+- 200: {
+    status: "success",
+    data: {
+        "id": < book id e.g. "6a52e390f8d57538d01efcf9">,
+        "title": < book title e.g. "Rich Dad, Poor Dad" >,
+        "description": < book description e.g. "This is a book written by robert kiyosaki to help people gain financial intelligence and topmost priority" >,
+        "pages": < number of pages e.g. 203 >,
+        "author": < author name e.g. "robert kiyosaki" >,
+        "price": < price e.g. 10.99 >,
+        "cover_photo_url": < cover photo URL e.g. "https://res.cloudinary.com/dv5eejhou/image/upload/v1783817429/j6t4x7icpy95plielrnf.png" >,
+        "quantity": < book quantity in store e.g. 200 >,
+        "genre": < book genre e.g. "finance">
+    }
+}
+
+
+GET /books?limit={number}&page={number}  ( get all books )
 
 Request body: none
 Request Header: 
@@ -556,7 +645,7 @@ Response:
 - Redirect to order confirmation frontend page with order details
 
 
-GET /orders?limit={number}  ( get all orders for current user )
+GET /orders?limit={number}&page={number}  ( get all orders for current user )
 
 Request body: none
 Request Header:
@@ -576,7 +665,7 @@ Response:
 - JSON object containing order information if the order belongs to the current user
 
 
-GET /orders/admin?limit={number}  ( get all orders for admin )[admin only]
+GET /orders/admin?limit={number}&page={number}  ( get all orders for admin )[admin only]
 
 Request body: none
 Request Header:

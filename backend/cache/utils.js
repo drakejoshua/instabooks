@@ -237,15 +237,15 @@ async function getAndHydrateBookById(bookId, req = null) {
 // getAndHydrateBooks()
 // This helper function retrieves books from the cache or database,
 // and returns a list of hydrated book model instances.
-async function getAndHydrateBooks(limit, req = null) {
+async function getAndHydrateBooks(limit, page, req = null) {
     let books = await getOrSetCache(
         req,
-        CacheKeys.books(limit),
+        CacheKeys.books(limit, page),
         async function () {
             return await Books.find()
                 .limit(limit)
                 .skip(
-                    ( limit > 10 ) ? 0 : limit - 10
+                    ( page > 1 ) ? ( page - 1 ) * limit : 0
                 );
         },
         60 * 60, // cache expiration time in 60 mins
@@ -261,6 +261,22 @@ async function getAndHydrateBooks(limit, req = null) {
     });
 
     return books;
+}
+
+// getTotalBooksCount()
+// This helper function retrieves the total count of books 
+// from the cache or database.
+async function getTotalBooksCount(req = null) {
+    let totalBooks = await getOrSetCache(
+        req,
+        CacheKeys.bookCount(),
+        async function () {
+            return await Books.countDocuments();
+        },
+        60 * 60, // cache expiration time in 60 mins
+    );
+    
+    return totalBooks;
 }
 
 // CacheOperations Repository
@@ -313,9 +329,12 @@ export const CacheKeys = {
         return `book:id:${bookId}`;
     },
     // Generates a cache key for retrieving books data with a limit
-    books: function (limit) {
-        return `books:limit:${limit}`;
+    books: function (limit, page) {
+        return `books:limit:${limit}:page:${page}`;
     },
+    bookCount: function () {
+        return `books:count`;
+    }
 };
 
 // CacheUpdate Repository
