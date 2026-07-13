@@ -13,17 +13,29 @@ orderRouter.use(
 );
 
 import {
-    createOrderValidatorRules,
-    createOrderValidationFunction,
+    checkoutOrderValidatorRules,
+    checkoutOrderValidationFunction,
+    confirmOrderPaymentValidatorRules,
+    confirmOrderPaymentValidationFunction,
 } from "./orders.validators.js";
-import { createOrderController } from "./orders.controllers.js";
+import { 
+    checkoutOrderController, 
+    confirmOrderPaymentController 
+} from "./orders.controllers.js";
 
 orderRouter.post(
     "/checkout",
     passport.authenticate("jwt", { session: false }),
-    createOrderValidatorRules,
-    createOrderValidationFunction,
-    createOrderController,
+    checkoutOrderValidatorRules,
+    checkoutOrderValidationFunction,
+    checkoutOrderController,
 );
+
+orderRouter.get(
+    "/confirm",
+    confirmOrderPaymentValidatorRules,
+    confirmOrderPaymentValidationFunction,
+    confirmOrderPaymentController,
+)
 
 export default orderRouter;

@@ -9,6 +9,7 @@
 export const ERROR_CODES = {
     INTERNAL_SERVER_ERROR: "INTERNAL_SERVER_ERROR",
     DB_OPERATION_ERROR: "DB_OPERATION_ERROR",
+    PAYMENT_GATEWAY_ERROR: "PAYMENT_GATEWAY_ERROR",
     ROUTE_NOT_FOUND: "ROUTE_NOT_FOUND",
     INVALID_AUTH_ID: "INVALID_AUTH_ID",
     USER_NOT_FOUND: "USER_NOT_FOUND",
@@ -30,6 +31,8 @@ export const ERROR_CODES = {
     INVALID_BOOK_GENRE: "INVALID_BOOK_GENRE",
     INVALID_BOOK_COVER_PHOTO: "INVALID_BOOK_COVER_PHOTO",
     INVALID_REQUEST_INFO: "INVALID_REQUEST_INFO",
+    INVALID_ORDER_REFERENCE: "INVALID_ORDER_REFERENCE",
+    ORDER_NOT_FOUND: "ORDER_NOT_FOUND",
 };
 
 export const RouteNotFoundError = new Error(
@@ -264,4 +267,38 @@ export function reportInvalidRequestInfoError(next, message) {
         ? message
         : InvalidRequestInfoError.message;
     next(InvalidRequestInfoError);
+}
+
+
+export const InvalidOrderReferenceError = new Error(
+    "The provided order reference is invalid, Please check and try again",
+);
+InvalidOrderReferenceError.status = 400;
+InvalidOrderReferenceError.code = ERROR_CODES.INVALID_ORDER_REFERENCE;
+
+export function reportInvalidOrderReferenceError(next) {
+    next(InvalidOrderReferenceError);
+}
+
+
+export const PaymentGatewayError = new Error(
+    "There was an error processing the payment, Please check and try again",
+);
+PaymentGatewayError.status = 500;
+PaymentGatewayError.code = ERROR_CODES.PAYMENT_GATEWAY_ERROR;
+
+export function reportPaymentGatewayError(next) {
+    next(PaymentGatewayError);
+}
+
+
+export const OrderNotFoundError = new Error(
+    "The order with the specified reference could not be found, Please check" +
+        " the order reference and try again",
+);
+OrderNotFoundError.status = 404;
+OrderNotFoundError.code = ERROR_CODES.ORDER_NOT_FOUND;
+
+export function reportOrderNotFoundError(next) {
+    next(OrderNotFoundError);
 }

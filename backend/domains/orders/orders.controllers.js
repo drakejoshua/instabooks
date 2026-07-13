@@ -1,11 +1,13 @@
-export async function createOrderController(req, res, next) {
+import { confirmOrderPaymentService } from "./orders.service";
+
+export async function checkoutOrderController(req, res, next) {
     try {
         // get the shipping address from the request body
         let { shipping_address } = req.body;
 
         // call the create order service to create a
         // new order based on shipping address and user data
-        let paymentData = await createOrderService(shipping_address, req.user);
+        let paymentData = await checkoutOrderService(shipping_address, req.user);
 
         // send the payment info as a response
         res.status(201).json({ 
@@ -16,3 +18,22 @@ export async function createOrderController(req, res, next) {
         next(error);
     }
 }
+
+
+export async function confirmOrderPaymentController(req, res, next) {
+    try {
+        // get the order reference from the request query
+        let { reference } = req.query;
+
+        // call the confirm order payment service to verify
+        // the order payment and update the order status
+        await confirmOrderPaymentService(reference);
+
+        // redirect to the frontend order confirmation page
+        // with the order reference as a route parameter
+        let frontendURL = process.env.FRONTEND_URL;
+        return res.redirect(`${frontendURL}/orders/confirm/${reference}`);
+    } catch (error) {
+        next(error);
+    }
+} 
