@@ -1,4 +1,4 @@
-import { confirmOrderPaymentService } from "./orders.service";
+import { confirmOrderPaymentService, getOrderDetailsService } from "./orders.service";
 
 export async function checkoutOrderController(req, res, next) {
     try {
@@ -39,7 +39,7 @@ export async function confirmOrderPaymentController(req, res, next) {
 } 
 
 
-export async function getOrderController(req, res, next) {
+export async function getOrderDetailsController(req, res, next) {
     try {
         // get the user id from the request user object
         let userId = req.user._id;
@@ -47,12 +47,33 @@ export async function getOrderController(req, res, next) {
 
         // call the get order service to retrieve the order
         // details for the user
-        let order = await getOrderService( userId, order_id );
+        let order = await getOrderDetailsService( userId, order_id );
 
         // send the order details as a response
         res.json({
             status: "success",
             data: order
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export async function getAllOrdersController(req, res, next) {
+    try {
+        // get the user id from the request user object
+        let userId = req.user._id;
+        let { limit, page } = req.query;
+
+        // call the get all orders service to retrieve all the orders
+        // for the user with the specified limit
+        let ordersData = await getAllOrdersService( userId, limit, page );
+
+        // send the orders as a response
+        res.json({
+            status: "success",
+            data: ordersData
         });
     } catch (error) {
         next(error);

@@ -85,7 +85,7 @@ export async function confirmOrderPaymentService(reference) {
 }
 
 
-export async function getOrderService(userId, orderId) {
+export async function getOrderDetailsService(userId, orderId) {
     // find the order by user id and order id
     let order = await Orders.findOne({ _id: orderId, user_id: userId });
 
@@ -96,4 +96,22 @@ export async function getOrderService(userId, orderId) {
     }
 
     return order;
+}
+
+
+export async function getAllOrdersService(userId, limit, page) {
+    // find all orders for the user with the 
+    // specified limit
+    let orders = await Orders.find({ user_id: userId })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .skip(
+            ( page && page > 0 ) ? ( page - 1 ) * limit : 0
+        )
+    let totalOrders = await Orders.countDocuments({ user_id: userId });
+
+    return {
+        totalOrders,
+        orders
+    };
 }

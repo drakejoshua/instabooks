@@ -17,13 +17,16 @@ import {
     checkoutOrderValidationFunction,
     confirmOrderPaymentValidatorRules,
     confirmOrderPaymentValidationFunction,
-    getOrderValidationFunction,
-    getOrderValidatorRules,
+    getOrderDetailsValidatorRules,
+    getOrderDetailsValidationFunction,
+    getAllOrdersValidatorRules,
+    getAllOrdersValidationFunction,
 } from "./orders.validators.js";
 import { 
     checkoutOrderController, 
     confirmOrderPaymentController, 
-    getOrderController
+    getOrderDetailsController,
+    getAllOrdersController
 } from "./orders.controllers.js";
 
 orderRouter.post(
@@ -44,9 +47,18 @@ orderRouter.get(
 orderRouter.get(
     "/:order_id",
     passport.authenticate("jwt", { session: false }),
-    getOrderValidatorRules,
-    getOrderValidationFunction,
-    getOrderController
+    getOrderDetailsValidatorRules,
+    getOrderDetailsValidationFunction,
+    getOrderDetailsController
+);
+
+
+orderRouter.get(
+    "/",
+    passport.authenticate("jwt", { session: false }),
+    getAllOrdersValidatorRules,
+    getAllOrdersValidationFunction,
+    getAllOrdersController
 );
 
 

@@ -1,5 +1,5 @@
 import { body, validationResult } from "express-validator";
-import { ERROR_CODES, reportInvalidAddressError, reportInvalidOrderReferenceError } from "../shared/utils/errors";
+import { ERROR_CODES, reportInvalidAddressError, reportInvalidOrderReferenceError, reportInvalidRequestInfoError } from "../shared/utils/errors";
 
 export let checkoutOrderValidatorRules = [
     body("shipping_address")
@@ -63,7 +63,7 @@ export function confirmOrderPaymentValidationFunction(req, res, next) {
     next();
 }
 
-export let getOrderValidatorRules = [
+export let getOrderDetailsValidatorRules = [
     params("order_id")
         .exists()
         .withMessage(ERROR_CODES.INVALID_ORDER_REFERENCE)
@@ -76,7 +76,7 @@ export let getOrderValidatorRules = [
         .bail()
 ]
 
-export function getOrderValidationFunction(req, res, next) {
+export function getOrderDetailsValidationFunction(req, res, next) {
     // get validation errors from the request
     // if any
     const errors = validationResult(req);
@@ -86,6 +86,47 @@ export function getOrderValidationFunction(req, res, next) {
     // reference error if there was
     if (!errors.isEmpty()) {
         return reportInvalidOrderReferenceError(next);
+    }
+
+    // proceed to the next middleware if there are no
+    // validation errors
+    next();
+}
+
+export let getAllOrdersValidatorRules = [
+    query("limit")
+        .default(10)
+        .isInt({ min: 1, max: 100 })
+        .withMessage(ERROR_CODES.INVALID_REQUEST_INFO)
+        .bail(),
+    query("page")
+        .default(1)
+        .isInt({ min: 1 })
+        .withMessage(ERROR_CODES.INVALID_REQUEST_INFO)
+        .bail(),
+]
+
+export function getAllOrdersValidationFunction(req, res, next) {
+    // get validation errors from the request
+    // if any
+    const errors = validationResult(req);
+
+    // check if there was invalid limit query
+    // in the request body and report an invalid request
+    // info error if there was
+    if (!errors.isEmpty()) {
+        switch (errors.array()[0].param) {
+            case "limit":
+                return reportInvalidRequestInfoError(
+                    next,
+                    "Invalid limit query. Limit must be an integer between 1 and 100."
+                );
+            case "page":
+                return reportInvalidRequestInfoError(
+                    next,
+                    "Invalid page query. Page must be a positive integer."
+                );
+        }
     }
 
     // proceed to the next middleware if there are no
