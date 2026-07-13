@@ -1,5 +1,10 @@
 import { body, validationResult } from "express-validator";
-import { ERROR_CODES, reportInvalidAddressError, reportInvalidOrderReferenceError, reportInvalidRequestInfoError } from "../shared/utils/errors";
+import {
+    ERROR_CODES,
+    reportInvalidAddressError,
+    reportInvalidOrderReferenceError,
+    reportInvalidRequestInfoError,
+} from "../shared/utils/errors";
 
 export let checkoutOrderValidatorRules = [
     body("shipping_address")
@@ -49,13 +54,13 @@ export function confirmOrderPaymentValidationFunction(req, res, next) {
     // if any
     const errors = validationResult(req);
 
-    // check if there was invalid order reference 
-    // in the request body and redirect to the 
-    // frontend invalid order reference page if there 
+    // check if there was invalid order reference
+    // in the request body and redirect to the
+    // frontend invalid order reference page if there
     // was an invalid order reference
     if (!errors.isEmpty()) {
-        let frontendURL = process.env.FRONTEND_URL
-        return res.redirect(`${frontendURL}/orders/invalid`)
+        let frontendURL = process.env.FRONTEND_URL;
+        return res.redirect(`${frontendURL}/orders/invalid`);
     }
 
     // proceed to the next middleware if there are no
@@ -73,8 +78,8 @@ export let getOrderDetailsValidatorRules = [
         .bail()
         .isMongoId()
         .withMessage(ERROR_CODES.INVALID_ORDER_REFERENCE)
-        .bail()
-]
+        .bail(),
+];
 
 export function getOrderDetailsValidationFunction(req, res, next) {
     // get validation errors from the request
@@ -82,7 +87,7 @@ export function getOrderDetailsValidationFunction(req, res, next) {
     const errors = validationResult(req);
 
     // check if there was invalid order reference
-    // in the request body and report an invalid order 
+    // in the request body and report an invalid order
     // reference error if there was
     if (!errors.isEmpty()) {
         return reportInvalidOrderReferenceError(next);
@@ -104,7 +109,7 @@ export let getAllOrdersValidatorRules = [
         .isInt({ min: 1 })
         .withMessage(ERROR_CODES.INVALID_REQUEST_INFO)
         .bail(),
-]
+];
 
 export function getAllOrdersValidationFunction(req, res, next) {
     // get validation errors from the request
@@ -119,12 +124,12 @@ export function getAllOrdersValidationFunction(req, res, next) {
             case "limit":
                 return reportInvalidRequestInfoError(
                     next,
-                    "Invalid limit query. Limit must be an integer between 1 and 100."
+                    "Invalid limit query. Limit must be an integer between 1 and 100.",
                 );
             case "page":
                 return reportInvalidRequestInfoError(
                     next,
-                    "Invalid page query. Page must be a positive integer."
+                    "Invalid page query. Page must be a positive integer.",
                 );
         }
     }

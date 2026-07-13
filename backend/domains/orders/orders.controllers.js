@@ -1,4 +1,8 @@
-import { confirmOrderPaymentService, getOrderDetailsService } from "./orders.service";
+import {
+    confirmOrderPaymentService,
+    getAllOrdersForAdminService,
+    getOrderDetailsService,
+} from "./orders.service";
 
 export async function checkoutOrderController(req, res, next) {
     try {
@@ -7,18 +11,20 @@ export async function checkoutOrderController(req, res, next) {
 
         // call the create order service to create a
         // new order based on shipping address and user data
-        let paymentData = await checkoutOrderService(shipping_address, req.user);
+        let paymentData = await checkoutOrderService(
+            shipping_address,
+            req.user,
+        );
 
         // send the payment info as a response
-        res.status(201).json({ 
+        res.status(201).json({
             status: "success",
-            data: paymentData
+            data: paymentData,
         });
     } catch (error) {
         next(error);
     }
 }
-
 
 export async function confirmOrderPaymentController(req, res, next) {
     try {
@@ -36,8 +42,7 @@ export async function confirmOrderPaymentController(req, res, next) {
     } catch (error) {
         next(error);
     }
-} 
-
+}
 
 export async function getOrderDetailsController(req, res, next) {
     try {
@@ -47,18 +52,17 @@ export async function getOrderDetailsController(req, res, next) {
 
         // call the get order service to retrieve the order
         // details for the user
-        let order = await getOrderDetailsService( userId, order_id );
+        let order = await getOrderDetailsService(userId, order_id);
 
         // send the order details as a response
         res.json({
             status: "success",
-            data: order
+            data: order,
         });
     } catch (error) {
         next(error);
     }
 }
-
 
 export async function getAllOrdersController(req, res, next) {
     try {
@@ -68,12 +72,30 @@ export async function getAllOrdersController(req, res, next) {
 
         // call the get all orders service to retrieve all the orders
         // for the user with the specified limit
-        let ordersData = await getAllOrdersService( userId, limit, page );
+        let ordersData = await getAllOrdersService(userId, limit, page);
 
         // send the orders as a response
         res.json({
             status: "success",
-            data: ordersData
+            data: ordersData,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getAllOrdersForAdminController(req, res, next) {
+    try {
+        let { limit, page } = req.query;
+
+        // call the get all orders service to retrieve all the orders
+        // for the user with the specified limit
+        let ordersData = await getAllOrdersForAdminService(limit, page);
+
+        // send the orders as a response
+        res.json({
+            status: "success",
+            data: ordersData,
         });
     } catch (error) {
         next(error);

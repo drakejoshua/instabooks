@@ -7,10 +7,7 @@ import passport from "passport";
 
 let orderRouter = express.Router();
 
-orderRouter.use(
-    bearerAuthValidationRules, 
-    bearerAuthValidationFunction
-);
+orderRouter.use(bearerAuthValidationRules, bearerAuthValidationFunction);
 
 import {
     checkoutOrderValidatorRules,
@@ -22,11 +19,12 @@ import {
     getAllOrdersValidatorRules,
     getAllOrdersValidationFunction,
 } from "./orders.validators.js";
-import { 
-    checkoutOrderController, 
-    confirmOrderPaymentController, 
+import {
+    checkoutOrderController,
+    confirmOrderPaymentController,
     getOrderDetailsController,
-    getAllOrdersController
+    getAllOrdersController,
+    getAllOrdersForAdminController,
 } from "./orders.controllers.js";
 
 orderRouter.post(
@@ -42,24 +40,30 @@ orderRouter.get(
     confirmOrderPaymentValidatorRules,
     confirmOrderPaymentValidationFunction,
     confirmOrderPaymentController,
-)
+);
 
 orderRouter.get(
     "/:order_id",
     passport.authenticate("jwt", { session: false }),
     getOrderDetailsValidatorRules,
     getOrderDetailsValidationFunction,
-    getOrderDetailsController
+    getOrderDetailsController,
 );
-
 
 orderRouter.get(
     "/",
     passport.authenticate("jwt", { session: false }),
     getAllOrdersValidatorRules,
     getAllOrdersValidationFunction,
-    getAllOrdersController
+    getAllOrdersController,
 );
 
+orderRouter.get(
+    "/admin",
+    passport.authenticate("admin-key", { session: false }),
+    getAllOrdersValidatorRules,
+    getAllOrdersValidationFunction,
+    getAllOrdersForAdminController,
+);
 
 export default orderRouter;
