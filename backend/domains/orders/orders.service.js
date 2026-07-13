@@ -115,14 +115,11 @@ export async function getAllOrdersService(userId, limit, page) {
     };
 }
 
-export async function getAllOrdersForAdminService(limit, page) {
+export async function getAllOrdersForAdminService(limit, page, req) {
     // find all orders for the user with the
     // specified limit
-    let orders = await Orders.find()
-        .sort({ createdAt: -1 })
-        .limit(limit)
-        .skip(page && page > 0 ? (page - 1) * limit : 0);
-    let totalOrders = await Orders.countDocuments();
+    let orders = await CacheOperations.getAndHydrateOrders(limit, page, req);
+    let totalOrders = await CacheOperations.getTotalOrdersCount( req );
 
     return {
         totalOrders,

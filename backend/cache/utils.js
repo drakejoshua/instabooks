@@ -14,6 +14,10 @@ import Users from "../database/models/user.model.js";
 // collection on the databse
 import Books from "../database/models/book.model.js";
 
+// import the Orders model for interaction with the orders
+// collection on the database
+import Orders from "../database/models/order.model.js"
+
 // pendingRequests map to track in-flight requests and prevent
 // duplicate async/cache calls for the same async operation and
 // prevent cache stampeding
@@ -301,6 +305,9 @@ async function getTotalBooksCount(req = null) {
 
 
 // getAndHydrateSearchResults()
+// This helper function retrieves search results for books
+// from the cache or database, and returns a list of hydrated
+// book model instances.
 async function getAndHydrateSearchResults(query, req = null) {
     let searchResults = await getOrSetCache(
         req,
@@ -335,6 +342,61 @@ async function getAndHydrateSearchResults(query, req = null) {
 }
 
 
+async function getAndHydrateOrders( limit, page, req ) {
+    // get the orders for the current page and limit
+    // from the cache and fallback to the database 
+    // if cache doesn't contain the orders data
+    let orders = await getOrSetCache(
+        req,
+        CacheKeys.orders( limit, page ),
+        async function() {
+            return await Orders.find()
+                .sort({ createdAt: -1 })
+                .limit(limit)
+                .skip(page && page > 0 ? (page - 1) * limit : 0);
+        },
+        CacheTTL.orders
+    )
+
+    // check if orders is invalid or an empty array
+    // and return and empty array to prevent integration
+    // errors
+    if ( !orders || orders.length === 0 ) {
+        return []
+    }
+
+    // check and hydrate the orders array gotten from 
+    // the cache into regular mongoose documents for
+    // use later in the application
+    orders = orders.map( function( order ) {
+        if ( !( order instanceof Orders ) ) {
+            return Orders.hydrate( order )
+        }
+
+        return order
+    })
+
+    return orders
+}
+
+
+// getTotalOrdersCount()
+// This helper function retrieves the total count of orders 
+// from the cache or database.
+async function getTotalOrdersCount(req = null) {
+    let totalOrders = await getOrSetCache(
+        req,
+        CacheKeys.ordersCount(),
+        async function () {
+            return await Orders.countDocuments();
+        },
+        CacheTTL.ordersCount, // cache expiration time in 5 mins
+    );
+
+    return totalOrders;
+}
+
+
 // CacheOperations Repository
 // This object defines the methods used for interacting with the cache
 // for this application, including getting, setting, deleting, and
@@ -348,6 +410,8 @@ export const CacheOperations = {
     getAndHydrateBooks,
     getTotalBooksCount,
     getAndHydrateSearchResults,
+    getAndHydrateOrders,
+    getTotalOrdersCount
 };
 
 // CacheTTL Repository
@@ -355,13 +419,16 @@ export const CacheOperations = {
 // keys used in this application, specifying how long each type of cached
 // data should be retained in Redis before expiring.
 export const CacheTTL = {
-    bookById: 10 * 60, // 5 mins
+    bookById: 60 * 60, // 30 mins
     bookCount: 60 * 60, // 60 mins
     searchResults: 3 * 60, // 3 mins
     userById: 60 * 60, // 60 mins
     userByGoogleAuthId: 5 * 60, // 5 mins
     userByEmail: 5 * 60, // 5 mins
     userByRefreshToken: 120 * 60, // 120 mins
+    orders: 5 * 60, // 5 mins
+    ordersCount: 5 * 60, // 5 mins
+    books: 60 * 60 // 60 mins
 };
 
 // CacheKeys Repository
@@ -397,6 +464,12 @@ export const CacheKeys = {
     },
     searchResults: function (query) {
         return `books:search:${query}`;
+    },
+    orders: function( limit, page ) {
+        return `orders:limit:${limit}:page:${page}`
+    },
+    ordersCount: function () {
+        return `orders:count`;
     }
 };
 

@@ -90,7 +90,7 @@ export async function getAllOrdersForAdminController(req, res, next) {
 
         // call the get all orders service to retrieve all the orders
         // for the user with the specified limit
-        let ordersData = await getAllOrdersForAdminService(limit, page);
+        let ordersData = await getAllOrdersForAdminService(limit, page, req);
 
         // send the orders as a response
         res.json({
