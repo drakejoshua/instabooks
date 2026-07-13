@@ -28,7 +28,6 @@ orders
 - products
     - book id
     - order quantity
-    - format
 - id
 - status ( shipped | pending | cancelled )
 - price at purchase

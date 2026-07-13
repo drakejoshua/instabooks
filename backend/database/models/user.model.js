@@ -49,16 +49,57 @@ const UserSchema = new mongoose.Schema({
 // name, email, photo URL, addresses, and cart. It populates the
 // cart with book details before returning the data.
 UserSchema.methods.getProfileData = async function () {
-    // await this.populate("cart.book_id");
+    await this.populate("cart.book_id");
 
     return {
         name: this.name,
         email: this.email,
         photo_url: this.photo_url,
         addresses: this.addresses,
-        cart: this.cart,
+        cart: this.cart.map( function( book ) {
+            let { 
+                __v, 
+                _id, 
+                cover_photo_id,
+                ...bookDetails 
+            } = book.book_id.toObject();
+            let { quantity } = book;
+
+            return {
+                ...bookDetails,
+                quantity,
+                id: _id
+            }
+
+        })
     };
 };
+
+
+// getCartData()
+// This method retrieves the user's cart data, including the book
+// details and quantities. It populates the cart with book details
+// before returning the data.
+UserSchema.methods.getCartData = async function () {
+    await this.populate("cart.book_id");
+
+    return this.cart.map( function( book ) {
+        let { 
+            __v, 
+            _id, 
+            cover_photo_id,
+            ...bookDetails 
+        } = book.book_id.toObject();
+        let { quantity } = book;
+
+        return {
+            ...bookDetails,
+            quantity,
+            id: _id
+        }
+
+    })
+}
 
 // addToCart()
 // This method adds a book to the user's cart. It checks if the
@@ -69,7 +110,7 @@ UserSchema.methods.addToCart = async function (book_id, quantity) {
     try {
         // get index of book with book_id if it has already been
         // added to the cart
-        let bookIndex = this.cart.findIndex((book) => book.book_id === book_id);
+        let bookIndex = this.cart.findIndex((book) => book.book_id.equals(book_id));
 
         // if a valid book index was returned, update cart with
         // new quantity of the book, if not, add new book to user's
@@ -88,7 +129,7 @@ UserSchema.methods.addToCart = async function (book_id, quantity) {
 
         // populate user document before sending it back to the
         // service
-        // await this.populate("cart.book_id");
+        await this.populate("cart.book_id");
     } catch (err) {
         // if any errors occured during cart updates, tag the
         // error as a db operation error and throw it to the
@@ -108,20 +149,20 @@ UserSchema.methods.removeFromCart = async function (book_id) {
     try {
         // get index of book with book_id if it has already been
         // added to the cart
-        let bookIndex = this.cart.findIndex((book) => book.book_id === book_id);
+        let bookIndex = this.cart.findIndex((book) => book.book_id.equals(book_id));
 
         // if a valid book index was returned, update cart with
         // new quantity of the book, if not, add new book to user's
         // cart
         if (bookIndex >= 0) {
-            this.cart.pull({ book_id });
+            this.cart.splice( bookIndex, 1 );
 
             // save updated user document to the database
             await this.save();
 
             // populate user document before sending it back to the
             // service
-            // await this.populate("cart.book_id");
+            await this.populate("cart.book_id");
         }
     } catch (err) {
         // if any errors occured during cart updates, tag the

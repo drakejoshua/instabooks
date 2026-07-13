@@ -13,7 +13,7 @@ export async function addToCartService( user, bookId, quantity, req = null ) {
     // consistency
     await CacheUpdate.updateUserById( user, req )
 
-    return user.cart 
+    return user.getCartData()
 }
 
 
@@ -29,7 +29,7 @@ export async function deleteFromCartService( user, bookId, req ) {
     // consistency
     await CacheUpdate.updateUserById( user, req )
 
-    return user.cart
+    return user.getCartData()
 }
 
 

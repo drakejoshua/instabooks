@@ -1,24 +1,24 @@
 info:
-  name: Add To Cart Request
-  type: http
-  seq: 1
+    name: Add To Cart Request
+    type: http
+    seq: 1
 
 http:
-  method: POST
-  url: http://localhost:8000/user/cart
-  body:
-    type: form-urlencoded
-    data:
-      - name: book_id
-        value: dsksks
-        disabled: true
-      - name: quantity
-        value: "2"
-        disabled: true
-  auth: inherit
+    method: POST
+    url: http://localhost:8000/user/cart/
+    body:
+        type: form-urlencoded
+        data:
+            - name: book_id
+              value: 6a54114e5eac753b3e8aba63
+            - name: quantity
+              value: "2"
+    auth:
+        type: bearer
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODM5MDEyNTYsImV4cCI6MTc4MzkwMjE1Nn0.JEEPZVa7g3WvI4nXMC9_FieIZNIfbi1jw_yfEAeYa7M
 
 settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5
