@@ -11,6 +11,7 @@ import notFound from "./domains/shared/middleware/notFound.js";
 import errorHandler from "./domains/shared/middleware/error.js";
 import redisClient from "./cache/setup.js";
 import bookRouter from "./domains/books/books.routes.js";
+import orderRouter from "./domains/orders/orders.routes.js";
 
 const server = express();
 
@@ -74,6 +75,9 @@ server.use("/user", usersRouter);
 
 // attach the routes from the books domains to the server
 server.use("/books", bookRouter);
+
+// attach the routes from the books domains to the server
+server.use("/orders", orderRouter);
 
 // not-found/catch-all middleware to handle requests to
 // undefined routes

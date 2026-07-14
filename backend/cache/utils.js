@@ -36,6 +36,8 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
         // check if cached data exists for the provided key, if so,
         // log a "cache_hit" event and return parsed cache data
         if (cachedData) {
+            console.log(`read cache for key: ${key} and got data: ${cachedData}`)
+
             logger.info({
                 event: "cache_hit",
                 cacheKey: key,
@@ -87,6 +89,9 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
 
             await redisClient.setEx(key, expiration, JSON.stringify(data));
 
+            let cachedData = await redisClient.get(key);
+            console.log(`set cache for key: ${key} and got data: ${cachedData}`)
+
             // return fresh data back to invoking function/block of code
             return data;
         } finally {
@@ -121,6 +126,8 @@ async function getCache(req, key) {
         // check if cached data exists for the provided key, if so,
         // log a "cache_hit" event and return parsed cache data
         if (cachedData) {
+            console.log(`read cache for key: ${key} and got data: ${cachedData}`)
+
             logger.info({
                 event: "cache_hit",
                 cacheKey: key,
@@ -184,6 +191,41 @@ async function deleteCache(req, key) {
         throw err;
     }
 }
+
+
+// setCache()
+// this helper function to set data in redis cache using a provided key
+// and expiration time
+async function setCache(req, key, data, expiration = 3600) {
+    try {
+        // log a "cache_set" event for tracking cache set operations
+        logger.info({
+            event: "cache_set",
+            cacheKey: key,
+            requestId: req.requestId,
+            expiration: expiration,
+        });
+
+        await redisClient.setEx(key, expiration, JSON.stringify(data));
+
+        let cachedData = await redisClient.get(key);
+        console.log(`set cache for key: ${key} and got data: ${cachedData}`)
+    } catch (err) {
+        // if any errors occur during the cache set operation,
+        // log the error and rethrow it to be handled up in the execution
+        // chain
+        logger.error({
+            event: "cache_error",
+            message: `Cache error: ${err.message || "Unknown error"}`,
+            stack: err.stack,
+            cacheKey: key,
+            requestId: req.requestId,
+        });
+
+        throw err;
+    }
+}
+
 
 // hydrateUserById()
 // This helper function retrieves a user by their ID from the cache
@@ -479,157 +521,47 @@ export const CacheKeys = {
 export const CacheUpdate = {
     // Updates the cache entry for a user by their ID.
     updateBookById: async function (book, req = null) {
-        try {
-            // log a "cache_set" event for tracking cache updates
-            logger.info({
-                event: "cache_set",
-                cacheKey: CacheKeys.bookById(book._id),
-                requestId: req?.requestId || "N/A",
-                expiration: CacheTTL.bookById,
-            });
-
-            await redisClient.setEx(
-                CacheKeys.bookById(book._id),
-                CacheTTL.bookById,
-                JSON.stringify(book),
-            );
-        } catch (err) {
-            // if any errors occur during the cache update operation,
-            // log the error and rethrow it to be handled up in the execution
-            // chain
-            logger.error({
-                event: "cache_error",
-                message: `Cache error: ${err.message || "Unknown error"}`,
-                stack: err.stack,
-                cacheKey: CacheKeys.bookById(book._id),
-                requestId: req?.requestId || "N/A",
-            });
-
-            throw err;
-        }
+        await setCache(
+            req,
+            CacheKeys.bookById(book._id),
+            book,
+            CacheTTL.bookById, // cache expiration time in 60 mins
+        );
     },
     // Updates the cache entry for a user by their ID.
     updateUserById: async function (user, req = null) {
-        try {
-            // log a "cache_set" event for tracking cache updates
-            logger.info({
-                event: "cache_set",
-                cacheKey: CacheKeys.userById(user._id),
-                requestId: req?.requestId || "N/A",
-                expiration: CacheTTL.userById,
-            });
-
-            await redisClient.setEx(
-                CacheKeys.userById(user._id),
-                CacheTTL.userById, // cache expiration time in 60 mins
-                JSON.stringify(user),
-            );
-        } catch (err) {
-            // if any errors occur during the cache update operation,
-            // log the error and rethrow it to be handled up in the execution
-            // chain
-            logger.error({
-                event: "cache_error",
-                message: `Cache error: ${err.message || "Unknown error"}`,
-                stack: err.stack,
-                cacheKey: CacheKeys.userById(user._id),
-                requestId: req?.requestId || "N/A",
-            });
-
-            throw err;
-        }
+        await setCache(
+            req,
+            CacheKeys.userById(user._id),
+            user,
+            CacheTTL.userById, // cache expiration time in 60 mins
+        );
     },
     // Updates the cache entry for a user by their Google auth ID.
     updateUserByGoogleAuthId: async function (user, req = null) {
-        try {
-            // log a "cache_set" event for tracking cache updates
-            logger.info({
-                event: "cache_set",
-                cacheKey: CacheKeys.userByGoogleAuthId(user.google_auth_id),
-                requestId: req?.requestId || "N/A",
-                expiration: CacheTTL.userByGoogleAuthId,
-            });
-
-            await redisClient.setEx(
-                CacheKeys.userByGoogleAuthId(user.google_auth_id),
-                CacheTTL.userByGoogleAuthId, // cache expiration time in 5 mins
-                JSON.stringify(user._id),
-            );
-        } catch (err) {
-            // if any errors occur during the cache update operation,
-            // log the error and rethrow it to be handled up in the execution
-            // chain
-            logger.error({
-                event: "cache_error",
-                message: `Cache error: ${err.message || "Unknown error"}`,
-                stack: err.stack,
-                cacheKey: CacheKeys.userByGoogleAuthId(user.google_auth_id),
-                requestId: req?.requestId || "N/A",
-            });
-
-            throw err;
-        }
+        await setCache(
+            req,
+            CacheKeys.userByGoogleAuthId(user.google_auth_id),
+            user._id,
+            CacheTTL.userByGoogleAuthId, // cache expiration time in 5 mins
+        );
     },
     // Updates the cache entry for a user by their email.
     updateUserByEmail: async function (user, req = null) {
-        try {
-            // log a "cache_set" event for tracking cache updates
-            logger.info({
-                event: "cache_set",
-                cacheKey: CacheKeys.userByEmail(user.email),
-                requestId: req?.requestId || "N/A",
-                expiration: CacheTTL.userByEmail,
-            });
-
-            await redisClient.setEx(
-                CacheKeys.userByEmail(user.email),
-                CacheTTL.userByEmail, // cache expiration time in 5 mins
-                JSON.stringify(user._id),
-            );
-        } catch (err) {
-            // if any errors occur during the cache update operation,
-            // log the error and rethrow it to be handled up in the execution
-            // chain
-            logger.error({
-                event: "cache_error",
-                message: `Cache error: ${err.message || "Unknown error"}`,
-                stack: err.stack,
-                cacheKey: CacheKeys.userByEmail(user.email),
-                requestId: req?.requestId || "N/A",
-            });
-
-            throw err;
-        }
+        await setCache(
+            req,
+            CacheKeys.userByEmail(user.email),
+            user._id,
+            CacheTTL.userByEmail, // cache expiration time in 5 mins
+        );
     },
     // Updates the cache entry for a user by their refresh token.
     updateUserByRefreshToken: async function (user, req = null) {
-        try {
-            // log a "cache_set" event for tracking cache updates
-            logger.info({
-                event: "cache_set",
-                cacheKey: CacheKeys.userByRefreshToken(user.refresh_token),
-                requestId: req?.requestId || "N/A",
-                expiration: CacheTTL.userByRefreshToken,
-            });
-
-            await redisClient.setEx(
-                CacheKeys.userByRefreshToken(user.refresh_token),
-                CacheTTL.userByRefreshToken, // cache expiration time in 120 mins
-                JSON.stringify(user._id),
-            );
-        } catch (err) {
-            // if any errors occur during the cache update operation,
-            // log the error and rethrow it to be handled up in the execution
-            // chain
-            logger.error({
-                event: "cache_error",
-                message: `Cache error: ${err.message || "Unknown error"}`,
-                stack: err.stack,
-                cacheKey: CacheKeys.userByRefreshToken(user.refresh_token),
-                requestId: req?.requestId || "N/A",
-            });
-
-            throw err;
-        }
+        await setCache(
+            req,
+            CacheKeys.userByRefreshToken(user.refresh_token),
+            user._id,
+            CacheTTL.userByRefreshToken, // cache expiration time in 120 mins
+        );
     },
 };

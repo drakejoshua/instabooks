@@ -38,7 +38,7 @@ export async function deleteFromCartService( user, bookId, req ) {
 // It takes the user object and the new address as parameters, 
 // calls the addAddress method on the user object, and returns the 
 // updated list of addresses.
-export async function addAddressService( user, newAddress ) {
+export async function addAddressService( user, newAddress, req ) {
     await user.addAddress( newAddress )
 
     // update user data in cache to maintain data 
@@ -54,8 +54,8 @@ export async function addAddressService( user, newAddress ) {
 // account. It takes the user object and the address to be deleted 
 // as parameters, calls the deleteAddress method on the user 
 // object, and returns the updated list of addresses.
-export async function deleteAddressService( user, newAddress ) {
-    await user.deleteAddress( newAddress )
+export async function deleteAddressService( user, addressToDelete, req ) {
+    await user.deleteAddress( addressToDelete )
 
     // update user data in cache to maintain data 
     // consistency

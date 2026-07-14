@@ -6,14 +6,14 @@ import {
 } from "../shared/utils/errors.js";
 import { paystackInitialize, paystackVerify } from "./orders.utils.js";
 
-export async function checkoutOrderService(shippingAddress, userData) {
+export async function checkoutOrderService(shippingAddress, user) {
     // check if the shipping address is valid
-    if (!userData.addresses.includes(shippingAddress)) {
+    if (!user.addresses.includes(shippingAddress)) {
         throw InvalidAddressError;
     }
 
     // get the cart items from the user data
-    let cartItems = await userData.getCartData();
+    let cartItems = await user.getCartData();
 
     // calculate the total price of the order
     let totalPrice = cartItems.reduce(function (total, item) {
@@ -23,7 +23,7 @@ export async function checkoutOrderService(shippingAddress, userData) {
     // create a new order document with the user data
     // and cart items
     let newOrder = await Orders.create({
-        user_id: userData._id,
+        user_id: user._id,
         shipping_address: shippingAddress,
         price_at_purchase: totalPrice,
         payment_status: "pending",
@@ -38,14 +38,24 @@ export async function checkoutOrderService(shippingAddress, userData) {
 
     // generate payment authorization link using
     // paystackInitialize() utility function
-    let paymentData = await paystackInitialize(userData, newOrder);
+    let paymentData = await paystackInitialize(user, newOrder);
 
     // check if there was an error initializing the payment
     // and throw a PaymentGatewayError if there was
     if (paymentData.status === "error") {
         PaymentGatewayError.message = paymentData.error.message;
+
+        // delete the order if there was an error initializing 
+        // the payment
+        await Orders.findByIdAndDelete(newOrder._id);
+
         throw PaymentGatewayError;
     }
+
+    // clear the user's cart after checkout and save 
+    // the user data
+    user.cart = []
+    await user.save()
 
     return paymentData.data;
 }

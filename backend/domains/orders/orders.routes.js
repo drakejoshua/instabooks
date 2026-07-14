@@ -5,10 +5,6 @@ import {
 } from "../shared/shared.validators.js";
 import passport from "passport";
 
-let orderRouter = express.Router();
-
-orderRouter.use(bearerAuthValidationRules, bearerAuthValidationFunction);
-
 import {
     checkoutOrderValidatorRules,
     checkoutOrderValidationFunction,
@@ -27,19 +23,24 @@ import {
     getAllOrdersForAdminController,
 } from "./orders.controllers.js";
 
-orderRouter.post(
-    "/checkout",
-    passport.authenticate("jwt", { session: false }),
-    checkoutOrderValidatorRules,
-    checkoutOrderValidationFunction,
-    checkoutOrderController,
-);
+
+let orderRouter = express.Router();
 
 orderRouter.get(
     "/confirm",
     confirmOrderPaymentValidatorRules,
     confirmOrderPaymentValidationFunction,
     confirmOrderPaymentController,
+);
+
+orderRouter.use(bearerAuthValidationRules, bearerAuthValidationFunction);
+
+orderRouter.post(
+    "/checkout",
+    passport.authenticate("jwt", { session: false }),
+    checkoutOrderValidatorRules,
+    checkoutOrderValidationFunction,
+    checkoutOrderController,
 );
 
 orderRouter.get(

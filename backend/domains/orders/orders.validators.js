@@ -1,10 +1,10 @@
-import { body, validationResult } from "express-validator";
+import { query, param, body, validationResult } from "express-validator";
 import {
     ERROR_CODES,
     reportInvalidAddressError,
     reportInvalidOrderReferenceError,
     reportInvalidRequestInfoError,
-} from "../shared/utils/errors";
+} from "../shared/utils/errors.js";
 
 export let checkoutOrderValidatorRules = [
     body("shipping_address")
@@ -69,7 +69,7 @@ export function confirmOrderPaymentValidationFunction(req, res, next) {
 }
 
 export let getOrderDetailsValidatorRules = [
-    params("order_id")
+    param("order_id")
         .exists()
         .withMessage(ERROR_CODES.INVALID_ORDER_REFERENCE)
         .bail()

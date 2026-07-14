@@ -730,3 +730,5 @@ Backend Git Commit Scopes
 - middleware
 - utils
 - backend
+- cache
+- users

@@ -1,0 +1,22 @@
+info:
+  name: Add Address Request
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: http://localhost:8000/user/address
+  body:
+    type: form-urlencoded
+    data:
+      - name: address
+        value: 123 Main St, Anytown, USA
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODQwNDI1MjcsImV4cCI6MTc4NDA0MzQyN30.pxSOqekzAvIHQx0zVkU5geLhv6f2cqIY4FOXkTM2gIg
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -110,7 +110,10 @@ UserSchema.methods.addToCart = async function (book_id, quantity) {
     try {
         // get index of book with book_id if it has already been
         // added to the cart
-        let bookIndex = this.cart.findIndex((book) => book.book_id.equals(book_id));
+        console.log("JSON user document: ", JSON.stringify(this))
+        let bookIndex = this.cart.findIndex( function(book) {
+            return book.book_id.equals(book_id);
+        });
 
         // if a valid book index was returned, update cart with
         // new quantity of the book, if not, add new book to user's
@@ -126,10 +129,6 @@ UserSchema.methods.addToCart = async function (book_id, quantity) {
 
         // save updated user document to the database
         await this.save();
-
-        // populate user document before sending it back to the
-        // service
-        await this.populate("cart.book_id");
     } catch (err) {
         // if any errors occured during cart updates, tag the
         // error as a db operation error and throw it to the
@@ -159,10 +158,6 @@ UserSchema.methods.removeFromCart = async function (book_id) {
 
             // save updated user document to the database
             await this.save();
-
-            // populate user document before sending it back to the
-            // service
-            await this.populate("cart.book_id");
         }
     } catch (err) {
         // if any errors occured during cart updates, tag the

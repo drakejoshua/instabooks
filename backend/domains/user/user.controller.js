@@ -17,7 +17,7 @@ import {
 export async function addToCartController( req, res, next ) {
     // extract book_id and quantity from the request body or params
     let bookId = req.body.book_id || req.params.book_id
-    let quantity = req.body.quantity
+    let quantity = req.body.quantity 
 
     try {
         // call the service function to add the book to the user's 

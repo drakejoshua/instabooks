@@ -46,4 +46,48 @@ let orderSchema = mongoose.Schema(
     },
 );
 
+// getOrderDetails()
+// This is a method that retrieves the details of the current
+// order
+orderSchema.methods.getOrderDetails = async function () {
+    let { _id, __v, products, user_id, ...orderDetails } = await this.populate([
+        "products.book_id",
+        "user_id",
+    ]).toObject();
+
+    let { 
+        _id: userId,
+        __v: userVersion, 
+        google_auth_id,
+        refresh_token,
+        photo_id,
+        ...userDetails 
+    } = user_id;
+
+    let leanProducts = products.map((product) => {
+        let { 
+            _id,
+            __v, 
+            cover_photo_id,
+            ...bookDetails 
+        } = product.book_id;
+
+        return {
+            id: _id,
+            ...bookDetails,
+            order_quantity: product.order_quantity,
+        };
+    });
+
+    return {
+        id: _id,
+        products: leanProducts,
+        user_id: {
+            id: userId,
+            ...userDetails
+        },
+        ...orderDetails,
+    };
+};
+
 export default mongoose.model("orders", orderSchema);

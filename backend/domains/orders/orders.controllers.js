@@ -2,7 +2,8 @@ import {
     confirmOrderPaymentService,
     getAllOrdersForAdminService,
     getOrderDetailsService,
-} from "./orders.service";
+    checkoutOrderService
+} from "./orders.service.js";
 
 export async function checkoutOrderController(req, res, next) {
     try {
