@@ -44,14 +44,6 @@ orderRouter.post(
 );
 
 orderRouter.get(
-    "/:order_id",
-    passport.authenticate("jwt", { session: false }),
-    getOrderDetailsValidatorRules,
-    getOrderDetailsValidationFunction,
-    getOrderDetailsController,
-);
-
-orderRouter.get(
     "/",
     passport.authenticate("jwt", { session: false }),
     getAllOrdersValidatorRules,
@@ -65,6 +57,14 @@ orderRouter.get(
     getAllOrdersValidatorRules,
     getAllOrdersValidationFunction,
     getAllOrdersForAdminController,
+);
+
+orderRouter.get(
+    "/:order_id",
+    passport.authenticate("jwt", { session: false }),
+    getOrderDetailsValidatorRules,
+    getOrderDetailsValidationFunction,
+    getOrderDetailsController,
 );
 
 export default orderRouter;

@@ -36,6 +36,40 @@ BookRouter.use(
     bearerAuthValidationFunction
 );
 
+BookRouter.get(
+    "/search",
+    passport.authenticate("jwt", { session: false }),
+    searchBooksValidationRule,
+    searchBooksValidationFunction,
+    searchBooksController,
+);
+
+BookRouter.get(
+    "/admin/search",
+    passport.authenticate("admin-key", { session: false }),
+    searchBooksValidationRule,
+    searchBooksValidationFunction,
+    searchBooksController,
+);
+
+
+BookRouter.get(
+    "/admin/:book_id",
+    passport.authenticate("admin-key", { session: false }),
+    bookIdValidationRule,
+    bookIdValidationFunction,
+    getBookController,
+);
+
+
+BookRouter.get(
+    "/admin",
+    passport.authenticate("admin-key", { session: false }),
+    getBooksValidationRule,
+    getBooksValidationFunction,
+    getBooksController,
+);
+
 BookRouter.post(
     "/",
     passport.authenticate("admin-key", { session: false }),
@@ -81,42 +115,6 @@ BookRouter.get(
     getBooksValidationRule,
     getBooksValidationFunction,
     getBooksController,
-);
-
-
-BookRouter.get(
-    "/search",
-    passport.authenticate("jwt", { session: false }),
-    searchBooksValidationRule,
-    searchBooksValidationFunction,
-    searchBooksController,
-);
-
-
-BookRouter.get(
-    "/admin/:book_id",
-    passport.authenticate("admin-key", { session: false }),
-    bookIdValidationRule,
-    bookIdValidationFunction,
-    getBookController,
-);
-
-
-BookRouter.get(
-    "/admin",
-    passport.authenticate("admin-key", { session: false }),
-    getBooksValidationRule,
-    getBooksValidationFunction,
-    getBooksController,
-);
-
-
-BookRouter.get(
-    "/admin/search",
-    passport.authenticate("admin-key", { session: false }),
-    searchBooksValidationRule,
-    searchBooksValidationFunction,
-    searchBooksController,
 );
 
 export default BookRouter;

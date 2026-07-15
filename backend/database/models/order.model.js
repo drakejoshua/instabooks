@@ -50,10 +50,8 @@ let orderSchema = mongoose.Schema(
 // This is a method that retrieves the details of the current
 // order
 orderSchema.methods.getOrderDetails = async function () {
-    let { _id, __v, products, user_id, ...orderDetails } = await this.populate([
-        "products.book_id",
-        "user_id",
-    ]).toObject();
+    await this.populate([ "products.book_id", "user_id" ])
+    let { _id, __v, products, user_id, ...orderDetails } = this.toObject();
 
     let { 
         _id: userId,
@@ -69,6 +67,7 @@ orderSchema.methods.getOrderDetails = async function () {
             _id,
             __v, 
             cover_photo_id,
+            quantity,
             ...bookDetails 
         } = product.book_id;
 

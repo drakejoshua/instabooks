@@ -76,8 +76,14 @@ Response:
         "name": < user's name: "John Doe" >,
         "email": < user's email: "john.doe@example.com" >,
         "photo_url": < user's photo url: "https://example.com/photo.jpg" >,
-        "addresses":[] ( array of user's saved addresses ),
-        "cart":[],
+        "addresses": [
+            < shipping address e.g. "123 Main St, Anytown, USA" >,
+            ...
+        ],
+        "cart": [
+            < cart item e.g. { "book_id": "sjskejnu3489483den34", "quantity": 2 } >,
+            ...
+        ]
         "access_token": < JWT token: "erdrd.yyfytfyu.uyfytfy" >,
         "expires_in": < JWT token expiration time in seconds: 3600 >,
     }
@@ -134,8 +140,14 @@ Response:
             "name": < user's name: "Joshua Ligron" >,
             "email": < user's email: "joshuanathan086@gmail.com" >,
             "photo_url": < user's photo URL: "https://lh3.googleusercontent.com/a/***" >,
-            "addresses": < user's addresses: [] >,
-            "cart": < user's cart: [] >
+            "addresses": [
+                < shipping address e.g. "123 Main St, Anytown, USA" >,
+                ...
+            ],
+            "cart": [
+                < cart item e.g. { "book_id": "sjskejnu3489483den34", "quantity": 2 } >,
+                ...
+            ]
         }
     }
 }
@@ -197,7 +209,10 @@ Response:
             "email": < user's email: "joshuanathan086@gmail.com" >,
             "photo_url": < user's photo URL: "http://example.com/photo.jpg" >,
             "addresses": < user's addresses: [ "123 Main St, Anytown, USA", ... ] >,
-            "cart": < user's cart: [] >
+            "cart": [
+                < cart item e.g. { "book_id": "sjskejnu3489483den34", "quantity": 2 } >,
+                ...
+            ]
         }
     }
 }
@@ -661,21 +676,39 @@ Orders
 POST /orders/checkout  ( create a new order )
 
 Request body:
-- JSON object containing order information (e.g. products, shipping address)
+- JSON: {
+    "shipping_address": < shipping address e.g. "123 Main St, Anytown, USA" >
+}
 Request Header: 
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response:
-- Redirect to payment gateway with order details
+- 200: {
+    "status": "success",
+    "data": {
+        "authorization_url": < paystack checkout url e.g. "https://checkout.paystack.com/xxxxxxx">
+    }
+}
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
 
 
-GET /orders/confirm?reference={order_id}  ( confirm order after successful redirect from payment gateway )
+GET /orders/confirm?reference={order_id}  
+( confirm order after successful redirect from paystack 
+checkout )
 
 Request body: none
 Request Header: none
 Response Header: none
 Response:
-- Redirect to order confirmation frontend page with order details
+- Redirect to order confirmation frontend page with order 
+  reference in query parameters 
+  ( e.g. /orders/confirmation?reference=<order_id> )
 
 
 GET /orders?limit={number}&page={number}  ( get all orders for current user )
@@ -685,7 +718,58 @@ Request Header:
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response:
-- JSON array of order objects for the current user
+- 200: {
+  "status": "success",
+  "data": {
+    "totalOrders": 1,
+    "orders": [
+        {
+            "id": < user id e.g. "sjskejnu3489483den34">,
+            "products": [
+                {
+                    "id": < book id e.g. "sjskejnu3489483den34">,
+                    "title": < book title e.g. "Little old town">,
+                    "description": < book description e.g. "What if the path to wealth... ">,
+                    "pages": < book page count e.g. 230>,
+                    "author": < book author e.g. "J. L. Collins">,
+                    "price": < book price e.g. 23.99>,
+                    "cover_photo_url": < book cover photo URL e.g. "https://res.cloudinary.com/sjsjjd/ksjdjd.jpg">,
+                    "genre": < book genre e.g. "Investing">,
+                    "order_quantity": < order quantity e.g. 2 >
+                },
+                ...
+            ],
+            "user_id": {
+                "id": < user id e.g. "sjskejnu3489483den34">,
+                "name": < user name e.g. "Joshua Nathan">,
+                "email": < user email e.g. "joshuanathan086@gmail.com">,
+                "addresses": [
+                    < shipping address e.g. "123 Main St, Anytown, USA" >,
+                    ...
+                ],
+                "photo_url": < user photo URL e.g. "https://lh3.googleusercontent.com/a/***" >,
+                "cart": [
+                    < cart item e.g. { "book_id": "sjskejnu3489483den34", "quantity": 2 } >,
+                    ...
+                ]
+            },
+            "status": < order status e.g. "shipped">,
+            "price_at_purchase": < price at purchase e.g. 156 >,
+            "shipping_address": < shipping address e.g. "123 Main St, Anytown, USA" >,
+            "payment_status": < payment status e.g. "paid" >,
+            "createdAt": < created at timestamp e.g. "2026-07-14T21:19:01.728Z" >,
+            "updatedAt": < updated at timestamp e.g. "2026-07-14T21:36:03.474Z" >
+        }
+    ]
+  }
+}
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
 
 
 GET /orders/{id}  ( get order by id for current user )
@@ -695,7 +779,57 @@ Request Header
 - Authorization: Bearer <JWT token>
 Response Header: none
 Response:
-- JSON object containing order information if the order belongs to the current user
+- 200: {
+    "id": < user id e.g. "sjskejnu3489483den34">,
+    "products": [
+        {
+            "id": < book id e.g. "sjskejnu3489483den34">,
+            "title": < book title e.g. "Little old town">,
+            "description": < book description e.g. "What if the path to wealth... ">,
+            "pages": < book page count e.g. 230>,
+            "author": < book author e.g. "J. L. Collins">,
+            "price": < book price e.g. 23.99>,
+            "cover_photo_url": < book cover photo URL e.g. "https://res.cloudinary.com/sjsjjd/ksjdjd.jpg">,
+            "genre": < book genre e.g. "Investing">,
+            "order_quantity": < order quantity e.g. 2 >
+        },
+        ...
+    ],
+    "user_id": {
+        "id": < user id e.g. "sjskejnu3489483den34">,
+        "name": < user name e.g. "Joshua Nathan">,
+        "email": < user email e.g. "joshuanathan086@gmail.com">,
+        "addresses": [
+            < shipping address e.g. "123 Main St, Anytown, USA" >,
+            ...
+        ],
+        "photo_url": < user photo URL e.g. "https://lh3.googleusercontent.com/a/***" >,
+        "cart": [
+            < cart item e.g. { "book_id": "sjskejnu3489483den34", "quantity": 2 } >,
+            ...
+        ]
+    },
+    "status": < order status e.g. "shipped">,
+    "price_at_purchase": < price at purchase e.g. 156 >,
+    "shipping_address": < shipping address e.g. "123 Main St, Anytown, USA" >,
+    "payment_status": < payment status e.g. "paid" >,
+    "createdAt": < created at timestamp e.g. "2026-07-14T21:19:01.728Z" >,
+    "updatedAt": < updated at timestamp e.g. "2026-07-14T21:36:03.474Z" >
+}
+- 404: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
 
 
 GET /orders/admin?limit={number}&page={number}  ( get all orders for admin )[admin only]
@@ -705,7 +839,51 @@ Request Header:
 - Authorization: Bearer < admin key >
 Response Header: none
 Response:
-- JSON array of all order objects
+- 200: {
+  "status": "success",
+  "data": {
+    "totalOrders": 1,
+    "orders": [
+        {
+            "id": < user id e.g. "sjskejnu3489483den34">,
+            "products": [
+                {
+                    "id": < book id e.g. "sjskejnu3489483den34">,
+                    "title": < book title e.g. "Little old town">,
+                    "description": < book description e.g. "What if the path to wealth... ">,
+                    "pages": < book page count e.g. 230>,
+                    "author": < book author e.g. "J. L. Collins">,
+                    "price": < book price e.g. 23.99>,
+                    "cover_photo_url": < book cover photo URL e.g. "https://res.cloudinary.com/sjsjjd/ksjdjd.jpg">,
+                    "genre": < book genre e.g. "Investing">,
+                    "order_quantity": < order quantity e.g. 2 >
+                },
+                ...
+            ],
+            "user_id": {
+                "id": < user id e.g. "sjskejnu3489483den34">,
+                "name": < user name e.g. "Joshua Nathan">,
+                "email": < user email e.g. "joshuanathan086@gmail.com">,
+                "addresses": [
+                    < shipping address e.g. "123 Main St, Anytown, USA" >,
+                    ...
+                ],
+                "photo_url": < user photo URL e.g. "https://lh3.googleusercontent.com/a/***" >,
+                "cart": [
+                    < cart item e.g. { "book_id": "sjskejnu3489483den34", "quantity": 2 } >,
+                    ...
+                ]
+            },
+            "status": < order status e.g. "shipped">,
+            "price_at_purchase": < price at purchase e.g. 156 >,
+            "shipping_address": < shipping address e.g. "123 Main St, Anytown, USA" >,
+            "payment_status": < payment status e.g. "paid" >,
+            "createdAt": < created at timestamp e.g. "2026-07-14T21:19:01.728Z" >,
+            "updatedAt": < updated at timestamp e.g. "2026-07-14T21:36:03.474Z" >
+        }
+    ]
+  }
+}
 
 
 

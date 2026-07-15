@@ -50,4 +50,4 @@ BookSchema.methods.getBookDetails = function() {
 }
 
 
-export default mongoose.model( "Books", BookSchema )
+export default mongoose.model( "books", BookSchema )

@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
             {
                 book_id: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: "Books",
+                    ref: "books",
                 },
                 quantity: Number,
             },
@@ -110,7 +110,6 @@ UserSchema.methods.addToCart = async function (book_id, quantity) {
     try {
         // get index of book with book_id if it has already been
         // added to the cart
-        console.log("JSON user document: ", JSON.stringify(this))
         let bookIndex = this.cart.findIndex( function(book) {
             return book.book_id.equals(book_id);
         });
@@ -193,5 +192,5 @@ UserSchema.methods.deleteAddress = async function (newAddress) {
 
 // create a User model using the UserSchema and export it for use
 // in other parts of the application
-const User = mongoose.model("Users", UserSchema);
+const User = mongoose.model("users", UserSchema);
 export default User;

@@ -1,0 +1,17 @@
+info:
+  name: Search Books For Admin
+  type: http
+  seq: 7
+
+http:
+  method: get
+  url: http://localhost:8000/books/admin/6a52e390f8d57538d01efcf9
+  auth:
+    type: bearer
+    token: instabooks-admin-key
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

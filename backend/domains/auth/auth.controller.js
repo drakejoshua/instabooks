@@ -25,7 +25,6 @@ let refreshTokenCookieConfig = {
 export async function googleAuthController(req, res, next) {
     // get user db model from request
     const authUser = req.user;
-    console.log( authUser )
 
     try {
         // invoke auth service with user data and get respData

@@ -1,3 +1,4 @@
+import { CacheOperations } from "../../cache/utils.js";
 import Orders from "../../database/models/order.model.js";
 import {
     InvalidAddressError,
@@ -17,7 +18,7 @@ export async function checkoutOrderService(shippingAddress, user) {
 
     // calculate the total price of the order
     let totalPrice = cartItems.reduce(function (total, item) {
-        return total + item.price * item.quantity;
+        return total + ( item.price * item.quantity );
     }, 0);
 
     // create a new order document with the user data
@@ -25,7 +26,7 @@ export async function checkoutOrderService(shippingAddress, user) {
     let newOrder = await Orders.create({
         user_id: user._id,
         shipping_address: shippingAddress,
-        price_at_purchase: totalPrice,
+        price_at_purchase: Math.round( totalPrice ),
         payment_status: "pending",
         status: "pending",
         products: cartItems.map(function (item) {
@@ -94,6 +95,9 @@ export async function confirmOrderPaymentService(reference) {
         orderToConfirm.payment_status = "failed";
     }
 
+    // save the updated order to the database
+    await orderToConfirm.save();
+
     return verificationData.data;
 }
 
@@ -107,7 +111,7 @@ export async function getOrderDetailsService(userId, orderId) {
         throw OrderNotFoundError;
     }
 
-    return order;
+    return await order.getOrderDetails();
 }
 
 export async function getAllOrdersService(userId, limit, page) {
@@ -121,7 +125,7 @@ export async function getAllOrdersService(userId, limit, page) {
 
     return {
         totalOrders,
-        orders,
+        orders: await Promise.all( orders.map( (order) => order.getOrderDetails()) ),
     };
 }
 
@@ -133,6 +137,6 @@ export async function getAllOrdersForAdminService(limit, page, req) {
 
     return {
         totalOrders,
-        orders,
+        orders: await Promise.all( orders.map( (order) => order.getOrderDetails()) ),
     };
 }

@@ -36,8 +36,6 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
         // check if cached data exists for the provided key, if so,
         // log a "cache_hit" event and return parsed cache data
         if (cachedData) {
-            console.log(`read cache for key: ${key} and got data: ${cachedData}`)
-
             logger.info({
                 event: "cache_hit",
                 cacheKey: key,
@@ -89,9 +87,6 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
 
             await redisClient.setEx(key, expiration, JSON.stringify(data));
 
-            let cachedData = await redisClient.get(key);
-            console.log(`set cache for key: ${key} and got data: ${cachedData}`)
-
             // return fresh data back to invoking function/block of code
             return data;
         } finally {
@@ -126,8 +121,6 @@ async function getCache(req, key) {
         // check if cached data exists for the provided key, if so,
         // log a "cache_hit" event and return parsed cache data
         if (cachedData) {
-            console.log(`read cache for key: ${key} and got data: ${cachedData}`)
-
             logger.info({
                 event: "cache_hit",
                 cacheKey: key,
@@ -207,9 +200,6 @@ async function setCache(req, key, data, expiration = 3600) {
         });
 
         await redisClient.setEx(key, expiration, JSON.stringify(data));
-
-        let cachedData = await redisClient.get(key);
-        console.log(`set cache for key: ${key} and got data: ${cachedData}`)
     } catch (err) {
         // if any errors occur during the cache set operation,
         // log the error and rethrow it to be handled up in the execution

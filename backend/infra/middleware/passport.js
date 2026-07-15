@@ -127,7 +127,7 @@ export default async function initializePassport(passport) {
         "admin-key",
         new CustomStrategy(
             async function( req, done ) {
-                let adminKey = req.headers.authorization.split(" ")[1]
+                let adminKey = req.headers.authorization?.split(" ")[1]
 
                 if ( !adminKey ) {
                     return done( InvalidAdminKeyError, false )

@@ -1,0 +1,18 @@
+info:
+  name: Confirm Payment Request
+  type: http
+
+http:
+  method: GET
+  url: http://localhost:8000/orders/confirm?reference=6a56a7c5b40df1abe4fb89b6
+  params:
+    - name: reference
+      value: 6a56a7c5b40df1abe4fb89b6
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,17 @@
+info:
+    name: Get User Order Details Request
+    type: http
+    seq: 1
+
+http:
+    method: GET
+    url: http://localhost:8000/orders/6a56a7c5b40df1abe4fb89b6
+    auth:
+        type: bearer
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODQwNzE2NjksImV4cCI6MTc4NDA3MjU2OX0.HVHjFJUZJepAAtLll4hi2PlnvqpuN0I5hXoauPCJMUo
+
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5

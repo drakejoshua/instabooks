@@ -1,0 +1,17 @@
+info:
+    name: Get Orders for Admin Request
+    type: http
+    seq: 1
+
+http:
+    method: GET
+    url: http://localhost:8000/orders/admin
+    auth:
+        type: bearer
+        token: instabooks-admin-key
+
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5

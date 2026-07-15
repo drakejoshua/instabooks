@@ -1,4 +1,4 @@
-import { addBookService, deleteBookService, getBookService, getBooksService, updateBookService } from "./books.services.js"
+import { addBookService, deleteBookService, getBookService, getBooksService, searchBooksService, updateBookService } from "./books.services.js"
 
 export async function addBookController( req, res, next ) {
     try {

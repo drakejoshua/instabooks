@@ -101,7 +101,8 @@ export async function verifyGoogleAuthService(authId, req = null) {
 
     // remove google auth id from user data to prevent
     // deuplication and security risks
-    authUser.google_auth_id = null;
+    authUser.google_auth_id = "";
+    authUser.markModified("google_auth_id");
 
     // update user data in database with refresh token and
     // for further authentication
