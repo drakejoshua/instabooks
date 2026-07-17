@@ -1,7 +1,5 @@
 import React from "react";
 
-function Search() {
+export function Component() {
     return <div>This is the search page</div>;
 }
-
-export default Search;

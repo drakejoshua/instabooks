@@ -1,23 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "../features/home/Home";
-import Search from "../features/books/pages/Search";
-import Checkout from "../features/orders/pages/Checkout";
-import BookDetails from "../features/books/pages/BookDetails.";
-import OrderDetails from "../features/orders/pages/OrderDetails";
-import Google from "../features/users/pages/Google";
-import GoogleVerify from "../features/users/pages/GoogleVerify";
-import Cart from "../features/orders/pages/Cart";
-import Profile from "../features/users/pages/Profile";
-import AuthLayout from "../features/users/Layout/AuthLayout";
-import AppLayout from "../shared/AppLayout";
+import AppLayout from "../shared/layouts/AppLayout.jsx";
+import GeneralLayout from "../shared/layouts/GeneralLayout.jsx";
 
 let routes = createBrowserRouter([
     {
         path: "/",
+        element: <AppLayout />,
         children: [
             {
                 path: "",
-                element: <AppLayout />,
+                element: <GeneralLayout />,
                 children: [
                     {
                         index: true,
@@ -25,41 +18,41 @@ let routes = createBrowserRouter([
                     },
                     {
                         path: "books/search",
-                        element: <Search />,
+                        lazy: () => import("../features/books/pages/Search.jsx")
                     },
                     {
                         path: "books/details/:id",
-                        element: <BookDetails />,
+                        lazy: () => import("../features/books/pages/BookDetails.jsx"),
                     },
                     {
-                        path: "order/checkout",
-                        element: <Checkout />,
+                        path: "orders/checkout",
+                        lazy: () => import("../features/orders/pages/Checkout.jsx")
                     },
                     {
-                        path: "order/details/:id",
-                        element: <OrderDetails />,
+                        path: "orders/details/:id",
+                        lazy: () => import("../features/orders/pages/OrderDetails.jsx"),
                     },
                     {
                         path: "cart",
-                        element: <Cart />,
+                        lazy: () => import("../features/orders/pages/Cart.jsx"),
                     },
                     {
                         path: "profile",
-                        element: <Profile />,
+                        lazy: () => import("../features/users/pages/Profile.jsx"),
                     },
                 ],
             },
             {
                 path: "auth",
-                element: <AuthLayout />,
+                lazy: () => import("../features/users/Layout/AuthLayout.jsx"),
                 children: [
                     {
                         path: "google",
-                        element: <Google />,
+                        lazy: () => import("../features/users/pages/Google.jsx"),
                     },
                     {
                         path: "verify/:id",
-                        element: <GoogleVerify />,
+                        lazy: () => import("../features/users/pages/GoogleVerify.jsx"),
                     },
                 ],
             },

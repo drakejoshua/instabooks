@@ -1,11 +1,9 @@
 import React from 'react'
 
-function Cart() {
+export function Component() {
   return (
     <div>
       This is the cart page
     </div>
   )
 }
-
-export default Cart

@@ -1,7 +1,5 @@
 import React from "react";
 
-function BookDetails() {
+export function Component() {
     return <div>This is the books details page</div>;
 }
-
-export default BookDetails;

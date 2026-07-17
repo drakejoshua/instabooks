@@ -1,11 +1,9 @@
 import React from 'react'
 
-function OrderDetails() {
+export function Component() {
   return (
     <div>
       This is the order details page
     </div>
   )
 }
-
-export default OrderDetails
