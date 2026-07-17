@@ -1,5 +1,6 @@
-import { Outlet } from "react-router-dom";
-
+import { Link, Outlet } from "react-router-dom";
+import Logo from "../components/Logo.jsx";
+import Button from "../components/Button.jsx";
 
 export default function GeneralLayout() {
     return (
@@ -7,9 +8,31 @@ export default function GeneralLayout() {
             This is the general layout
 
             {/* general layout header */}
-            <header>
-                
-            </header>
+            <nav>
+                <Logo />
+
+                <div>
+                    <Link>
+                        <span>
+                            cart icon
+                        </span>
+                    </Link>
+
+                    <Link>
+                        <span>
+                            profile icon
+                        </span>
+                    </Link>
+
+                    <Button>
+                        Go To Admin
+                    </Button>
+
+                    <Button>
+                        Sign in
+                    </Button>
+                </div>
+            </nav>
 
             <Outlet />
         </div>

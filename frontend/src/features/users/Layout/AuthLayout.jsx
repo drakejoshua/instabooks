@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import InstabooksBlackLogo from "../../../assets/instabooks-logo-black.png";
+import Logo from "../../../shared/components/Logo";
 
 function AuthLayout() {
     return (
@@ -7,7 +7,7 @@ function AuthLayout() {
             This is the auth layout
             {/* auth layout header */}
             <header>
-                <img src={InstabooksBlackLogo} alt="Instabooks Logo" />
+                <Logo />
             </header>
 
             <Outlet />
