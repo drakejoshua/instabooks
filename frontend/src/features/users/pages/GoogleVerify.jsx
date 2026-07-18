@@ -1,68 +1,108 @@
+import {
+    FaCircleCheck,
+    FaCircleNotch,
+    FaTriangleExclamation,
+} from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
 import { Link } from "react-router-dom";
+import RouteHeading from "../components/RouteHeading";
+import AnimatedWarningIcon from "../../../shared/components/AnimatedWarningIcon";
+import AnimatedCheckIcon from "../../../shared/components/AnimatedCheckIcon";
 
 export function Component() {
-    let state = "loading";   // placeholder state for the mean time
-    return <>
-        {/* loading state */}
-        { state === "loading" && <div>
-            {/* TODO: to be replaced with animated loading icon */}
-            <span> loading... </span>
+    let state = "loaded"; // placeholder state for the mean time
 
-            <h1>
-                Hold on, we're verifying your google
-                sign-in credentials. This may take a few seconds.
-            </h1>
+    let iconStyle = `
+        text-6xl
+        block
+        mx-auto
+        mt-16
+        text-instabooks-blue
+    `;
 
-            <p>
-                If your confirmation isn't completed within a few 
-                seconds, please check your internet connection and 
-                try again.
-            </p>
-        </div>}
-        
-        {/* error state */}
-        { state === "error" && <div>
-            {/* TODO: to be replaced with animated error icon */}
-            <span> error... </span>
+    let buttonStyle = `
+        mt-10
+        block
+        mx-auto
+    `;
 
-            <h1>
-                There was an error verifying your google 
-                sign-in credentials.
-            </h1>
+    return (
+        <>
+            {/* loading state */}
+            {state === "loading" && (
+                <div>
+                    <FaCircleNotch className={iconStyle + "animate-spin"} />
 
-            <p>
-                Please check your internet connection and try again.
-                You can try signing in with your google account again 
-                by clicking the button below.
-            </p>
+                    <RouteHeading>
+                        We're verifying your google sign-in credentials
+                    </RouteHeading>
 
-            <Button>
-                <Link to="/auth/google">
-                    Try signing in with google again
-                </Link>
-            </Button>
-        </div>}
+                    <p
+                        className="
+                            text-center
+                            mt-4
+                        "
+                    >
+                        If your confirmation isn't completed within a few
+                        seconds, please check your internet connection and try
+                        again.
+                    </p>
+                </div>
+            )}
 
-        {/* loaded state */}
-        { state === "loaded" && <div>
-            {/* TODO: to be replaced with animated confirmation icon */}
-            <span> confirmed... </span>
+            {/* error state */}
+            {state === "error" && (
+                <div>
+                    <AnimatedWarningIcon />
 
-            <h1>
-                Your google sign-in credentials have been verified.
-            </h1>
+                    <RouteHeading>
+                        Error verifying your google sign-in credentials.
+                    </RouteHeading>
 
-            <p>
-                You can now proceed to access your Instabooks account.
-                You will be redirected to your Instabooks account shortly.
-            </p>
+                    <p
+                        className="
+                            text-center
+                            mt-4
+                        "
+                    >
+                        Please check your internet connection and try again. You
+                        can try signing in with your google account again by
+                        clicking the button below.
+                    </p>
 
-            <Button>
-                <Link to="/">
-                    Proceed to your Instabooks account
-                </Link>
-            </Button>
-        </div>}
-    </>;
+                    <Button className={buttonStyle}>
+                        <Link to="/auth/google">
+                            Try signing in with google again
+                        </Link>
+                    </Button>
+                </div>
+            )}
+
+            {/* loaded state */}
+            {state === "loaded" && (
+                <div>
+                    <AnimatedCheckIcon />
+
+                    <RouteHeading>
+                        Your google sign-in credentials have been verified.
+                    </RouteHeading>
+
+                    <p
+                        className="
+                            text-center
+                            mt-4
+                        "
+                    >
+                        You can now proceed to access your Instabooks account.
+                        You will be redirected to your Instabooks account
+                        shortly.
+                    </p>
+
+                    <Button className={buttonStyle}>
+                        <Link to="/">Proceed to your Instabooks account</Link>
+                    </Button>
+                </div>
+            )}
+        </>
+    );
 }

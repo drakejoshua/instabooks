@@ -1,21 +1,56 @@
 import { Link, useParams } from "react-router-dom"
 import Button from "../../../shared/components/Button"
+import { FaArrowLeft, FaArrowRotateLeft, FaArrowRotateRight, FaCircleCheck, FaCircleNotch, FaTriangleExclamation } from "react-icons/fa6"
+import RouteHeading from "../../users/components/RouteHeading"
+import OrderDetailsItem from "../components/OrderDetailsItem"
+import AnimatedCheckIcon from "../../../shared/components/AnimatedCheckIcon.jsx"
+import AnimatedWarningIcon from "../../../shared/components/AnimatedWarningIcon.jsx"
 
 export function Component() {
     let state = "loaded"
     let { id } = useParams()
 
-    return <>
+    let iconStyle = `
+        text-6xl
+        block
+        mx-auto
+        mt-16
+        text-instabooks-blue
+    `;
+
+    let buttonStyle = `
+        mt-10
+        block
+        mx-auto
+        flex
+        gap-2
+        items-center
+        capitalize
+    `;
+
+    return <div
+        className="
+            w-full
+            max-w-lg
+            mx-auto
+            pt-2 px-6 pb-4 lg:px-2
+        "
+    >
         {/* loading state */}
         { state === "loading" && <div>
             {/* TODO: to be replaced with animated loading icon */}
-            <span> loading... </span>
+            <FaCircleNotch className={iconStyle + "animate-spin"} />
 
-            <h1>
-                Hold on, we're fetching your order information
-            </h1>
+            <RouteHeading>
+                We're fetching your order information
+            </RouteHeading>
 
-            <p>
+            <p
+                className="
+                    text-center
+                    mt-4
+                "
+            >
                 If your confirmation isn't completed within a few 
                 seconds, please check your internet connection and 
                 try again.
@@ -25,20 +60,28 @@ export function Component() {
         {/* error state */}
         { state === "error" && <div>
             {/* TODO: to be replaced with animated error icon */}
-            <span> error... </span>
+            {/* <FaTriangleExclamation className={ iconStyle }/> */}
+            <AnimatedWarningIcon />
 
-            <h1>
-                There was an error verifying the order with
-                the ID: { id }
-            </h1>
+            <RouteHeading>
+                Error verifying the order ID: #{ id }
+            </RouteHeading>
 
-            <p>
+            <p
+                className="
+                    text-center
+                    mt-4
+                "
+            >
                 Please check your internet connection and try again.
                 You can try fetching your order information again
                 by clicking the button below.
             </p>
 
-            <Button>
+            <Button
+                className={ buttonStyle }
+            >
+                <FaArrowRotateRight />
                 refresh order information
             </Button>
         </div>}
@@ -46,35 +89,47 @@ export function Component() {
         {/* loaded state */}
         { state === "loaded" && <div>
             {/* TODO: to be replaced with animated confirmation icon */}
-            <span> confirmed... </span>
+            {/* <FaCircleCheck className={ iconStyle + "mt-8!" }/> */}
+            <AnimatedCheckIcon />
 
-            <h1>
-                Order number: { id }
-            </h1>
+            <RouteHeading>
+                Order ID details: #{ id }
+            </RouteHeading>
 
-            <p>
-                your order status is: {"pending"} and is expected 
+            <p
+                className="
+                    text-center
+                    mt-4
+                "
+            >
+                Your order status is: {"pending"} and is expected 
                 to be delivered on: {"2024-06-30"}
             </p>
 
-            <div>
-                <div>
-                    <img src="https://picsum.photos/id/24/400" alt="product image" />
-
-                    <div>
-                        <h2>Product Name</h2>
-                        <p>1 pcs</p>
-                    </div>
-
-                    <span>$100</span>
-                </div>
+            <div
+                className="
+                    mt-4
+                    rounded-lg
+                    p-3
+                    bg-gray-100
+                    max-h-48
+                "
+            >
+                <OrderDetailsItem 
+                    bookName="The Great Gatsby"
+                    quantity={ 1 }
+                    price={ 100 }
+                />
             </div>
 
-            <Button>
+            <Button
+                className={ buttonStyle }
+            >
+                <FaArrowLeft />
                 <Link to="..">
                     Go back to home
                 </Link>
             </Button>
         </div>}
-    </>
+    </div>
 }
