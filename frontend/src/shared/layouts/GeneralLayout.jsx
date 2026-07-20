@@ -35,11 +35,11 @@ export default function GeneralLayout() {
                         ml-auto lg:mr-4 
                     "
                 >
-                    <Link>
+                    <Link to="/cart">
                         <FaCartShopping className="text-xl inline-block" />
                     </Link>
 
-                    <Link>
+                    <Link to="/profile">
                         <FaUser className="text-xl inline-block" />
                     </Link>
 
@@ -62,9 +62,17 @@ export default function GeneralLayout() {
                     mt-6 lg:m-0
                     *:grow
                 ">
-                    <Button>Sign in</Button>
+                    <Button>
+                        <Link to="/auth/google">
+                            Sign in
+                        </Link>
+                    </Button>
 
-                    <AltButton>Go To Admin</AltButton>
+                    <AltButton>
+                        <Link to="/auth/google">
+                            Go to admin
+                        </Link>
+                    </AltButton>
                 </div>}
             </nav>
             <Outlet />

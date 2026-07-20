@@ -1,10 +1,15 @@
-import { FaGoogle } from "react-icons/fa6";
+import { FaArrowRight, FaGoogle } from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
 import RouteHeading from "../components/RouteHeading";
+import AltButton from "../../../shared/components/AltButton.jsx";
 
 export function Component() {
     return <div>
-        <RouteHeading>
+        <RouteHeading
+            className="
+                mt-12 lg:mt-14
+            "
+        >
             Sign in with your Google account
         </RouteHeading>
 
@@ -31,5 +36,18 @@ export function Component() {
             <FaGoogle />
             Sign in with google
         </Button>
+
+        <AltButton
+            className="
+                flex
+                items-center
+                mx-auto
+                mt-4
+                gap-2
+            "
+        >
+            Go to admin
+            <FaArrowRight />
+        </AltButton>
     </div>;
 }

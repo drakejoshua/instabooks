@@ -8,7 +8,7 @@ function AuthLayout() {
                 w-full
                 max-w-lg
                 mx-auto
-                pt-12 px-2 pb-4
+                pt-2 px-6 pb-4 lg:px-2
             "
         >
             {/* auth layout header */}
