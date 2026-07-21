@@ -75,7 +75,16 @@ export default function GeneralLayout() {
                     </AltButton>
                 </div>}
             </nav>
-            <Outlet />
+
+            <div 
+                className="
+                    px-5
+                    pt-3
+                    pb-12 lg:pb-5
+                " 
+            >
+                <Outlet />
+            </div>
         </div>
     );
 }
