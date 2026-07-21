@@ -1,5 +1,5 @@
 function OrderDetailsItem(
-    { bookName, quantity, price }
+    { bookName, quantity, price, photoUrl }
 ) {
     return <div
         className="
@@ -12,7 +12,7 @@ function OrderDetailsItem(
         "
     >
         <img 
-            src="https://picsum.photos/id/24/400" 
+            src={ photoUrl }
             alt="product image" 
             className="w-13 h-15 rounded-lg object-cover"
         />

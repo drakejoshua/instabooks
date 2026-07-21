@@ -23,7 +23,7 @@ export function Component() {
                 w-full
                 object-cover
                 rounded-md
-                max-h-100
+                max-h-100 lg:max-h-full
             "
             />
 

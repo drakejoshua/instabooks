@@ -119,6 +119,7 @@ export function Component() {
                     bookName="The Great Gatsby"
                     quantity={ 1 }
                     price={ 100 }
+                    photoUrl={"https://picsum.photos/id/24/400"}
                 />
             </div>
 
