@@ -1,4 +1,5 @@
 import SampleBookImage from "../../../assets/sample-book.jpg";
+import BookActions from "../../../shared/components/BookActions";
 import Button from "../../../shared/components/Button";
 import {
     FaCircleUser,
@@ -125,39 +126,12 @@ export function Component() {
                 </div>
 
                 {/* book actions */}
-                <div
+                <BookActions 
                     className="
-                    mt-12
-                "
-                >
-                    {false && <Button>Add to cart</Button>}
-
-                    <div
-                        className="
-                        mt-4
-                        flex
-                        items-center
-                        gap-5
+                        mt-16
+                        max-w-50
                     "
-                    >
-                        <Button>
-                            <FaPlus />
-                        </Button>
-
-                        <span
-                            className="
-                            text-xl
-                            font-medium
-                        "
-                        >
-                            10
-                        </span>
-
-                        <Button>
-                            <FaMinus />
-                        </Button>
-                    </div>
-                </div>
+                />
             </div>
         </div>
     );

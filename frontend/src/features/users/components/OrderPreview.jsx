@@ -5,6 +5,7 @@ import { InfoList } from "../../../shared/components/InfoList";
 import OrderDetailsItem from "../../../shared/components/OrderDetailsItem";
 import Button from "../../../shared/components/Button";
 import AltButton from "../../../shared/components/AltButton";
+import Badge from "../../../shared/components/Badge";
 
 export function OrderPreview({ 
     orderId, 
@@ -55,20 +56,13 @@ export function OrderPreview({
                         Order ID: #{ orderId }
                     </span>
 
-                    <span 
+                    <Badge
                         className="
-                            capitalize
-                            bg-instabooks-blue
-                            font-medium
-                            text-white
-                            px-3.5 py-0.5
-                            rounded-full
                             ml-auto
-                            inline-block
                         "
                     >
                         { status }
-                    </span>
+                    </Badge>
                 </div>
 
                 {/* shipping address */}
