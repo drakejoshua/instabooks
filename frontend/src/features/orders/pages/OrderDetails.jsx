@@ -1,10 +1,10 @@
 import { Link, useParams } from "react-router-dom"
 import Button from "../../../shared/components/Button"
-import { FaArrowLeft, FaArrowRotateLeft, FaArrowRotateRight, FaCircleCheck, FaCircleNotch, FaTriangleExclamation } from "react-icons/fa6"
-import RouteHeading from "../../users/components/RouteHeading"
-import OrderDetailsItem from "../components/OrderDetailsItem"
+import { FaArrowLeft, FaArrowRotateRight, FaCircleNotch } from "react-icons/fa6"
 import AnimatedCheckIcon from "../../../shared/components/AnimatedCheckIcon.jsx"
 import AnimatedWarningIcon from "../../../shared/components/AnimatedWarningIcon.jsx"
+import Heading from "../../../shared/components/Heading.jsx"
+import OrderDetailsItem from "../../../shared/components/OrderDetailsItem.jsx"
 
 export function Component() {
     let state = "loaded"
@@ -41,9 +41,9 @@ export function Component() {
             {/* TODO: to be replaced with animated loading icon */}
             <FaCircleNotch className={iconStyle + "animate-spin"} />
 
-            <RouteHeading>
+            <Heading variant="route">
                 We're fetching your order information
-            </RouteHeading>
+            </Heading>
 
             <p
                 className="
@@ -59,13 +59,11 @@ export function Component() {
         
         {/* error state */}
         { state === "error" && <div>
-            {/* TODO: to be replaced with animated error icon */}
-            {/* <FaTriangleExclamation className={ iconStyle }/> */}
             <AnimatedWarningIcon />
 
-            <RouteHeading>
+            <Heading variant="route">
                 Error verifying the order ID: #{ id }
-            </RouteHeading>
+            </Heading>
 
             <p
                 className="
@@ -88,13 +86,11 @@ export function Component() {
 
         {/* loaded state */}
         { state === "loaded" && <div>
-            {/* TODO: to be replaced with animated confirmation icon */}
-            {/* <FaCircleCheck className={ iconStyle + "mt-8!" }/> */}
             <AnimatedCheckIcon />
 
-            <RouteHeading>
+            <Heading variant="route">
                 Order ID details: #{ id }
-            </RouteHeading>
+            </Heading>
 
             <p
                 className="

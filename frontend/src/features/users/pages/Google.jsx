@@ -1,53 +1,53 @@
 import { FaArrowRight, FaGoogle } from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
-import RouteHeading from "../components/RouteHeading";
 import AltButton from "../../../shared/components/AltButton.jsx";
+import Heading from "../../../shared/components/Heading.jsx";
 
 export function Component() {
-    return <div>
-        <RouteHeading
-            className="
-                mt-12 lg:mt-14
-            "
-        >
-            Sign in with your Google account
-        </RouteHeading>
+    let headingStyle = "mt-12 lg:mt-14";
 
-        <p
-            className="
+    return (
+        <div>
+            <Heading variant="route" className={headingStyle}>
+                Sign in with your Google account
+            </Heading>
+
+            <p
+                className="
                 text-center
                 mt-4
             "
-        >
-            Welcome back! Please continue with your Google 
-            account to access your Instabooks account. You
-            will be redirected to the Google sign-in page.
-        </p>
+            >
+                Welcome back! Please continue with your Google account to access
+                your Instabooks account. You will be redirected to the Google
+                sign-in page.
+            </p>
 
-        <Button
-            className="
+            <Button
+                className="
                 mt-12
                 flex
                 items-center
                 gap-2
                 mx-auto
             "
-        >
-            <FaGoogle />
-            Sign in with google
-        </Button>
+            >
+                <FaGoogle />
+                Sign in with google
+            </Button>
 
-        <AltButton
-            className="
+            <AltButton
+                className="
                 flex
                 items-center
                 mx-auto
                 mt-4
                 gap-2
             "
-        >
-            Go to admin
-            <FaArrowRight />
-        </AltButton>
-    </div>;
+            >
+                Go to admin
+                <FaArrowRight />
+            </AltButton>
+        </div>
+    );
 }

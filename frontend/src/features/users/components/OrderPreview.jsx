@@ -2,7 +2,7 @@ import { Collapsible } from "radix-ui";
 import { useState } from "react";
 import { FaArrowsRotate, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa6";
 import { InfoList } from "../../../shared/components/InfoList";
-import OrderDetailsItem from "../../orders/components/OrderDetailsItem";
+import OrderDetailsItem from "../../../shared/components/OrderDetailsItem";
 import Button from "../../../shared/components/Button";
 import AltButton from "../../../shared/components/AltButton";
 

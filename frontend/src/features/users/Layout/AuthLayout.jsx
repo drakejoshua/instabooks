@@ -13,10 +13,11 @@ function AuthLayout() {
         >
             {/* auth layout header */}
             <Logo 
-                className="
+                className=" 
                     h-10
                     block
                     mx-auto
+                    mt-12
                 "
             />
 

@@ -1,13 +1,9 @@
-import {
-    FaCircleCheck,
-    FaCircleNotch,
-    FaTriangleExclamation,
-} from "react-icons/fa6";
+import { FaCircleNotch } from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
 import { Link } from "react-router-dom";
-import RouteHeading from "../components/RouteHeading";
 import AnimatedWarningIcon from "../../../shared/components/AnimatedWarningIcon";
 import AnimatedCheckIcon from "../../../shared/components/AnimatedCheckIcon";
+import Heading from "../../../shared/components/Heading";
 
 export function Component() {
     let state = "loaded"; // placeholder state for the mean time
@@ -33,9 +29,9 @@ export function Component() {
                 <div>
                     <FaCircleNotch className={iconStyle + "animate-spin"} />
 
-                    <RouteHeading>
+                    <Heading variant="route">
                         We're verifying your google sign-in credentials
-                    </RouteHeading>
+                    </Heading>
 
                     <p
                         className="
@@ -55,9 +51,9 @@ export function Component() {
                 <div>
                     <AnimatedWarningIcon />
 
-                    <RouteHeading>
+                    <Heading variant="route">
                         Error verifying your google sign-in credentials.
-                    </RouteHeading>
+                    </Heading>
 
                     <p
                         className="
@@ -83,9 +79,9 @@ export function Component() {
                 <div>
                     <AnimatedCheckIcon />
 
-                    <RouteHeading>
+                    <Heading variant="route">
                         Your google sign-in credentials have been verified.
-                    </RouteHeading>
+                    </Heading>
 
                     <p
                         className="
