@@ -1,6 +1,7 @@
 import OrderDetailsItem from "../components/OrderDetailsItem";
 import { ToggleGroup } from 'radix-ui'
 import Button from "../../../shared/components/Button";
+import { InfoList } from "../../../shared/components/InfoList";
 
 export function Component() {
     return <div className="pb-12">
@@ -173,36 +174,3 @@ export function Component() {
 }
 
 
-function InfoList({ entries, className = "" }) {
-    return (
-        <div
-            className={`
-                flex
-                flex-col
-                gap-1
-
-                *:flex
-                *:justify-between
-                *:capitalize
-
-                [&_.important-info]:font-medium
-
-                ${ className }
-            `}
-        >
-            {
-                Object.entries( entries ).map( ( [ key, value ] ) => (
-                    <dl key={`${key}-${value}`}>
-                        <dt>
-                            { key }
-                        </dt>
-
-                        <dd className="important-info">
-                            { value }
-                        </dd>
-                    </dl>
-                ))
-            }
-        </div>
-    )
-}
