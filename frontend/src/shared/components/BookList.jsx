@@ -10,7 +10,7 @@ function BookList({ books, className = "" }) {
         `}
     >
         {
-            books.map( function( book, index ) {
+            books?.map( function( book, index ) {
                 return <BookItem {...book} key={index} />
             })
         }

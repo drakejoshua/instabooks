@@ -1,16 +1,17 @@
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import Button from "./Button";
 
-function SearchBar() {
+function SearchBar({ className = "" }) {
     return <div
-        className="
+        className={`
             flex
             gap-4
             items-center
             bg-gray-200
             p-3 pr-4 pl-5
             rounded-xl
-        "
+            ${ className }
+        `}
     >
         <FaMagnifyingGlass 
             className="
