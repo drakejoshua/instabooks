@@ -41,6 +41,22 @@ let routes = createBrowserRouter([
                         path: "profile",
                         lazy: () => import("../features/users/pages/Profile.jsx"),
                     },
+                    {
+                        path: "admin/books",
+                        lazy: () => import("../features/admin/pages/BooksCatalog.jsx"),
+                    },
+                    {
+                        path: "admin/books/details/:id",
+                        lazy: () => import("../features/admin/pages/BookDetails.jsx"),
+                    },
+                    {
+                        path: "admin/books/search",
+                        lazy: () => import("../features/admin/pages/BookSearch.jsx"),
+                    },
+                    {
+                        path: "admin/orders",
+                        lazy: () => import("../features/admin/pages/Orders.jsx"),
+                    },
                 ],
             },
             {
