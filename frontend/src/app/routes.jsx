@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "../features/home/Home";
 import AppLayout from "../shared/layouts/AppLayout.jsx";
+import AppLayoutError from "../shared/components/AppLayoutError.jsx";
 import GeneralLayout from "../shared/layouts/GeneralLayout.jsx";
 
 let routes = createBrowserRouter([
@@ -57,6 +58,7 @@ let routes = createBrowserRouter([
                 ],
             },
         ],
+        errorElement: <AppLayoutError />
     },
 ]);
 
