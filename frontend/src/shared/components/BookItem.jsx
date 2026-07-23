@@ -126,6 +126,7 @@ function BookItem({
                     mt-8
                     w-full
                 "
+                asChild
             >
                 <Link to={`/admin/books/details/${id}`}>
                     View book details

@@ -1,11 +1,15 @@
 import React from "react";
+import { Slot } from 'radix-ui';
 
 const Button = React.forwardRef( function( {
     children,
     className,
+    asChild,
     ...props
 }, ref ) {
-    return <button 
+    let Component = asChild ? Slot.Root : "button";
+
+    return <Component 
         className={`
             bg-instabooks-blue hover:opacity-90
             text-white
@@ -15,13 +19,15 @@ const Button = React.forwardRef( function( {
             outline-2
             outline-instabooks-blue
             rounded-md
+            inline-block
+            text-center
             ${className}
         `}
         ref={ref} 
         {...props}
     >
         {children}
-    </button>;
+    </Component>;
 })
 
 export default Button;
