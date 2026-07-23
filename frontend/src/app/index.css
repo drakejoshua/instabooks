@@ -3,4 +3,31 @@
 @theme {
     --color-instabooks-blue: #294267;
     --color-instabooks-black: #222;
+
+    @keyframes slide-in {
+        from {
+            transform: translateX( calc( 100% + var(--viewport-padding)))
+        }
+        to {
+            transform: translateX(0)
+        }
+    }
+    
+    @keyframes slide-out {
+        from {
+            transform: translateX(var(--radix-toast-swipe-end-x))
+        }
+        to {
+            transform: translateX(calc(100% + var(--viewport-padding)));
+        }
+    }
+
+    @keyframes fade-out {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
 }

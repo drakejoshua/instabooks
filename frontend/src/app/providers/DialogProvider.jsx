@@ -2,7 +2,6 @@ import { createContext, useContext, useState } from "react";
 import { Dialog } from "radix-ui";
 import { FaXmark } from "react-icons/fa6";
 import Heading from "../../shared/components/Heading";
-import crypto from "crypto"
 
 const DialogContext = createContext();
 
@@ -17,12 +16,7 @@ export function useDialogProvider() {
 }
 
 function DialogProvider({ children }) {
-    const [ dialogs, setDialogs ] = useState([{
-        id: "default",
-        title: "Default Dialog",
-        description: "This is a default dialog.",
-        content: <p>This is the default dialog content.</p>
-    }]);
+    const [ dialogs, setDialogs ] = useState([]);
 
     function openDialog(dialog) {
         let dialogId = crypto.randomUUID();
