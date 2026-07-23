@@ -40,24 +40,30 @@ let routes = createBrowserRouter([
                     {
                         path: "profile",
                         lazy: () => import("../features/users/pages/Profile.jsx"),
-                    },
+                    }
+                ],
+            },
+            {
+                path: "admin",
+                lazy: () => import("../features/admin/Layout/AdminLayout.jsx"),
+                children: [
                     {
-                        path: "admin/books",
+                        path: "books",
                         lazy: () => import("../features/admin/pages/BooksCatalog.jsx"),
                     },
                     {
-                        path: "admin/books/details/:id",
+                        path: "books/details/:id",
                         lazy: () => import("../features/admin/pages/BookDetails.jsx"),
                     },
                     {
-                        path: "admin/books/search",
+                        path: "books/search",
                         lazy: () => import("../features/admin/pages/BookSearch.jsx"),
                     },
                     {
-                        path: "admin/orders",
+                        path: "orders",
                         lazy: () => import("../features/admin/pages/Orders.jsx"),
                     },
-                ],
+                ]
             },
             {
                 path: "auth",

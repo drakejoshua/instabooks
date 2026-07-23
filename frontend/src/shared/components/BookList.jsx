@@ -1,6 +1,6 @@
 import BookItem from "./BookItem";
 
-function BookList({ books, className = "" }) {
+function BookList({ books, className = "", type = "default" }) {
     return <div
         className={`
             grid
@@ -11,7 +11,7 @@ function BookList({ books, className = "" }) {
     >
         {
             books?.map( function( book, index ) {
-                return <BookItem {...book} key={index} />
+                return <BookItem {...book} key={index} type={type} />
             })
         }
     </div>

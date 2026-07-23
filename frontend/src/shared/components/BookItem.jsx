@@ -2,8 +2,11 @@ import { FaCircleUser, FaFileLines } from "react-icons/fa6";
 import Badge from "./Badge";
 import BookActions from "./BookActions";
 import Heading from "./Heading";
+import Button from "./Button";
+import { Link } from "react-router-dom";
 
 function BookItem({
+    id,
     title,
     author,
     price,
@@ -11,7 +14,8 @@ function BookItem({
     genre,
     description,
     pages,
-    className = ""
+    className = "",
+    type = "default"
 }) {
     return <div
         className={`
@@ -111,11 +115,22 @@ function BookItem({
             </span>
 
             {/* book actions */}
-            <BookActions 
+            { type === "default" && <BookActions 
                 className="
                     mt-8
                 "
-            />
+            />}
+            
+            { type === "admin" && <Button
+                className="
+                    mt-8
+                    w-full
+                "
+            >
+                <Link to={`/admin/books/details/${id}`}>
+                    View book details
+                </Link>
+            </Button>}
         </div>
     </div>;
 }
