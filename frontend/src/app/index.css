@@ -30,4 +30,14 @@
             opacity: 0;
         }
     }
+
+    @keyframes loading {
+        from {
+            transform: translateX( 0 );
+        }
+        to {
+            transform: translateX(calc(100vw - var(--spacing-40)));
+        }
+    }
+
 }

@@ -1,11 +1,12 @@
 import { Link, Outlet } from "react-router-dom";
 import Logo from "../components/Logo.jsx";
 import Button from "../components/Button.jsx";
-import { FaBars, FaCartShopping, FaUser } from "react-icons/fa6"
+import { FaBars, FaCartShopping } from "react-icons/fa6"
 import AltButton from "../components/AltButton.jsx";
 import { useState } from "react";
+import UserAvatar from "../components/UserAvatar.jsx";
 
-export default function GeneralLayout() {
+export function Component() {
     const isMobile = window.innerWidth < 768;
     let [ isMobileMenuOpen, setIsMobileMenuOpen ] = useState( isMobile ? false : true );
 
@@ -36,11 +37,21 @@ export default function GeneralLayout() {
                     "
                 >
                     <Link to="/cart">
-                        <FaCartShopping className="text-xl inline-block" />
+                        <FaCartShopping 
+                            className="
+                                text-xl 
+                                inline-block
+                                text-instabooks-black
+                            " 
+                        />
                     </Link>
 
                     <Link to="/profile">
-                        <FaUser className="text-xl inline-block" />
+                        <UserAvatar 
+                            src="https://images.unsplash.com/photo-1682685794700-1e3f5c7b8d4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+                            alt="User Avatar"
+                            className="w-8 h-8 rounded-full"
+                        />
                     </Link>
 
                     <button 
@@ -62,13 +73,13 @@ export default function GeneralLayout() {
                     mt-6 lg:m-0
                     *:grow
                 ">
-                    <Button>
+                    <Button asChild>
                         <Link to="/auth/google">
                             Sign in
                         </Link>
                     </Button>
 
-                    <AltButton>
+                    <AltButton asChild>
                         <Link to="/auth/google">
                             Go to admin
                         </Link>
