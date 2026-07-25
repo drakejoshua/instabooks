@@ -10,7 +10,6 @@ export default function BookActions({ id, className = "" }) {
         {true && 
             <Button
                 className="
-                    mt-8
                     block
                     w-fit
                 "
@@ -21,7 +20,6 @@ export default function BookActions({ id, className = "" }) {
 
         { false && <div
             className="
-                mt-8
                 flex
                 items-center
                 gap-5
