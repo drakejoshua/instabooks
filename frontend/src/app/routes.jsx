@@ -48,7 +48,7 @@ let routes = createBrowserRouter([
                 children: [
                     {
                         path: "books",
-                        lazy: () => import("../features/admin/pages/BooksCatalog.jsx"),
+                        lazy: () => import("../features/admin/pages/Home.jsx"),
                     },
                     {
                         path: "books/details/:id",

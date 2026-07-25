@@ -8,7 +8,6 @@ export function InfoList({ entries, className = "" }) {
 
                 *:flex
                 *:justify-between
-                *:capitalize
 
                 [&_.important-info]:font-medium
 
@@ -18,7 +17,7 @@ export function InfoList({ entries, className = "" }) {
             {
                 Object.entries( entries ).map( ( [ key, value ] ) => (
                     <dl key={`${key}-${value}`}>
-                        <dt>
+                        <dt className="capitalize">
                             { key }
                         </dt>
 

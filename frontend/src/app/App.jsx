@@ -5,13 +5,17 @@ import ToastProvider from "./providers/ToastProvider.jsx";
 
 function App() {
     return (
-        <>
+        <div className="
+            bg-white
+            min-h-screen
+            overflow-x-hidden
+        ">
             <ToastProvider>
                 <DialogProvider>
                     <RouterProvider router={routes} />
                 </DialogProvider>
             </ToastProvider>
-        </>
+        </div>
     );
 }
 

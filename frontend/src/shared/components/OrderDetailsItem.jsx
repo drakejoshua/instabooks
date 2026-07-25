@@ -14,7 +14,14 @@ function OrderDetailsItem(
         <img 
             src={ photoUrl }
             alt="product image" 
-            className="w-13 h-15 rounded-lg object-cover"
+            className="
+                w-13 
+                h-15 
+                rounded-lg 
+                object-cover 
+                outline-2
+                outline-instabooks-blue
+            "
         />
 
         <div>

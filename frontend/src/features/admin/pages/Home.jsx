@@ -6,47 +6,29 @@ import Button from "../../../shared/components/Button";
 import { FaArrowsRotate } from "react-icons/fa6";
 import BookList from "../../../shared/components/BookList";
 import SearchBar from "../../../shared/components/SearchBar";
+import Intro from "../components/Intro";
 
 export function Component() {
     return <div
         className="pb-16"
     >
         {/* intro section */}
-        <section 
-            className="
-                pt-4
-                flex
-                justify-between
-                flex-wrap
-                items-center
-                gap-4
-            "
+        <Intro 
+            title="Manage books"
+            className="mt-4"
         >
-            <Heading>
-                Store Admin
-            </Heading>
+            <Button>
+                Add new book
+            </Button>
 
-            {/* intro actions */}
-            <div
-                className="
-                    flex
-                    gap-4
-                    flex-wrap
+            <AltButton asChild>
+                <Link to="/admin/orders">
+                    view orders
+                </Link>
+            </AltButton>
+        </Intro>
 
-                    *:capitalize
-                "
-            >
-                <Button>
-                    Add new book
-                </Button>
-
-                <AltButton>
-                    <Link to="/admin/orders">
-                        view orders
-                    </Link>
-                </AltButton>
-            </div>
-        </section>
+            
 
         {/* search bar */}
         <SearchBar 
