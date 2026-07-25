@@ -1,5 +1,5 @@
 import { useNavigate, useRouteError } from 'react-router-dom';
-import ErrorComponent from './ErrorComponent';
+import ErrorComponent from '../ui/ErrorComponent';
 
 function AppLayoutError() {
     let error = useRouteError();

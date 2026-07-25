@@ -1,6 +1,7 @@
-import Logo from "./Logo.jsx";
-import Heading from "./Heading.jsx";
-import AltButton from "./AltButton.jsx";
+import AltButton from "../components/AltButton";
+import Heading from "../components/Heading";
+import Logo from "../components/Logo";
+
 
 function ErrorComponent({ error, reset }) {
     return <div

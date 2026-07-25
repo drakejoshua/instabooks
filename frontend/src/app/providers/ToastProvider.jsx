@@ -27,13 +27,7 @@ export function useToastProvider() {
 }
 
 function ToastProvider({ children }) {
-    const [ toasts, setToasts ] = useState([
-        {
-            id: "default",
-            type: ToastTypes.info,
-            message: "sample toast"
-        }
-    ]);
+    const [ toasts, setToasts ] = useState([]);
 
     const addToast = useCallback( function(toast) {
         let toastId = crypto.randomUUID();
