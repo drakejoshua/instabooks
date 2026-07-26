@@ -2,6 +2,7 @@ import { FaArrowRight, FaGoogle } from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
 import AltButton from "../../../shared/components/AltButton.jsx";
 import Heading from "../../../shared/components/Heading.jsx";
+import { Link } from "react-router-dom";
 
 export function Component() {
     let headingStyle = "mt-12 lg:mt-14";
@@ -25,28 +26,36 @@ export function Component() {
 
             <Button
                 className="
-                mt-12
-                flex
-                items-center
-                gap-2
-                mx-auto
-            "
+                    mt-12
+                    flex!
+                    items-center
+                    gap-2
+                    mx-auto
+                    w-fit
+                "
+                asChild
             >
-                <FaGoogle />
-                Sign in with google
+                <Link to="/auth/google">
+                    <FaGoogle />
+                    Sign in with google
+                </Link>
             </Button>
 
             <AltButton
                 className="
-                flex
-                items-center
-                mx-auto
-                mt-4
-                gap-2
-            "
+                    items-center
+                    mx-auto
+                    mt-4
+                    gap-2
+                    flex!
+                    w-fit
+                "
+                asChild
             >
-                Go to admin
-                <FaArrowRight />
+                <Link to="/auth/google">
+                    Go to admin
+                    <FaArrowRight />
+                </Link>
             </AltButton>
         </div>
     );

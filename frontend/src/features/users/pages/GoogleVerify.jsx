@@ -18,7 +18,7 @@ export function Component() {
 
     let buttonStyle = `
         mt-10
-        block
+        block!
         mx-auto
     `;
 
