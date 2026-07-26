@@ -11,7 +11,7 @@ export default function BookActions({ id, className = "" }) {
             <Button
                 className="
                     block
-                    w-fit
+                    w-full
                 "
             >
                 Add to cart

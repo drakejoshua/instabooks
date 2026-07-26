@@ -41,7 +41,7 @@ export function Component() {
                             className="
                                 text-xl 
                                 inline-block
-                                text-instabooks-black
+                                text-instabooks-blue
                             " 
                         />
                     </Link>

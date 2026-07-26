@@ -16,7 +16,7 @@ function UserAvatar({
             overflow-hidden
             select-none
             rounded-full
-            bg-instabooks-black
+            bg-instabooks-blue
             ${ className || "" }
         `}
     >

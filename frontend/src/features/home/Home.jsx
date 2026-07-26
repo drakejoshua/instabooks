@@ -206,7 +206,7 @@ export function Home() {
         {/* load more button */}
         <AltButton
             className="
-                flex
+                flex!
                 items-center
                 gap-4
                 mt-14 lg:mt-20
