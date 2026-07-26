@@ -1,6 +1,6 @@
 import Logo from "../../../shared/components/Logo";
 import Button from "../../../shared/components/Button";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 export function Component() {
     return <div>
@@ -20,8 +20,15 @@ export function Component() {
                 "
             />
 
-            <Button className="capitalize">
-                go to shop
+            <Button 
+                className="
+                    capitalize
+                "
+                asChild
+            >
+                <Link to="/">
+                    Go to shop
+                </Link>
             </Button>
         </nav>
 

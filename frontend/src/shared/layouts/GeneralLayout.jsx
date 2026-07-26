@@ -80,7 +80,7 @@ export function Component() {
                     </Button>
 
                     <AltButton asChild>
-                        <Link to="/auth/google">
+                        <Link to="/admin/books">
                             Go to admin
                         </Link>
                     </AltButton>

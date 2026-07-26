@@ -43,10 +43,12 @@ function OrderDetails({
                     "
                 >
                     <FaChevronUp 
-                        className="group-data-[state='open']:inline-block hidden"
-                    /> 
-                    <FaChevronDown 
-                        className="group-data-[state='closed']:inline-block hidden"
+                        className="
+                            group-data-[state=open]:rotate-0
+                            transition-transform
+                            duration-300
+                            group-data-[state=closed]:rotate-180
+                        "
                     />
 
                     <span
