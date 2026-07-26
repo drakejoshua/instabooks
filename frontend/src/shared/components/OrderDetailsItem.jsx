@@ -30,6 +30,7 @@ function OrderDetailsItem(
                     font-medium
                     lg:text-lg
                     text-instabooks-black
+                    line-clamp-1
                 "
             >
                 { bookName }

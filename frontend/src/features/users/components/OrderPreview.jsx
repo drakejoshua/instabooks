@@ -17,13 +17,8 @@ export function OrderPreview({
     paymentStatus,
     items
 }) {
-    const [open, setOpen] = useState(false);
-
     return (
-        <Collapsible.Root
-            open={open}
-            onOpenChange={setOpen}
-        >
+        <Collapsible.Root>
             <div
                 className="
                     bg-gray-100
@@ -32,20 +27,24 @@ export function OrderPreview({
                 "
             >
                 {/* order id and status */}
-                <div
+                <Collapsible.Trigger
                     className="
                         flex
                         items-center
                         gap-3
+                        group
+                        w-full
                     "
                 >
-                    <Collapsible.Trigger>
-                        {
-                            open ?
-                            <FaChevronUp /> :
-                            <FaChevronDown />
-                        }
-                    </Collapsible.Trigger>
+                    <FaChevronUp 
+                        className="
+                            group-data-[state=open]:rotate-0
+                            transition-transform
+                            duration-300
+                            group-data-[state=closed]:rotate-180
+                        "
+                    />
+                    
 
                     <span
                         className="
@@ -63,7 +62,7 @@ export function OrderPreview({
                     >
                         { status }
                     </Badge>
-                </div>
+                </Collapsible.Trigger>
 
                 {/* shipping address */}
                 <p

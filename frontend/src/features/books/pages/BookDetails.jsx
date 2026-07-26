@@ -14,7 +14,12 @@ export function Component() {
             author="Dale Carnegie"
             pages={320}
         >
-            <BookActions />
+            <BookActions 
+                className="
+                    w-fit
+                    mt-8 lg:mt-12
+                "
+            />
         </BookDetailsLayout>
     );
 }
