@@ -16,8 +16,7 @@ export function trackBookView( book ) {
             {
                 item_id: book.id,
                 item_name: book.title,
-                price: book.price,
-                quantity: 1
+                price: book.price
             }
         ]
     } )

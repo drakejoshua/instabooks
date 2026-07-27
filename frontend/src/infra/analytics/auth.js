@@ -9,14 +9,14 @@ export function trackGoogleAuthInitEvent() {
 
 
 // auth verification
-export function trackGoogleAuthVerifyEvent() {
+export function trackGoogleAuthVerifyEvent( status ) {
     trackEvent("google_auth_verify", {
         method: "Google",
-        status: "success"
+        status: status || GOOGLE_AUTH_STATUS.FAILURE
     })
 }
 
-export let GOOGLE_AUTH_STATUS = {
+export const GOOGLE_AUTH_STATUS = {
     SUCCESS: "success",
     FAILURE: "failure"
 }
