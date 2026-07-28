@@ -163,6 +163,20 @@ export async function cancelOrderService(orderId) {
 
     // update the order status to cancelled
     orderToCancel.status = "cancelled";
+
+    // populate the order products with book data to 
+    // update the store inventory
+    await orderToCancel.populate("products.book_id");
+
+    // update the store inventory data for each book in the 
+    // cancelled order
+    for (let item of orderToCancel.products) {
+        let book = await item.book_id;
+        book.quantity += item.order_quantity;
+        await book.save();
+    }
+
+    // save the updated order to the database
     await orderToCancel.save();
 }
 
