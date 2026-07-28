@@ -10,8 +10,8 @@ import {
     checkoutOrderValidationFunction,
     confirmOrderPaymentValidatorRules,
     confirmOrderPaymentValidationFunction,
-    getOrderDetailsValidatorRules,
-    getOrderDetailsValidationFunction,
+    orderIdValidatorRules,
+    orderIdValidationFunction,
     getAllOrdersValidatorRules,
     getAllOrdersValidationFunction,
 } from "./orders.validators.js";
@@ -21,6 +21,8 @@ import {
     getOrderDetailsController,
     getAllOrdersController,
     getAllOrdersForAdminController,
+    revalidateOrderPaymentController,
+    cancelOrderController,
 } from "./orders.controllers.js";
 
 
@@ -60,11 +62,27 @@ orderRouter.get(
 );
 
 orderRouter.get(
+    "/revalidate/:order_id",
+    passport.authenticate("jwt", { session: false }),
+    orderIdValidatorRules,
+    orderIdValidationFunction,
+    revalidateOrderPaymentController,
+)
+
+orderRouter.get(
     "/:order_id",
     passport.authenticate("jwt", { session: false }),
-    getOrderDetailsValidatorRules,
-    getOrderDetailsValidationFunction,
+    orderIdValidatorRules,
+    orderIdValidationFunction,
     getOrderDetailsController,
+);
+
+orderRouter.delete(
+    "/:order_id",
+    passport.authenticate("jwt", { session: false }),
+    orderIdValidatorRules,
+    orderIdValidationFunction,
+    cancelOrderController,
 );
 
 export default orderRouter;

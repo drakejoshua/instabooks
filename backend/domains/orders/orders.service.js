@@ -1,4 +1,4 @@
-import { CacheOperations } from "../../cache/utils.js";
+import { CacheOperations, CacheUpdate } from "../../cache/utils.js";
 import Orders from "../../database/models/order.model.js";
 import {
     InvalidAddressError,
@@ -6,6 +6,8 @@ import {
     PaymentGatewayError,
 } from "../shared/utils/errors.js";
 import { paystackInitialize, paystackVerify } from "./orders.utils.js";
+import mongoose from "mongoose";
+
 
 export async function checkoutOrderService(shippingAddress, user) {
     // check if the shipping address is valid
@@ -61,7 +63,7 @@ export async function checkoutOrderService(shippingAddress, user) {
     return paymentData.data;
 }
 
-export async function confirmOrderPaymentService(reference) {
+export async function confirmOrderPaymentService(reference, req) {
     // verify the payment using the paystackVerify()
     // utility function
     let verificationData = await paystackVerify(reference);
@@ -86,19 +88,82 @@ export async function confirmOrderPaymentService(reference) {
     let paymentStatus = verificationData.data?.data?.status;
 
     // check if the payment status is successful and
-    // update the order status and payment status
+    // update the order status, payment status and store inventory data
     // accordingly, if not, throw a PaymentGatewayError
     if (paymentStatus === "success") {
+        // update the order status to shipped and payment 
+        // status to paid
         orderToConfirm.status = "shipped";
         orderToConfirm.payment_status = "paid";
+
+        // populate the order products with book data to update the store inventory
+        await orderToConfirm.populate("products.book_id");
+
+        // update the store inventory data for each book in the order
+        for (let item of orderToConfirm.products) {
+            let book = await item.book_id;
+            book.quantity -= item.order_quantity;
+            await book.save();
+
+            await CacheUpdate.updateBookById( book, req )
+        }
     } else {
         orderToConfirm.payment_status = "failed";
     }
 
     // save the updated order to the database
-    await orderToConfirm.save();
+    await orderToConfirm.save(); 
 
     return verificationData.data;
+}
+
+export async function revalidateOrderPaymentService(orderId, userData) {
+    // get the existing order from the database
+    let orderToRevalidate = await Orders.findById(orderId);
+
+    // check if the order exists and throw an OrderNotFoundError
+    // if it doesn't
+    if (!orderToRevalidate) {
+        throw OrderNotFoundError;
+    }
+
+    // duplicate the order to create a new order with a new reference
+    let duplicateOrder = orderToRevalidate.$clone();
+    duplicateOrder._id = new mongoose.Types.ObjectId();
+    duplicateOrder.isNew = true;
+    await duplicateOrder.save()
+    
+    // delete the old order from the database
+    await Orders.findByIdAndDelete(orderId);
+
+    // generate payment authorization link using
+    // paystackInitialize() utility function
+    let paymentData = await paystackInitialize(userData, duplicateOrder);
+
+    // check if there was an error initializing the payment
+    // and throw a PaymentGatewayError if there was
+    if (paymentData.status === "error") {
+        PaymentGatewayError.message = paymentData.error.message;
+        PaymentGatewayError.details = paymentData.error.details;
+        throw PaymentGatewayError;
+    }
+
+    return paymentData.data;
+}
+
+export async function cancelOrderService(orderId) {
+    // get the existing order from the database
+    let orderToCancel = await Orders.findById(orderId);
+
+    // check if the order exists and throw an OrderNotFoundError
+    // if it doesn't
+    if (!orderToCancel) {
+        throw OrderNotFoundError;
+    }
+
+    // update the order status to cancelled
+    orderToCancel.status = "cancelled";
+    await orderToCancel.save();
 }
 
 export async function getOrderDetailsService(userId, orderId) {

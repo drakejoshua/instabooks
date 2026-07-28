@@ -3,7 +3,9 @@ import {
     getAllOrdersForAdminService,
     getOrderDetailsService,
     checkoutOrderService,
-    getAllOrdersService
+    getAllOrdersService,
+    cancelOrderService,
+    revalidateOrderPaymentService
 } from "./orders.service.js";
 
 export async function checkoutOrderController(req, res, next) {
@@ -35,7 +37,7 @@ export async function confirmOrderPaymentController(req, res, next) {
 
         // call the confirm order payment service to verify
         // the order payment and update the order status
-        await confirmOrderPaymentService(reference);
+        await confirmOrderPaymentService(reference, req);
 
         // redirect to the frontend order confirmation page
         // with the order reference as a route parameter
@@ -98,6 +100,46 @@ export async function getAllOrdersForAdminController(req, res, next) {
         res.json({
             status: "success",
             data: ordersData,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export async function revalidateOrderPaymentController(req, res, next) {
+    try {
+        // get the order id from the request params
+        let { order_id } = req.params;
+
+        // call the confirm order payment service to verify
+        // the order payment and update the order status
+        let verificationData = await revalidateOrderPaymentService(order_id, req.user);
+
+        // send the verification data as a response
+        res.json({
+            status: "success",
+            data: verificationData,
+        });
+    } catch (error) {
+        next(error);
+    } 
+}
+    
+
+export async function cancelOrderController(req, res, next) {
+    try {
+        // get the user id from the request user object
+        let userId = req.user._id;
+        let { order_id } = req.params;
+
+        // call the cancel order service to cancel the order
+        await cancelOrderService(order_id);
+
+        // send a success response
+        res.json({
+            status: "success",
+            message: "Order cancelled successfully",
         });
     } catch (error) {
         next(error);

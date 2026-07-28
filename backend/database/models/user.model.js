@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "books",
                 },
-                quantity: Number,
+                order_quantity: Number,
             },
         ],
     },
@@ -63,11 +63,11 @@ UserSchema.methods.getProfileData = async function () {
                 cover_photo_id,
                 ...bookDetails 
             } = book.book_id.toObject();
-            let { quantity } = book;
+            let { order_quantity } = book;
 
             return {
                 ...bookDetails,
-                quantity,
+                order_quantity,
                 id: _id
             }
 
@@ -90,11 +90,11 @@ UserSchema.methods.getCartData = async function () {
             cover_photo_id,
             ...bookDetails 
         } = book.book_id.toObject();
-        let { quantity } = book;
+        let { order_quantity } = book;
 
         return {
             ...bookDetails,
-            quantity,
+            order_quantity,
             id: _id
         }
 
@@ -118,11 +118,11 @@ UserSchema.methods.addToCart = async function (book_id, quantity) {
         // new quantity of the book, if not, add new book to user's
         // cart
         if (bookIndex >= 0) {
-            this.cart[bookIndex].quantity = quantity;
+            this.cart[bookIndex].order_quantity = quantity;
         } else {
             this.cart.unshift({
                 book_id,
-                quantity,
+                order_quantity: quantity,
             });
         }
 

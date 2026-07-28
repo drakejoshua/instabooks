@@ -68,7 +68,7 @@ export function confirmOrderPaymentValidationFunction(req, res, next) {
     next();
 }
 
-export let getOrderDetailsValidatorRules = [
+export let orderIdValidatorRules = [
     param("order_id")
         .exists()
         .withMessage(ERROR_CODES.INVALID_ORDER_REFERENCE)
@@ -81,7 +81,7 @@ export let getOrderDetailsValidatorRules = [
         .bail(),
 ];
 
-export function getOrderDetailsValidationFunction(req, res, next) {
+export function orderIdValidationFunction(req, res, next) {
     // get validation errors from the request
     // if any
     const errors = validationResult(req);
