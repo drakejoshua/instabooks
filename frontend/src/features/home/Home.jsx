@@ -8,15 +8,14 @@ import Button from "../../shared/components/Button";
 import { Link } from "react-router-dom";
 
 export function Home() {
-    return <div
-        className="pb-8 lg:pb-12"
-    >
-        {/* search bar */}
-        <SearchBar />
+    return (
+        <div className="pb-8 lg:pb-12">
+            {/* search bar */}
+            <SearchBar />
 
-        {/* home carousel */}
-        <Carousel.Root
-            className="
+            {/* home carousel */}
+            <Carousel.Root
+                className="
                 h-screen
                 max-h-150
                 bg-instabooks-blue
@@ -26,9 +25,9 @@ export function Home() {
                 relative
                 top-0
             "
-        >
-            <Carousel.Track
-                className="
+            >
+                <Carousel.Track
+                    className="
                     h-full
                     w-full
                     flex
@@ -38,40 +37,40 @@ export function Home() {
                     transition-transform
                     translate-x-[calc(var(--active-slide)*-100%)]
                 "
-            >
-                <BookItem 
-                    title="The great gatsby"
-                    description="A novel by F. Scott Fitzgerald that 
+                >
+                    <BookItem
+                        title="The great gatsby"
+                        description="A novel by F. Scott Fitzgerald that 
                     explores themes of wealth, love, and the American 
                     Dream in 1920s America."
-                    to="/books/the-great-gatsby-2"
-                    src="https://picsum.photos/id/24/200"
-                />
-                
-                <BookItem 
-                    title="How to Win Friends and Influence People"
-                    description="A timeless classic by Dale Carnegie that 
+                        to="/books/the-great-gatsby-2"
+                        src="https://picsum.photos/id/24/200"
+                    />
+
+                    <BookItem
+                        title="How to Win Friends and Influence People"
+                        description="A timeless classic by Dale Carnegie that 
                     offers practical advice on how to improve your social
                     skills, build meaningful relationships, and become a 
                     more influential person in both your personal and 
                     professional life."
-                    to="/books/how-to-win-friends-and-influence-people"
-                    src="https://picsum.photos/id/24/200"
-                />
-                
-                <BookItem 
-                    title="Rich Dad Poor Dad"
-                    description="A personal finance book by Robert Kiyosaki 
+                        to="/books/how-to-win-friends-and-influence-people"
+                        src="https://picsum.photos/id/24/200"
+                    />
+
+                    <BookItem
+                        title="Rich Dad Poor Dad"
+                        description="A personal finance book by Robert Kiyosaki 
                     that contrasts the financial philosophies of his two 
                     'dads' and provides insights on how to achieve financial 
                     independence and build wealth."
-                    to="/books/rich-dad-poor-dad"
-                    src="https://picsum.photos/id/24/200"
-                />
-            </Carousel.Track>
+                        to="/books/rich-dad-poor-dad"
+                        src="https://picsum.photos/id/24/200"
+                    />
+                </Carousel.Track>
 
-            <div
-                className="
+                <div
+                    className="
                     absolute
                     left-1/2 lg:left-16
                     -translate-x-1/2 lg:translate-x-0
@@ -81,26 +80,26 @@ export function Home() {
                     gap-4
                     flex-col-reverse lg:flex-row
                 "
-            >
-                <div
-                    className="
+                >
+                    <div
+                        className="
                         flex
                         text-white
                         gap-3
                         text-3xl
                     "
-                >
-                    <Carousel.PrevButton>
-                        <FaArrowLeft />
-                    </Carousel.PrevButton>
+                    >
+                        <Carousel.PrevButton>
+                            <FaArrowLeft />
+                        </Carousel.PrevButton>
 
-                    <Carousel.NextButton>
-                        <FaArrowRight />
-                    </Carousel.NextButton>
-                </div>
+                        <Carousel.NextButton>
+                            <FaArrowRight />
+                        </Carousel.NextButton>
+                    </div>
 
-                <Carousel.Indicators
-                    className="
+                    <Carousel.Indicators
+                        className="
                         flex
                         gap-2
 
@@ -111,101 +110,99 @@ export function Home() {
                         *:data-[active-slide=true]:bg-white
                         *:cursor-pointer    
                     "
-                >
-                    <Carousel.Indicator/>
-                    
-                    <Carousel.Indicator/>
-                    
-                    <Carousel.Indicator/>
-                </Carousel.Indicators>
-            </div>
-        </Carousel.Root>
+                    >
+                        <Carousel.Indicator />
 
-        {/* all books section */}
-        <section
-            className="
+                        <Carousel.Indicator />
+
+                        <Carousel.Indicator />
+                    </Carousel.Indicators>
+                </div>
+            </Carousel.Root>
+
+            {/* all books section */}
+            <section
+                className="
                 mt-16
             "
-        >
-            <Heading variant="route">
-                Browse all books
-            </Heading>
+            >
+                <Heading variant="route">Browse all books</Heading>
 
-            <p
-                className="
+                <p
+                    className="
                     text-center
                     max-w-125
                     mx-auto
                     mt-3
                 "
-            >
-                Explore our extensive collection of books across various 
-                genres and categories. Find your next great read today!
-            </p>
+                >
+                    Explore our extensive collection of books across various
+                    genres and categories. Find your next great read today!
+                </p>
 
-            {/* book grid */}
-            <BookList
-                className="mt-14"
-                books={[
-                    {
-                        title: "How to Win Friends and Influence People",
-                        description: `This timeless classic by Dale 
+                {/* book grid */}
+                <BookList
+                    className="mt-14"
+                    books={[
+                        {
+                            title: "How to Win Friends and Influence People",
+                            description: `This timeless classic by Dale 
                         Carnegie offers practical advice on how to 
                         improve your social skills, build meaningful 
                         relationships, and become a more influential 
                         person in both your personal and professional life.`,
-                        author: "Dale Carnegie",
-                        pages: 302,
-                        price: 10.00,
-                        genre: "Finance",
-                        photoUrl: "https://picsum.photos/id/24/400"
-                    },
-                    {
-                        title: "How to Win Friends and Influence People",
-                        description: `This timeless classic by Dale 
+                            author: "Dale Carnegie",
+                            pages: 302,
+                            price: 10.0,
+                            genre: "Finance",
+                            photoUrl: "https://picsum.photos/id/24/400",
+                        },
+                        {
+                            title: "How to Win Friends and Influence People",
+                            description: `This timeless classic by Dale 
                         Carnegie offers practical advice on how to 
                         improve your social skills, build meaningful 
                         relationships, and become a more influential 
                         person in both your personal and professional life.`,
-                        author: "Dale Carnegie",
-                        pages: 302,
-                        price: 10.00,
-                        genre: "Finance",
-                        photoUrl: "https://picsum.photos/id/24/400"
-                    },
-                    {
-                        title: "How to Win Friends and Influence People",
-                        description: `This timeless classic by Dale 
+                            author: "Dale Carnegie",
+                            pages: 302,
+                            price: 10.0,
+                            genre: "Finance",
+                            photoUrl: "https://picsum.photos/id/24/400",
+                        },
+                        {
+                            title: "How to Win Friends and Influence People",
+                            description: `This timeless classic by Dale 
                         Carnegie offers practical advice on how to 
                         improve your social skills, build meaningful 
                         relationships, and become a more influential 
                         person in both your personal and professional life.`,
-                        author: "Dale Carnegie",
-                        pages: 302,
-                        price: 10.00,
-                        genre: "Finance",
-                        photoUrl: "https://picsum.photos/id/24/400"
-                    },
-                    {
-                        title: "How to Win Friends and Influence People",
-                        description: `This timeless classic by Dale 
+                            author: "Dale Carnegie",
+                            pages: 302,
+                            price: 10.0,
+                            genre: "Finance",
+                            photoUrl: "https://picsum.photos/id/24/400",
+                        },
+                        {
+                            title: "How to Win Friends and Influence People",
+                            description: `This timeless classic by Dale 
                         Carnegie offers practical advice on how to 
                         improve your social skills, build meaningful 
                         relationships, and become a more influential 
                         person in both your personal and professional life.`,
-                        author: "Dale Carnegie",
-                        pages: 302,
-                        price: 10.00,
-                        genre: "Finance",
-                        photoUrl: "https://picsum.photos/id/24/400"
-                    },
-                ]}
-            />
-        </section>
+                            author: "Dale Carnegie",
+                            pages: 302,
+                            price: 10.0,
+                            genre: "Finance",
+                            photoUrl: "https://picsum.photos/id/24/400",
+                        },
+                    ]}
+                />
+            </section>
 
-        {/* load more button */}
-        <AltButton
-            className="
+            {/* load more button */}
+            <AltButton
+                className="
                 flex!
                 items-center
                 gap-4
@@ -213,28 +210,29 @@ export function Home() {
                 mx-auto
 
             "
-        >
-            <FaArrowsRotate />
-
-            Load more books
-        </AltButton>
-    </div>;
+            >
+                <FaArrowsRotate />
+                Load more books
+            </AltButton>
+        </div>
+    );
 }
 
 export default Home;
 
 function BookItem({ title, description, to = "", src = "" }) {
-    return <Carousel.Item
-        className="
+    return (
+        <Carousel.Item
+            className="
             flex-[0_0_100%]
             h-full
             lg:flex
             items-center
             relative lg:static
         "
-    >
-        <div
-            className="
+        >
+            <div
+                className="
                 text-white
                 lg:w-2/5
                 lg:ml-15
@@ -246,29 +244,29 @@ function BookItem({ title, description, to = "", src = "" }) {
 
                 *:text-center lg:*:text-left
             "
-        >
-            <Heading
-                className="
+            >
+                <Heading
+                    className="
                     text-white
                     text-4xl
                     line-clamp-3
                 "
-            >
-                { title }
-            </Heading>
+                >
+                    {title}
+                </Heading>
 
-            <p
-                className="
+                <p
+                    className="
                     mt-4
                     line-clamp-4 lg:line-clamp-6
                 "
-            >
-                { description }
-            </p>
+                >
+                    {description}
+                </p>
 
-            <Button 
-                asChild
-                className="
+                <Button
+                    asChild
+                    className="
                     mt-8
                     bg-white
                     outline-white
@@ -278,17 +276,15 @@ function BookItem({ title, description, to = "", src = "" }) {
                     block! lg:inline-block
                     w-fit
                 "
-            >
-                <Link to={to}>
-                    learn more
-                </Link>
-            </Button>
-        </div>
+                >
+                    <Link to={to}>learn more</Link>
+                </Button>
+            </div>
 
-        <img 
-            src={ src }
-            alt="book photo"
-            className="
+            <img
+                src={src}
+                alt="book photo"
+                className="
                 h-full
                 w-full lg:w-2/5
                 absolute lg:static
@@ -297,6 +293,7 @@ function BookItem({ title, description, to = "", src = "" }) {
                 ml-auto
                 opacity-30 lg:opacity-100   
             "
-        />
-    </Carousel.Item>
+            />
+        </Carousel.Item>
+    );
 }

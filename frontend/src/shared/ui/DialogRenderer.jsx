@@ -1,79 +1,71 @@
-import { createContext, useContext, useState } from "react";
 import { Dialog } from "radix-ui";
 import { FaXmark } from "react-icons/fa6";
-import Heading from "../../shared/components/Heading";
+import Heading from "../components/Heading";
+import { useDispatch, useSelector } from "react-redux";
+import { addDialog, removeDialog } from "../uiSlice";
 
-const DialogContext = createContext();
+export function useDialogActions() {
+    const dispatch = useDispatch();
 
-export function useDialogProvider() {
-    let context = useContext(DialogContext);
+    return {
+        openDialog(dialog) {
+            let dialogId = crypto.randomUUID();
 
-    if (!context) {
-        throw new Error("useDialogProvider must be used within a DialogProvider");
-    }
+            dispatch(
+                addDialog({
+                    id: dialogId,
+                    title: dialog.title || "",
+                    description: dialog.description || "",
+                    content: dialog.render() || "",
+                }),
+            );
 
-    return context;
+            return dialogId;
+        },
+        closeDialog(dialogId) {
+            dispatch(removeDialog(dialogId));
+        },
+    };
 }
 
-function DialogProvider({ children }) {
-    const [ dialogs, setDialogs ] = useState([]);
+function DialogRenderer({ children }) {
+    const dialogs = useSelector(function (state) {
+        return state.ui.dialogs;
+    });
 
-    function openDialog(dialog) {
-        let dialogId = crypto.randomUUID();
-
-        setDialogs(prevDialogs => [
-            ...prevDialogs,
-            {
-                id: dialogId,
-                title: dialog.title || "",
-                description: dialog.description || "",
-                content: dialog.render() || ""
-            }
-        ]);
-
-        return dialogId;
-    }
-
-    function closeDialog(dialogId) {
-        setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== dialogId));
-    }
+    const { closeDialog } = useDialogActions();
 
     return (
-        <DialogContext.Provider value={{ openDialog, closeDialog }}>
+        <div>
             {children}
 
-            {
-                dialogs.map( function( dialog ) {
-                    return (
-                        <DialogComponent
-                            defaultOpen={ true }
-                            onOpenChange={ ( isOpen ) => {
-                                if ( !isOpen ) {
-                                    closeDialog( dialog.id );
-                                }
-                            } }
-                            key={ dialog.id }
-                            title={ dialog.title }
-                            description={ dialog.description }
-                            content={ dialog.content }
-                        />
-                    )
-                })
-            }
-        </DialogContext.Provider>
+            {dialogs.map(function (dialog) {
+                return (
+                    <DialogComponent
+                        defaultOpen={true}
+                        onOpenChange={(isOpen) => {
+                            if (!isOpen) {
+                                closeDialog(dialog.id);
+                            }
+                        }}
+                        key={dialog.id}
+                        title={dialog.title}
+                        description={dialog.description}
+                        content={dialog.content}
+                    />
+                );
+            })}
+        </div>
     );
 }
 
-export default DialogProvider;
-
+export default DialogRenderer;
 
 export function DialogComponent({ title, description, content, ...props }) {
     return (
-        <Dialog.Root
-            {...props}
-        >
+        <Dialog.Root {...props}>
             <Dialog.Portal>
-                <Dialog.Overlay 
+                <Dialog.Overlay
                     className="
                         fixed
                         inset-0
@@ -114,13 +106,13 @@ export function DialogComponent({ title, description, content, ...props }) {
                     </Dialog.Close>
 
                     <Dialog.Title asChild>
-                        <Heading 
+                        <Heading
                             variant="route"
                             className="
                                 mt-8!
                             "
                         >
-                            { title }
+                            {title}
                         </Heading>
                     </Dialog.Title>
 
@@ -131,10 +123,10 @@ export function DialogComponent({ title, description, content, ...props }) {
                             text-instabooks-black
                         "
                     >
-                        { description }
+                        {description}
                     </Dialog.Description>
 
-                    { content }
+                    {content}
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
