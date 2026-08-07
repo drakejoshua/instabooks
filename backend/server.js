@@ -12,8 +12,10 @@ import errorHandler from "./domains/shared/middleware/error.js";
 import redisClient from "./cache/setup.js";
 import bookRouter from "./domains/books/books.routes.js";
 import orderRouter from "./domains/orders/orders.routes.js";
+import cors from "cors"
 
 const server = express();
+const frontendURL = process.env.FRONTEND_URL
 
 // connect to the database
 await connectDB();
@@ -21,6 +23,11 @@ await connectDB();
 // initialize passport
 passport.initialize();
 initializePassport(passport);
+
+server.use( cors({
+    origin: frontendURL,
+    credentials: true
+}) )
 
 // middleware to parse JSON bodies
 server.use(express.json());

@@ -59,7 +59,7 @@ Request Header: none
 Response Header: none
 Response: 
 - 200: Redirect to frontend with auth id in query parameters (e.g. 
-    /auth/success?id=<auth id>)
+    /auth/google/verify/:auth_id)
 
 
 GET /auth/google/verify  ( verify google auth callback for frontend )
@@ -147,30 +147,28 @@ Response:
 - 200: {
     "status":"success",
     "data": {
-        "user": {
-            "name": < user's name: "Joshua Ligron" >,
-            "email": < user's email: "joshuanathan086@gmail.com" >,
-            "photo_url": < user's photo URL: "https://lh3.googleusercontent.com/a/***" >,
-            "addresses": [
-                < shipping address e.g. "123 Main St, Anytown, USA" >,
-                ...
-            ],
-            "cart": [
-                {
-                    "id": < book id e.g. "6a52e390f8d57538d01efcf9">,
-                    "title": < book title e.g. "Rich Dad, Poor Dad" >,
-                    "description": < book description e.g. "This is a book written by robert kiyosaki to help people gain financial intelligence and topmost priority" >,
-                    "pages": < number of pages e.g. 203 >,
-                    "author": < author name e.g. "robert kiyosaki" >,
-                    "price": < price e.g. 10.99 >,
-                    "cover_photo_url": < cover photo URL e.g. "https://res.cloudinary.com/dv5eejhou/image/upload/v1783817429/j6t4x7icpy95plielrnf.png" >,
-                    "quantity": < book quantity in store e.g. 200 >,
-                    "order_quantity": < order quantity e.g. 2 >,
-                    "genre": < book genre e.g. "finance">
-                },
-                ...
-            ]
-        }
+        "name": < user's name: "Joshua Ligron" >,
+        "email": < user's email: "joshuanathan086@gmail.com" >,
+        "photo_url": < user's photo URL: "https://lh3.googleusercontent.com/a/***" >,
+        "addresses": [
+            < shipping address e.g. "123 Main St, Anytown, USA" >,
+            ...
+        ],
+        "cart": [
+            {
+                "id": < book id e.g. "6a52e390f8d57538d01efcf9">,
+                "title": < book title e.g. "Rich Dad, Poor Dad" >,
+                "description": < book description e.g. "This is a book written by robert kiyosaki to help people gain financial intelligence and topmost priority" >,
+                "pages": < number of pages e.g. 203 >,
+                "author": < author name e.g. "robert kiyosaki" >,
+                "price": < price e.g. 10.99 >,
+                "cover_photo_url": < cover photo URL e.g. "https://res.cloudinary.com/dv5eejhou/image/upload/v1783817429/j6t4x7icpy95plielrnf.png" >,
+                "quantity": < book quantity in store e.g. 200 >,
+                "order_quantity": < order quantity e.g. 2 >,
+                "genre": < book genre e.g. "finance">
+            },
+            ...
+        ]
     }
 }
 - 401: {

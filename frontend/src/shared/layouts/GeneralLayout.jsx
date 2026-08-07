@@ -5,10 +5,24 @@ import { FaBars, FaCartShopping } from "react-icons/fa6"
 import AltButton from "../components/AltButton.jsx";
 import { useState } from "react";
 import UserAvatar from "../components/UserAvatar.jsx";
+import { useAuth } from "../hooks/useAuth.jsx";
+
 
 export function Component() {
     const isMobile = window.innerWidth < 768;
     let [ isMobileMenuOpen, setIsMobileMenuOpen ] = useState( isMobile ? false : true );
+
+    const { data, isLoading } = useAuth()
+
+    if ( isLoading ) {
+        return (
+            <div>
+                loading authenticated user information
+            </div>
+        )
+    }
+
+    const user = data?.data
 
     return (
         <div>
@@ -36,7 +50,10 @@ export function Component() {
                         ml-auto lg:mr-4 
                     "
                 >
-                    <Link to="/cart">
+                    <Link 
+                        to="/cart"
+                        className="relative top-0"
+                    >
                         <FaCartShopping 
                             className="
                                 text-xl 
@@ -44,11 +61,23 @@ export function Component() {
                                 text-instabooks-blue
                             " 
                         />
+
+                        { user?.cart.length > 0 && <span
+                            className="
+                                inline-block
+                                p-2
+                                rounded-full
+                                bg-instabooks-blue
+                                absolute
+                                top-0
+                                -right-2
+                            "
+                        ></span> }
                     </Link>
 
                     <Link to="/profile">
                         <UserAvatar 
-                            src="https://images.unsplash.com/photo-1682685794700-1e3f5c7b8d4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+                            src={ user?.photo_url }
                             alt="User Avatar"
                             className="w-8 h-8 rounded-full"
                         />

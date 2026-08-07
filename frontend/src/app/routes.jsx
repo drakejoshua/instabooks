@@ -13,37 +13,37 @@ let routes = createBrowserRouter([
                 lazy: () => import("../shared/layouts/GeneralLayout.jsx"),
                 children: [
                     {
-                        index: true,
+                        index: true, // protected
                         element: <Home />,
                     },
                     {
-                        path: "books/search",
+                        path: "books/search", // protected
                         lazy: () => import("../features/books/pages/Search.jsx")
                     },
                     {
-                        path: "books/details/:id",
+                        path: "books/details/:id", // protected
                         lazy: () => import("../features/books/pages/BookDetails.jsx"),
                     },
                     {
-                        path: "orders/checkout",
+                        path: "orders/checkout", // protected
                         lazy: () => import("../features/orders/pages/Checkout.jsx")
                     },
                     {
-                        path: "orders/details/:id",
+                        path: "orders/details/:id", // protected
                         lazy: () => import("../features/orders/pages/OrderDetails.jsx"),
                     },
                     {
-                        path: "cart",
+                        path: "cart", // protected
                         lazy: () => import("../features/orders/pages/Cart.jsx"),
                     },
                     {
-                        path: "profile",
+                        path: "profile", // protected
                         lazy: () => import("../features/users/pages/Profile.jsx"),
                     }
                 ],
             },
             {
-                path: "admin",
+                path: "admin", // protected
                 lazy: () => import("../features/admin/Layout/AdminLayout.jsx"),
                 children: [
                     {
@@ -73,7 +73,7 @@ let routes = createBrowserRouter([
                         lazy: () => import("../features/users/pages/Google.jsx"),
                     },
                     {
-                        path: "verify/:id",
+                        path: "google/verify/:id",
                         lazy: () => import("../features/users/pages/GoogleVerify.jsx"),
                     },
                 ],

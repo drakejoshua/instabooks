@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 export function Component() {
     let headingStyle = "mt-12 lg:mt-14";
+    let backendURL = import.meta.env.VITE_BACKEND_URL
 
     return (
         <div>
@@ -35,7 +36,7 @@ export function Component() {
                 "
                 asChild
             >
-                <Link to="/auth/google">
+                <Link to={`${backendURL}/auth/google`}>
                     <FaGoogle />
                     Sign in with google
                 </Link>

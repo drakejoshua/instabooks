@@ -1,12 +1,21 @@
 import { FaCircleNotch } from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import AnimatedWarningIcon from "../../../shared/components/AnimatedWarningIcon";
 import AnimatedCheckIcon from "../../../shared/components/AnimatedCheckIcon";
 import Heading from "../../../shared/components/Heading";
+import { useGoogleVerifyQuery } from "../services/authApi";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setToken } from "../authSlice.js";
 
 export function Component() {
-    let state = "loaded"; // placeholder state for the mean time
+    let { id } = useParams()
+    const dispatch = useDispatch()
+
+    const { data, isLoading, error } = useGoogleVerifyQuery( 
+        id || ""
+    )
 
     let iconStyle = `
         text-6xl
@@ -22,10 +31,20 @@ export function Component() {
         mx-auto
     `;
 
+    useEffect( function() {
+        if ( !isLoading && data ) {
+            // dispatch the access token to the redux store
+            dispatch( setToken( data.data.access_token ) )
+
+            // save access token to localStorage
+            localStorage.setItem("instabooks-auth-token", data.data.access_token )
+        }
+    }, [ isLoading ])
+
     return (
         <>
             {/* loading state */}
-            {state === "loading" && (
+            { isLoading && (
                 <div>
                     <FaCircleNotch className={iconStyle + "animate-spin"} />
 
@@ -47,7 +66,7 @@ export function Component() {
             )}
 
             {/* error state */}
-            {state === "error" && (
+            { ( !isLoading && error != null ) && (
                 <div>
                     <AnimatedWarningIcon />
 
@@ -75,7 +94,7 @@ export function Component() {
             )}
 
             {/* loaded state */}
-            {state === "loaded" && (
+            { ( !isLoading && error == null ) && (
                 <div>
                     <AnimatedCheckIcon />
 
@@ -90,12 +109,11 @@ export function Component() {
                         "
                     >
                         You can now proceed to access your Instabooks account.
-                        You will be redirected to your Instabooks account
-                        shortly.
+                        You will be redirected to the shop shortly.
                     </p>
 
                     <Button className={buttonStyle}>
-                        <Link to="/">Proceed to your Instabooks account</Link>
+                        <Link to="/">Proceed to shop</Link>
                     </Button>
                 </div>
             )}

@@ -32,7 +32,7 @@ export async function googleAuthController(req, res, next) {
 
         // return redirect to frontend URL
         res.redirect(
-            `${process.env.FRONTEND_URL}/auth/google?id=${respData.google_auth_id}`,
+            `${process.env.FRONTEND_URL}/auth/google/verify/${respData.google_auth_id}`,
         );
     } catch (err) {
         return next(err);
@@ -100,9 +100,7 @@ export async function profileAuthController(req, res, next) {
     res.json({
         status: "success",
         data: {
-            user: {
-                ...( await req.user.getProfileData() ),
-            },
+            ...( await req.user.getProfileData() ),
         },
     });
 }
