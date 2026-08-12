@@ -1,14 +1,16 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setToken, logOut } from "../../features/users/authSlice.js"
+import { authApi } from "../../features/users/services/authApi.js";
 
 const backendURL = import.meta.env.VITE_BACKEND_URL
+const LocalStorageAuthKey = import.meta.env.VITE_LOCALSTORAGE_AUTH_KEY
 
 export const baseQuery = fetchBaseQuery({
     baseUrl: backendURL,
     credentials: "include",
     prepareHeaders: function( headers, { getState } ) {
         // fetch access token from localStorage or state
-        const token = getState().auth.token || localStorage.getItem("instabooks-auth-token")
+        const token = getState().auth.token || localStorage.getItem( LocalStorageAuthKey )
 
         if ( token ) {
             headers.set("Authorization", `Bearer ${ token }`)
@@ -44,12 +46,8 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
             // retry original request with new access token
             result = await baseQuery( args, api, extraOptions )
         } else {
-            api.dispatch(
-                logOut()
-            )
-
-            // remove access token from localstorage
-            localStorage.removeItem("instabooks-auth-token")
+            api.dispatch(logOut());
+            api.dispatch(authApi.util.resetApiState());
         }
     }
 

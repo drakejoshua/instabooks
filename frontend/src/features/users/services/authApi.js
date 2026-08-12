@@ -16,6 +16,10 @@ export const authApi = createApi({
             }),
             getMe: builder.query({
                 query: () => "/auth/me"
+            }),
+            logout: builder.mutation({
+                query: () => "/auth/logout",
+                method: "GET"
             })
         }
     }
@@ -24,5 +28,6 @@ export const authApi = createApi({
 
 export const {
     useGoogleVerifyQuery,
-    useGetMeQuery
+    useGetMeQuery,
+    useLogoutMutation
 } = authApi

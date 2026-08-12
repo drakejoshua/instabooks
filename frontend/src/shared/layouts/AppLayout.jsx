@@ -1,18 +1,7 @@
-import { useEffect } from "react";
 import { Outlet, useNavigation } from "react-router-dom";
-import { useSelector } from "react-redux"
 
 function AppLayout() {
     let { state } = useNavigation();
-    let token = useSelector( function( state ) {
-        return state.auth.token
-    })
-    
-    useEffect( function() {
-        if ( token ) {
-            localStorage.setItem("instabooks-auth-token", token )
-        }
-    }, [ token ])
 
     return (
         <div>

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useGetMeQuery } from "../../features/users/services/authApi";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { logOut } from "../../features/users/authSlice";
+import { logOut, setIsAuthenticated } from "../../features/users/authSlice";
 
 export function useProtectedRoute() {
     const isAuthenticated = useSelector( state => state.auth.isAuthenticated )
@@ -18,6 +18,10 @@ export function useProtectedRoute() {
     }, [ isAuthenticated ] )
 
     useEffect( function() {
+        if ( !isLoading && data ) {
+            dispatch( setIsAuthenticated() )
+        }
+
         if ( !isLoading && error ) {
             dispatch( logOut() )
 

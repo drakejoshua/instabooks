@@ -9,6 +9,7 @@ export function useDialogActions() {
 
     return {
         openDialog(dialog) {
+            // dialogs should have title, description and render
             let dialogId = crypto.randomUUID();
 
             dispatch(

@@ -41,7 +41,7 @@ export function Component() {
             // redirect to the shop after 1 second
             let timeout = setTimeout( function() {
                 navigateTo("/")
-            }, 1000 )
+            }, 2500 )
 
             return function() {
                 clearTimeout( timeout )
