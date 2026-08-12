@@ -1,6 +1,5 @@
-import { FaArrowRight, FaGoogle } from "react-icons/fa6";
+import { FaGoogle } from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
-import AltButton from "../../../shared/components/AltButton.jsx";
 import Heading from "../../../shared/components/Heading.jsx";
 import { Link } from "react-router-dom";
 
@@ -41,23 +40,6 @@ export function Component() {
                     Sign in with google
                 </Link>
             </Button>
-
-            <AltButton
-                className="
-                    items-center
-                    mx-auto
-                    mt-4
-                    gap-2
-                    flex!
-                    w-fit
-                "
-                asChild
-            >
-                <Link to="/auth/google">
-                    Go to admin
-                    <FaArrowRight />
-                </Link>
-            </AltButton>
         </div>
     );
 }

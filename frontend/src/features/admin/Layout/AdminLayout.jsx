@@ -1,11 +1,11 @@
 import Logo from "../../../shared/components/Logo";
 import Button from "../../../shared/components/Button";
 import { Link, Outlet } from "react-router-dom";
-import { useAuth } from "../../../shared/hooks/useAuth";
+import { useProtectedRoute } from "../../../shared/hooks/useProtectedRoute";
 
 
 export function Component() {
-    const { isLoading } = useAuth()
+    const { isLoading } = useProtectedRoute()
 
     if ( isLoading ) {
         return (

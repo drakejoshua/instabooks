@@ -1,6 +1,6 @@
 import { FaCircleNotch } from "react-icons/fa6";
 import Button from "../../../shared/components/Button";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AnimatedWarningIcon from "../../../shared/components/AnimatedWarningIcon";
 import AnimatedCheckIcon from "../../../shared/components/AnimatedCheckIcon";
 import Heading from "../../../shared/components/Heading";
@@ -16,6 +16,8 @@ export function Component() {
     const { data, isLoading, error } = useGoogleVerifyQuery( 
         id || ""
     )
+
+    const navigateTo = useNavigate()
 
     let iconStyle = `
         text-6xl
@@ -36,8 +38,14 @@ export function Component() {
             // dispatch the access token to the redux store
             dispatch( setToken( data.data.access_token ) )
 
-            // save access token to localStorage
-            localStorage.setItem("instabooks-auth-token", data.data.access_token )
+            // redirect to the shop after 1 second
+            let timeout = setTimeout( function() {
+                navigateTo("/")
+            }, 1000 )
+
+            return function() {
+                clearTimeout( timeout )
+            }
         }
     }, [ isLoading ])
 
@@ -66,7 +74,7 @@ export function Component() {
             )}
 
             {/* error state */}
-            { ( !isLoading && error != null ) && (
+            { ( !isLoading && error ) && (
                 <div>
                     <AnimatedWarningIcon />
 
@@ -94,7 +102,7 @@ export function Component() {
             )}
 
             {/* loaded state */}
-            { ( !isLoading && error == null ) && (
+            { ( !isLoading && !error ) && (
                 <div>
                     <AnimatedCheckIcon />
 

@@ -4,14 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { logOut } from "../../features/users/authSlice";
 
-export function useAuth() {
-    const { isAuthenticated } = useSelector( state => state.auth.isAuthenticated )
+export function useProtectedRoute() {
+    const isAuthenticated = useSelector( state => state.auth.isAuthenticated )
     const { data, isLoading, error } = useGetMeQuery();
     const dispatch = useDispatch()
-
-    console.log("auth error: ", error)
-    console.log("auth loading: ", isLoading)
-    console.log("auth data: ", data)
 
     const navigateTo = useNavigate()
 

@@ -20,7 +20,7 @@ export const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithRefreshAuth = async function( args, api, extraOptions ) {
     // make initial request
-    let result = baseQuery( args, api, extraOptions )
+    let result = await baseQuery( args, api, extraOptions )
 
     // if access token expired
     if ( result.error?.status === 401 ) {
@@ -41,15 +41,15 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
                 setToken( accessToken )
             )
 
-            // update localstorage with new access token
-            localStorage.setItem("instabooks-auth-token", accessToken )
-
             // retry original request with new access token
             result = await baseQuery( args, api, extraOptions )
         } else {
             api.dispatch(
                 logOut()
             )
+
+            // remove access token from localstorage
+            localStorage.removeItem("instabooks-auth-token")
         }
     }
 

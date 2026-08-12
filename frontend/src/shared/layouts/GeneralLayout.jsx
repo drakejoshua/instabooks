@@ -5,14 +5,14 @@ import { FaBars, FaCartShopping } from "react-icons/fa6"
 import AltButton from "../components/AltButton.jsx";
 import { useState } from "react";
 import UserAvatar from "../components/UserAvatar.jsx";
-import { useAuth } from "../hooks/useAuth.jsx";
+import { useProtectedRoute } from "../hooks/useProtectedRoute.jsx";
 
 
 export function Component() {
     const isMobile = window.innerWidth < 768;
     let [ isMobileMenuOpen, setIsMobileMenuOpen ] = useState( isMobile ? false : true );
 
-    const { data, isLoading } = useAuth()
+    const { data, isLoading } = useProtectedRoute()
 
     if ( isLoading ) {
         return (
@@ -62,7 +62,7 @@ export function Component() {
                             " 
                         />
 
-                        { user?.cart.length > 0 && <span
+                        { user?.cart?.length > 0 && <span
                             className="
                                 inline-block
                                 p-2
@@ -102,10 +102,8 @@ export function Component() {
                     mt-6 lg:m-0
                     *:grow
                 ">
-                    <Button asChild>
-                        <Link to="/auth/google">
-                            Sign in
-                        </Link>
+                    <Button>
+                        log out
                     </Button>
 
                     <AltButton asChild>
