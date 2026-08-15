@@ -26,8 +26,9 @@ function BookDetailsLayout({
             className="
             w-full
             object-cover
+            object-top
             rounded-md
-            max-h-100 lg:max-h-full
+            max-h-100 lg:max-h-[calc(100vh-8rem)]
         "
         />
 

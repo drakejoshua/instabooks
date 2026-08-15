@@ -198,8 +198,7 @@ export async function getAllOrdersService(userId, limit, page) {
     // specified limit
     let orders = await Orders.find({ user_id: userId })
         .sort({ createdAt: -1 })
-        .limit(limit)
-        .skip(page && page > 0 ? (page - 1) * limit : 0);
+        .limit(page * limit)
     let totalOrders = await Orders.countDocuments({ user_id: userId });
 
     return {

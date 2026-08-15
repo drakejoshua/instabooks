@@ -7,6 +7,7 @@ import ErrorComponent from "./shared/ui/ErrorComponent.jsx";
 import { Provider } from "react-redux";
 import { store } from "./app/store/store.js";
 
+
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <ErrorBoundary fallback={ErrorComponent}>

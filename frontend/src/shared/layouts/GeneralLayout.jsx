@@ -6,7 +6,7 @@ import AltButton from "../components/AltButton.jsx";
 import { useState } from "react";
 import UserAvatar from "../components/UserAvatar.jsx";
 import { useProtectedRoute } from "../hooks/useProtectedRoute.jsx";
-import { authApi, useLogoutMutation } from "../../features/users/services/authApi.js";
+import { useLogoutMutation } from "../../features/users/services/authApi.js";
 import { useToastActions, ToastTypes } from "../ui/ToastRenderer.jsx";
 import { useDialogActions } from "../ui/DialogRenderer.jsx";
 import { useDispatch } from "react-redux";
@@ -19,7 +19,7 @@ export function Component() {
         isMobile ? false : true,
     );
 
-    const { data, isLoading } = useProtectedRoute();
+    const { data, isLoading, error } = useProtectedRoute();
     const dispatch = useDispatch();
 
     // toast utility functions via the useToastActions to
@@ -33,7 +33,7 @@ export function Component() {
 
     // lazy logout query to logout users when
     // they click the logout button in the mobile menu
-    const [ triggerLogout ] = useLogoutMutation()
+    const [ triggerLogout, { isLoading: logoutIsLoading } ] = useLogoutMutation()
 
     // handleLogout() 
     // This function triggers the lazy logout request logging the 
@@ -53,7 +53,6 @@ export function Component() {
             })
 
             dispatch(logOut());
-            dispatch(authApi.util.resetApiState());
         } catch {
             let dialogId = openDialog({
                 title: "Account Logout Error",
@@ -79,6 +78,10 @@ export function Component() {
 
     if (isLoading) {
         return <div> loading authenticated user information </div>;
+    }
+
+    if ( error ) {
+        return <></>
     }
 
     const user = data?.data;
@@ -165,8 +168,10 @@ export function Component() {
                         <Button 
                             className="capitalize cursor-pointer"
                             onClick={ () => handleLogout() }
+                            disabled={ logoutIsLoading }
                         >
-                            log out
+                            { !logoutIsLoading && <> log out </> }
+                            { logoutIsLoading && <> loading.. </> }
                         </Button>
 
                         <AltButton asChild>

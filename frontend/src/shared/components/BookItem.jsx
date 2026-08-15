@@ -37,7 +37,8 @@ function BookItem({
                 alt="Book cover"
                 className="
                     w-full
-                    max-h-70
+                    h-70
+                    object-cover
                 "
             />
         
@@ -60,7 +61,9 @@ function BookItem({
             "
         >
             {/* title */}
-            <Heading>
+            <Heading
+                className="line-clamp-1"
+            >
                 { title }
             </Heading>
 
@@ -85,6 +88,7 @@ function BookItem({
                     *:flex
                     *:items-center
                     *:gap-2
+                    *:capitalize
                     [&_.metadata-icon]:text-instabooks-blue
                     [&_.metadata-icon]:text-xl
                 "

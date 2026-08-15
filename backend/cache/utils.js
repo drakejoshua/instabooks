@@ -285,16 +285,13 @@ async function getAndHydrateBookById(bookId, req = null) {
 // getAndHydrateBooks()
 // This helper function retrieves books from the cache or database,
 // and returns a list of hydrated book model instances.
-async function getAndHydrateBooks(limit, page, req = null) {
+async function getAndHydrateBooks(limit, req = null) {
     let books = await getOrSetCache(
         req,
-        CacheKeys.books(limit, page),
+        CacheKeys.books(limit),
         async function () {
             return await Books.find()
                 .limit(limit)
-                .skip(
-                    ( page > 1 ) ? ( page - 1 ) * limit : 0
-                );
         },
         CacheTTL.books, // cache expiration time
     );
@@ -488,8 +485,8 @@ export const CacheKeys = {
         return `book:id:${bookId}`;
     },
     // Generates a cache key for retrieving books data with a limit
-    books: function (limit, page) {
-        return `books:limit:${limit}:page:${page}`;
+    books: function (limit) {
+        return `books:limit:${limit}`;
     },
     bookCount: function () {
         return `books:count`;
@@ -497,8 +494,8 @@ export const CacheKeys = {
     searchResults: function (query) {
         return `books:search:${query}`;
     },
-    orders: function( limit, page ) {
-        return `orders:limit:${limit}:page:${page}`
+    orders: function( limit ) {
+        return `orders:limit:${limit}`
     },
     ordersCount: function () {
         return `orders:count`;

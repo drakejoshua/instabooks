@@ -6,8 +6,50 @@ import SearchBar from "../../shared/components/SearchBar";
 import Carousel from "./components/Carousel";
 import Button from "../../shared/components/Button";
 import { Link } from "react-router-dom";
+import { useGetBooksQuery } from "../books/services/booksApi";
+import { useState } from "react";
+import RouteLoading from "../../shared/ui/RouteLoading";
+import RouteError from "../../shared/ui/RouteError";
 
 export function Home() {
+    const [ page, setPage ] = useState( 1 )
+    const { 
+        isLoading, 
+        data: bookResponse, 
+        error,
+        isFetching
+    } = useGetBooksQuery( page )
+
+    const DefaultLimit = 10
+
+    function handleRetry() {
+        if ( ( page * DefaultLimit ) < bookResponse?.data?.totalBooks ) {
+            setPage( page + 1 )
+        }
+    }
+
+    if ( isLoading ) {
+        return (
+            <RouteLoading
+                label="loading books..."
+            />
+        )
+    }
+
+    if ( error ) {
+        return (
+            <RouteError
+                heading="An error occurred while fetching books"
+                error={ error }
+                refetch={ () => setPage( 1 ) }
+                text="
+                    There was an error while fetching the books. 
+                    Please try again later. Error code:
+                "
+            />
+        )
+    }
+
     return (
         <div className="pb-8 lg:pb-12">
             {/* search bar */}
@@ -38,35 +80,17 @@ export function Home() {
                     translate-x-[calc(var(--active-slide)*-100%)]
                 "
                 >
-                    <BookItem
-                        title="The great gatsby"
-                        description="A novel by F. Scott Fitzgerald that 
-                    explores themes of wealth, love, and the American 
-                    Dream in 1920s America."
-                        to="/books/the-great-gatsby-2"
-                        src="https://picsum.photos/id/24/200"
-                    />
-
-                    <BookItem
-                        title="How to Win Friends and Influence People"
-                        description="A timeless classic by Dale Carnegie that 
-                    offers practical advice on how to improve your social
-                    skills, build meaningful relationships, and become a 
-                    more influential person in both your personal and 
-                    professional life."
-                        to="/books/how-to-win-friends-and-influence-people"
-                        src="https://picsum.photos/id/24/200"
-                    />
-
-                    <BookItem
-                        title="Rich Dad Poor Dad"
-                        description="A personal finance book by Robert Kiyosaki 
-                    that contrasts the financial philosophies of his two 
-                    'dads' and provides insights on how to achieve financial 
-                    independence and build wealth."
-                        to="/books/rich-dad-poor-dad"
-                        src="https://picsum.photos/id/24/200"
-                    />
+                    {
+                        bookResponse?.data?.books.slice( 1, 4 ).map( ( book ) => (
+                            <BookItem
+                                key={ book.id }
+                                title={ book.title }
+                                description={ book.description }
+                                to={ `/books/details/${book.id}` }
+                                src={ book.cover_photo_url }
+                            />
+                        ) )
+                    }
                 </Carousel.Track>
 
                 <div
@@ -143,82 +167,48 @@ export function Home() {
                 {/* book grid */}
                 <BookList
                     className="mt-14"
-                    books={[
-                        {
-                            title: "How to Win Friends and Influence People",
-                            description: `This timeless classic by Dale 
-                        Carnegie offers practical advice on how to 
-                        improve your social skills, build meaningful 
-                        relationships, and become a more influential 
-                        person in both your personal and professional life.`,
-                            author: "Dale Carnegie",
-                            pages: 302,
-                            price: 10.0,
-                            genre: "Finance",
-                            photoUrl: "https://picsum.photos/id/24/400",
-                        },
-                        {
-                            title: "How to Win Friends and Influence People",
-                            description: `This timeless classic by Dale 
-                        Carnegie offers practical advice on how to 
-                        improve your social skills, build meaningful 
-                        relationships, and become a more influential 
-                        person in both your personal and professional life.`,
-                            author: "Dale Carnegie",
-                            pages: 302,
-                            price: 10.0,
-                            genre: "Finance",
-                            photoUrl: "https://picsum.photos/id/24/400",
-                        },
-                        {
-                            title: "How to Win Friends and Influence People",
-                            description: `This timeless classic by Dale 
-                        Carnegie offers practical advice on how to 
-                        improve your social skills, build meaningful 
-                        relationships, and become a more influential 
-                        person in both your personal and professional life.`,
-                            author: "Dale Carnegie",
-                            pages: 302,
-                            price: 10.0,
-                            genre: "Finance",
-                            photoUrl: "https://picsum.photos/id/24/400",
-                        },
-                        {
-                            title: "How to Win Friends and Influence People",
-                            description: `This timeless classic by Dale 
-                        Carnegie offers practical advice on how to 
-                        improve your social skills, build meaningful 
-                        relationships, and become a more influential 
-                        person in both your personal and professional life.`,
-                            author: "Dale Carnegie",
-                            pages: 302,
-                            price: 10.0,
-                            genre: "Finance",
-                            photoUrl: "https://picsum.photos/id/24/400",
-                        },
-                    ]}
+                    books={
+                        bookResponse?.data?.books.map( book => ({
+                            id: book.id,
+                            title: book.title,
+                            description: book.description,
+                            author: book.author,
+                            pages: book.pages,
+                            price: book.price,
+                            genre: book.genre,
+                            photoUrl: book.cover_photo_url,
+                        }) )
+                    }
                 />
             </section>
 
             {/* load more button */}
-            <AltButton
-                className="
-                flex!
-                items-center
-                gap-4
-                mt-14 lg:mt-20
-                mx-auto
+            { ( page * DefaultLimit < bookResponse?.data?.totalBooks ) &&
+                <AltButton
+                    className="
+                        flex!
+                        items-center
+                        gap-4
+                        mt-14 lg:mt-20
+                        mx-auto
+                    "
+                    onClick={ handleRetry }
+                >
+                    <FaArrowsRotate
+                        className={`
+                            ${ isFetching ? "animate-spin" : "" }
+                        `}
+                    />
 
-            "
-            >
-                <FaArrowsRotate />
-                Load more books
-            </AltButton>
+                    Load more books
+                </AltButton>
+            }
         </div>
     );
 }
 
 export default Home;
+
 
 function BookItem({ title, description, to = "", src = "" }) {
     return (
@@ -249,7 +239,7 @@ function BookItem({ title, description, to = "", src = "" }) {
                     className="
                     text-white
                     text-4xl
-                    line-clamp-3
+                    line-clamp-2
                 "
                 >
                     {title}
@@ -258,7 +248,7 @@ function BookItem({ title, description, to = "", src = "" }) {
                 <p
                     className="
                     mt-4
-                    line-clamp-4 lg:line-clamp-6
+                    line-clamp-4 lg:line-clamp-3
                 "
                 >
                     {description}

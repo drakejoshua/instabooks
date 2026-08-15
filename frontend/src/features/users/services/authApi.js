@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
-import { baseQueryWithRefreshAuth } from "../../../app/store/baseQuery"
+import { baseQueryWithRefreshAuth } from "../../../app/store/baseQuery.js"
 
 export const authApi = createApi({
     reducerPath: "authApi",
@@ -18,8 +18,10 @@ export const authApi = createApi({
                 query: () => "/auth/me"
             }),
             logout: builder.mutation({
-                query: () => "/auth/logout",
-                method: "GET"
+                query: () => ({
+                    url: "/auth/logout",
+                    method: "GET"
+                })
             })
         }
     }

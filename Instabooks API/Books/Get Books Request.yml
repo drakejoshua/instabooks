@@ -14,10 +14,11 @@ http:
         type: multipart-form
     auth:
         type: bearer
-        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODM4MTc2NjMsImV4cCI6MTc4MzgxODU2M30.6koFDgcp9HRzzrcDbMIN57-g_S--8G61yDvCOnSfN7o
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTJkNjhlYjY1MDYwZjhjODc2Nzk0OWEiLCJpYXQiOjE3ODY3MDk4MDcsImV4cCI6MTc4NjcxMDcwN30.lTu5GFbJyX2_bY29QG9ZcG42otP-t2ZwLrv1_8JP2Bs
 
 settings:
     encodeUrl: true
     timeout: 0
     followRedirects: true
     maxRedirects: 5
+​

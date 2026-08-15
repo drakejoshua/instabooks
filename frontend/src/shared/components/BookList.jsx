@@ -10,8 +10,8 @@ function BookList({ books, className = "", type = "default" }) {
         `}
     >
         {
-            books?.map( function( book, index ) {
-                return <BookItem {...book} key={index} type={type} />
+            books?.map( function( book ) {
+                return <BookItem {...book} key={book.id} type={type} />
             })
         }
     </div>

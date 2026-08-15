@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-const LocalStorageAuthKey = import.meta.env.VITE_LOCALSTORAGE_AUTH_KEY
-
 const authSlice = createSlice({
     name: "auth",
     initialState: {
@@ -10,19 +8,20 @@ const authSlice = createSlice({
     },
     reducers: {
         setToken: (state, action) => {
-            // set auth token to localStorage
-            localStorage.setItem( LocalStorageAuthKey, action.payload )
-
             state.token = action.payload,
             state.isAuthenticated = true
         },
         setIsAuthenticated: (state) => {
             state.isAuthenticated = true
         },
+        clearToken: (state) => {
+            state.token = null,
+            state.isAuthenticated = false
+        },
+        // logOut is different from clearToken because it also 
+        // removes the token from localStorage and resets the 
+        // authApi state via a listener middleware
         logOut: (state) => {
-            // remove access token from localstorage
-            localStorage.removeItem( LocalStorageAuthKey )
-
             state.token = null,
             state.isAuthenticated = false
         }
@@ -33,6 +32,7 @@ const authSlice = createSlice({
 export const {
     setToken,
     setIsAuthenticated,
+    clearToken,
     logOut
 } = authSlice.actions
 export default authSlice.reducer

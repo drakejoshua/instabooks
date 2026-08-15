@@ -1,9 +1,15 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { setToken, logOut } from "../../features/users/authSlice.js"
-import { authApi } from "../../features/users/services/authApi.js";
+import { clearToken, setToken } from "../../features/users/authSlice.js"
 
 const backendURL = import.meta.env.VITE_BACKEND_URL
 const LocalStorageAuthKey = import.meta.env.VITE_LOCALSTORAGE_AUTH_KEY
+
+// pendingRefresh is used to prevent multiple refresh 
+// requests from being sent simultaneously. If a refresh 
+// request is already in progress, subsequent requests 
+// will wait for the first one to complete and use its 
+// result.
+let pendingRefresh = null
 
 export const baseQuery = fetchBaseQuery({
     baseUrl: backendURL,
@@ -27,15 +33,29 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
     // if access token expired
     if ( result.error?.status === 401 ) {
         // refresh access token
-        const refreshResult = await baseQuery(
-            {
-                url: "/auth/refresh",
-                method: "POST"
-            },
-            api,
-            extraOptions
-        )
 
+        // check if there's a pending refresh and instantiate
+        // a new refresh request if none
+        if (!pendingRefresh) {
+            pendingRefresh = baseQuery(
+                {
+                    url: "/auth/refresh",
+                    method: "POST",
+                },
+                api,
+                extraOptions
+            ).finally(() => {
+                // cleanup the value of the pending refresh when 
+                // the request is finally done
+                pendingRefresh = null;
+            });
+        }
+
+        // get the value of the pending refresh request and
+        // await it to get the results  
+        const refreshResult = await pendingRefresh;
+
+        // proceed with the refresh result and clear pendingRefresh
         if ( refreshResult.data ) {
             let accessToken = refreshResult.data.data.access_token
 
@@ -46,8 +66,7 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
             // retry original request with new access token
             result = await baseQuery( args, api, extraOptions )
         } else {
-            api.dispatch(logOut());
-            api.dispatch(authApi.util.resetApiState());
+            api.dispatch(clearToken());
         }
     }
 
