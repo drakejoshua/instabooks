@@ -14,11 +14,59 @@ export const ordersApi = createApi({
                         params: { limit, page }
                     }
                 }
+            }),
+            getOrder: builder.query({
+                query: function( order_id ) {
+                    return {
+                        url: `/orders/${ order_id }`,
+                    }
+                }
+            }),
+            checkoutCart: builder.mutation({
+                query: function( shipping_address ) {
+                    return {
+                        url: "/orders/checkout",
+                        method: "POST",
+                        body: {
+                            shipping_address
+                        }
+                    }
+                }
+            }),
+            revalidateOrder: builder.query({
+                query: function( order_id ) {
+                    return {
+                        url: `/orders/revalidate/${ order_id }`
+                    }
+                }
+            }),
+            confirmOrder: builder.query({
+                query: function( order_id ) {
+                    return {
+                        url: '/orders/confirm',
+                        params: {
+                            reference: order_id
+                        }
+                    }
+                }
+            }),
+            cancelOrder: builder.mutation({
+                query: function( order_id ) {
+                    return {
+                        url: `/orders/${ order_id }`,
+                        method: "DELETE",
+                    }
+                }
             })
         }
     }
 })
 
 export const {
-    useGetOrdersQuery
+    useGetOrdersQuery,
+    useGetOrderQuery,
+    useConfirmOrderQuery,
+    useCheckoutCartMutation,
+    useCancelOrderMutation,
+    useRevalidateOrderQuery
 } = ordersApi
