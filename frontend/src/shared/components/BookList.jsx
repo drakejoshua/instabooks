@@ -11,7 +11,11 @@ function BookList({ books, className = "", type = "default" }) {
     >
         {
             books?.map( function( book ) {
-                return <BookItem {...book} key={book.id} type={type} />
+                return <BookItem 
+                    key={book.id} 
+                    type={type} 
+                    {...book}
+                />
             })
         }
     </div>

@@ -32,8 +32,8 @@ export function OrderPreview({
                         flex
                         items-center
                         gap-3
-                        group
                         w-full
+                        group
                     "
                 >
                     <FaChevronUp 
@@ -92,9 +92,9 @@ export function OrderPreview({
                         "
                     >
                         {
-                            items.map((item, index) => (
+                            items.map((item) => (
                                 <OrderDetailsItem
-                                    key={ index }
+                                    key={ item.id }
                                     bookName={ item.title }
                                     quantity={ item.quantity }
                                     price={ item.price }
@@ -119,17 +119,17 @@ export function OrderPreview({
                             *:px-4 *:py-2
                         "
                     >
-                        <Button>
+                        { paymentStatus != "paid" && <Button>
                             <FaArrowsRotate />
 
                             revalidate order
-                        </Button>
+                        </Button>}
 
-                        <AltButton>
+                        { status != "cancelled"  && <AltButton>
                             <FaTrash />
 
                             cancel order
-                        </AltButton>
+                        </AltButton>}
                     </div>
                 </Collapsible.Content>
             </div>

@@ -17,6 +17,7 @@ function OrderDetailsItem(
             className="
                 w-13 
                 h-15 
+                shrink-0
                 rounded-lg 
                 object-cover 
                 outline-2

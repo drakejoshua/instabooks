@@ -15,13 +15,29 @@ export const authApi = createApi({
                 })
             }),
             getMe: builder.query({
-                query: () => "/auth/me"
+                query: () => "/auth/me",
+                providesTags: ["user"]
             }),
             logout: builder.mutation({
                 query: () => ({
                     url: "/auth/logout",
                     method: "GET"
                 })
+            }),
+            updateUser: builder.mutation({
+                query: function({ name, photo, delete_photo = false }) {
+                    let newUserInfo = new FormData()
+
+                    if ( name ) newUserInfo.append("name", name)
+                    if ( photo ) newUserInfo.append("photo", photo)
+
+                    return {
+                        url: `/auth/update?deletePhoto=${ delete_photo }`,
+                        method: "POST",
+                        body: newUserInfo
+                    }
+                },
+                invalidatesTags: ["user"]
             })
         }
     }
@@ -31,5 +47,6 @@ export const authApi = createApi({
 export const {
     useGoogleVerifyQuery,
     useGetMeQuery,
-    useLogoutMutation
+    useLogoutMutation,
+    useUpdateUserMutation
 } = authApi

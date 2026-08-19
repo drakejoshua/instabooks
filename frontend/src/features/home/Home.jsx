@@ -281,6 +281,8 @@ function BookItem({ title, description, to = "", src = "" }) {
                 left-0
                 top-0
                 ml-auto
+                object-cover
+                object-center
                 opacity-30 lg:opacity-100   
             "
             />

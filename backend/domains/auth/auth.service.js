@@ -220,14 +220,6 @@ export async function profileUpdateAuthService(
 
         user.photo_url = "";
         user.photo_id = "";
-
-        await user.save();
-
-        // update user id cache info with updated user data ( i.e updated
-        // user name or profile photo info )
-        await CacheUpdate.updateUserById(user, req);
-
-        return await user.getProfileData();
     }
 
     // check if user wants to update their profile photo and
@@ -238,20 +230,15 @@ export async function profileUpdateAuthService(
 
         user.photo_url = uploadResult.secure_url;
         user.photo_id = uploadResult.public_id;
-
-        await user.save();
-
-        // update user id cache info with updated user data ( i.e updated
-        // user name or profile photo info )
-        await CacheUpdate.updateUserById(user, req);
-
-        return await user.getProfileData();
     }
 
-    // if user does not want to update their profile photo,
-    // just save the changes to user document and return updated
-    // user data
+    // save user document to reflect changes made to the 
+    // user profile
     await user.save();
+
+    // update user id cache info with updated user data ( i.e updated
+    // user name or profile photo info )
+    await CacheUpdate.updateUserById(user, req);
 
     return await user.getProfileData();
 }

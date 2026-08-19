@@ -115,7 +115,7 @@ export function Component() {
                     <Link to="/cart" className="relative top-0">
                         <FaCartShopping
                             className="
-                                text-xl 
+                                text-2xl 
                                 inline-block
                                 text-instabooks-blue
                             "
@@ -125,12 +125,12 @@ export function Component() {
                             <span
                                 className="
                                 inline-block
-                                p-2
+                                p-1
                                 rounded-full
                                 bg-instabooks-blue
                                 absolute
-                                top-0
-                                -right-2
+                                -top-1
+                                -right-2.5
                             "
                             ></span>
                         )}

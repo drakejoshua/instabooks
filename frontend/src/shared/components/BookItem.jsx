@@ -120,6 +120,7 @@ function BookItem({
 
             {/* book actions */}
             { type === "default" && <BookActions 
+                id={ id }
                 className="
                     mt-8
                 "

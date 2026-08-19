@@ -1,10 +1,11 @@
 import BookActions from "../../../shared/components/BookActions";
 
 function CartBookItem({
-    id,  // to be integrated with cart functionality in the future
+    id,
     title = "Book title",
     price = 0,
-    photoUrl = ""
+    photoUrl = "",
+    orderQuantity = 0,
 }) {
     return <div
         className="
@@ -65,6 +66,7 @@ function CartBookItem({
         </div>
 
         <BookActions 
+            id={id}
             className="
                 md:ml-auto
             "
@@ -77,7 +79,7 @@ function CartBookItem({
             "
         >
             {/* to be calculated using cart functionality later */}
-            $10.00  
+            ${ ( price * orderQuantity ).toFixed(2) }
         </span>
     </div>;
 }

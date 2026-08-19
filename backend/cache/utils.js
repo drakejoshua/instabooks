@@ -381,8 +381,7 @@ async function getAndHydrateOrders( limit, page, req ) {
         async function() {
             return await Orders.find()
                 .sort({ createdAt: -1 })
-                .limit(limit)
-                .skip(page && page > 0 ? (page - 1) * limit : 0);
+                .limit( page * limit )
         },
         CacheTTL.orders
     )
@@ -494,8 +493,8 @@ export const CacheKeys = {
     searchResults: function (query) {
         return `books:search:${query}`;
     },
-    orders: function( limit ) {
-        return `orders:limit:${limit}`
+    orders: function( limit, page ) {
+        return `orders:limit:${limit}:page:${page}`
     },
     ordersCount: function () {
         return `orders:count`;

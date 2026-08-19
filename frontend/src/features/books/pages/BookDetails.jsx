@@ -60,6 +60,7 @@ export function Component() {
             pages={ book.data.pages }
         >
             <BookActions 
+                id={ id }
                 className="
                     w-fit
                     mt-8 lg:mt-12

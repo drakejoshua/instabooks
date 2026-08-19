@@ -1,6 +1,10 @@
-import { FaTrash } from "react-icons/fa6";
+import { FaCircleNotch, FaTrash } from "react-icons/fa6";
 
-export function AddressListItem({ address }) {
+export function AddressListItem({ 
+    address = "",
+    handleDeleteAddress = () => {},
+    deleteLoading = false
+}) {
     return <div
         className="
             flex
@@ -18,9 +22,25 @@ export function AddressListItem({ address }) {
         </span>
 
         <button
-            className="cursor-pointer"
+            className="
+                cursor-pointer disabled:cursor-not-allowed
+                disabled:opacity-70
+            "
+            onClick={ handleDeleteAddress }
+            disabled={ deleteLoading }
         >
-            <FaTrash className="text-instabooks-blue"/>
+            {
+                deleteLoading ? (
+                    <FaCircleNotch 
+                        className="
+                            animate-spin 
+                            text-instabooks-blue
+                        "
+                    />
+                ) : (
+                    <FaTrash className="text-instabooks-blue"/>
+                )
+            }
         </button>
     </div>
 }

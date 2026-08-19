@@ -55,7 +55,7 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
         // await it to get the results  
         const refreshResult = await pendingRefresh;
 
-        // proceed with the refresh result and clear pendingRefresh
+        // proceed with the refresh result
         if ( refreshResult.data ) {
             let accessToken = refreshResult.data.data.access_token
 

@@ -52,7 +52,7 @@ function DialogRenderer({ children }) {
                         key={dialog.id}
                         title={dialog.title}
                         description={dialog.description}
-                        content={dialog.content}
+                        children={dialog.content}
                     />
                 );
             })}
@@ -62,7 +62,7 @@ function DialogRenderer({ children }) {
 
 export default DialogRenderer;
 
-export function DialogComponent({ title, description, content, ...props }) {
+export function DialogComponent({ title, description, children, ...props }) {
     return (
         <Dialog.Root {...props}>
             <Dialog.Portal>
@@ -127,7 +127,7 @@ export function DialogComponent({ title, description, content, ...props }) {
                         {description}
                     </Dialog.Description>
 
-                    {content}
+                    {children}
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
