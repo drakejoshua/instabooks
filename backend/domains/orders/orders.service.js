@@ -9,7 +9,7 @@ import { paystackInitialize, paystackVerify } from "./orders.utils.js";
 import mongoose from "mongoose";
 
 
-export async function checkoutOrderService(shippingAddress, user) {
+export async function checkoutOrderService(shippingAddress, user, req) {
     // check if the shipping address is valid
     if (!user.addresses.includes(shippingAddress)) {
         throw InvalidAddressError;
@@ -20,7 +20,7 @@ export async function checkoutOrderService(shippingAddress, user) {
 
     // calculate the total price of the order
     let totalPrice = cartItems.reduce(function (total, item) {
-        return total + ( item.price * item.quantity );
+        return total + ( item.price * item.order_quantity );
     }, 0);
 
     // create a new order document with the user data
@@ -28,13 +28,13 @@ export async function checkoutOrderService(shippingAddress, user) {
     let newOrder = await Orders.create({
         user_id: user._id,
         shipping_address: shippingAddress,
-        price_at_purchase: Math.round( totalPrice ),
+        price_at_purchase: totalPrice.toFixed(2),
         payment_status: "pending",
         status: "pending",
         products: cartItems.map(function (item) {
             return {
                 book_id: item.id,
-                order_quantity: item.quantity,
+                order_quantity: item.order_quantity,
             };
         }),
     });
@@ -59,6 +59,11 @@ export async function checkoutOrderService(shippingAddress, user) {
     // the user data
     user.cart = []
     await user.save()
+
+    // update the cache for the user data after checkout
+    // to ensure that the cart is cleared in the cache 
+    // as well
+    await CacheUpdate.updateUserById( user, req )
 
     return paymentData.data;
 }

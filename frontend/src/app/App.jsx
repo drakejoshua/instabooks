@@ -9,7 +9,6 @@ function App() {
             className="
             bg-white
             min-h-screen
-            overflow-x-hidden
         "
         >
             <ToastRenderer>

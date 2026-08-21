@@ -18,6 +18,7 @@ export async function checkoutOrderController(req, res, next) {
         let paymentData = await checkoutOrderService(
             shipping_address,
             req.user,
+            req
         );
 
         // send the payment info as a response
@@ -42,7 +43,7 @@ export async function confirmOrderPaymentController(req, res, next) {
         // redirect to the frontend order confirmation page
         // with the order reference as a route parameter
         let frontendURL = process.env.FRONTEND_URL;
-        return res.redirect(`${frontendURL}/orders/confirm/${reference}`);
+        return res.redirect(`${frontendURL}/orders/details/${reference}`);
     } catch (error) {
         next(error);
     }

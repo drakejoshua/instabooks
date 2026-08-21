@@ -3,7 +3,7 @@ import TextField from "../../../shared/components/TextField";
 import EmailField from "../../../shared/components/EmailField";
 import Button from "../../../shared/components/Button";
 import UserAvatar from "../../../shared/components/UserAvatar";
-import { FaArrowRotateLeft, FaArrowsToCircle, FaCircleArrowLeft, FaFileArrowUp, FaTrash } from "react-icons/fa6";
+import { FaArrowRotateLeft, FaFileArrowUp, FaTrash } from "react-icons/fa6";
 import { AddressListItem } from "../components/AddressListItem";
 import { OrderPreview } from "../components/OrderPreview";
 import Heading from "../../../shared/components/Heading";
@@ -13,16 +13,18 @@ import { useEffect, useState } from "react";
 import { ToastTypes, useToastActions } from "../../../shared/ui/ToastRenderer";
 import { DialogComponent, useDialogActions } from "../../../shared/ui/DialogRenderer";
 import { useAddAddressMutation, useDeleteAddressMutation } from "../../../shared/services/userApi";
+import ScrollSpy from 'react-scrollspy-navigation';
+import { getErrorMessage } from "../../../shared/utils/utils";
 
 export function Component() {
     const defaultLimit = 20
     const [ page, setPage ] = useState( 1 )
     
     const [ name, setName ] = useState("")
-    let [ isPhotoUpdateDialogOpen, setIsPhotoUpdateDialogOpen ] = useState( false )
-    let [ profilePhoto, setProfilePhoto ] = useState( null )
-    let [ newAddress, setNewAddress ] = useState( "" )
-    let [ isAddressAdditionDialogOpen, setIsAddressAdditionDialogOpen ] = useState( false )
+    const [ isPhotoUpdateDialogOpen, setIsPhotoUpdateDialogOpen ] = useState( false )
+    const [ profilePhoto, setProfilePhoto ] = useState( null )
+    const [ newAddress, setNewAddress ] = useState( "" )
+    const [ isAddressAdditionDialogOpen, setIsAddressAdditionDialogOpen ] = useState( false )
 
     const { data: user } = useGetMeQuery()
     const { 
@@ -39,9 +41,21 @@ export function Component() {
         } 
     ] = useUpdateUserMutation()
 
-    const [ deleteAddress, { isLoading: isDeleteAddressLoading } ] = useDeleteAddressMutation()
+    const [ 
+        deleteAddress, 
+        { 
+            isLoading: isDeleteAddressLoading, 
+            error: deleteAddressError 
+        } 
+    ] = useDeleteAddressMutation()
     
-    const [ addAddress, { isLoading: isAddAddressLoading } ] = useAddAddressMutation()
+    const [ 
+        addAddress, 
+        { 
+            isLoading: isAddAddressLoading,
+            error: addAddressError
+        } 
+    ] = useAddAddressMutation()
 
     const { openToast } = useToastActions()
     
@@ -58,7 +72,7 @@ export function Component() {
         // next page of orders is within the total 
         // number of orders
         if ( ordersData?.data?.orders.length < ordersData?.data?.totalOrders ) {
-            setPage( page + 1 )
+            setPage(prev => prev + 1)
         }
     }
 
@@ -76,7 +90,9 @@ export function Component() {
             let dialogId = openDialog({
                 title: "Profile Photo Deletion Error",
                 description: `An error occured while trying to delete
-                your profile photo. Error: ${ error?.message }`,
+                your profile photo. Error: ${ 
+                    getErrorMessage( updateUserError || error )
+                }`,
                 render: function() {
                     return (
                         <Button
@@ -144,8 +160,7 @@ export function Component() {
                 title: "Profile Info Update Error",
                 description: `An error occured while trying to update
                 your profile info. Error: ${ 
-                    error?.message ||
-                    updateUserError.data?.error?.message
+                    getErrorMessage( updateUserError || error )
                 }`,
                 render: function() {
                     return (
@@ -176,7 +191,7 @@ export function Component() {
             let dialogId = openDialog({
                 title: "Address Deletion Error",
                 description: `An error occured while trying to delete
-                this address. Error: ${ error?.message }`,
+                this address. Error: ${ getErrorMessage( deleteAddressError || error ) }`,
                 render: function() {
                     return (
                         <Button
@@ -240,7 +255,9 @@ export function Component() {
             let dialogId = openDialog({
                 title: "Address Addition Error",
                 description: `An error occured while trying to add
-                this address. Error: ${ error?.message }`,
+                this address. Error: ${ 
+                    getErrorMessage( addAddressError || error )
+                }`,
                 render: function() {
                     return (
                         <Button
@@ -281,7 +298,9 @@ export function Component() {
             let dialogId = openDialog({
                 title: "Profile Photo Update Error",
                 description: `An error occured while trying to update
-                your profile photo. Error: ${ error?.message }`,
+                your profile photo. Error: ${ 
+                    getErrorMessage( updateUserError || error )
+                }`,
                 render: function() {
                     return (
                         <Button
@@ -325,19 +344,19 @@ export function Component() {
                     *:px-4 *:py-3
                     *:capitalize
                     *:text-left
+                    *:rounded-lg
                 "
                 >
-                    <button
-                        className="
-                        bg-instabooks-blue
-                        text-white
-                        rounded-lg
-                    "
+                    <ScrollSpy
+                        activeClass="
+                            bg-instabooks-blue
+                            text-white
+                        "
                     >
-                        profile
-                    </button>
+                        <a href="#profile">profile</a>
 
-                    <button>orders</button>
+                        <a href="#orders">orders</a>
+                    </ScrollSpy>
                 </aside>
 
                 <section
@@ -346,7 +365,7 @@ export function Component() {
                 "
                 >
                     <div>
-                        <Heading as="h2">your profile</Heading>
+                        <Heading as="h2" id="profile">your profile</Heading>
 
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
@@ -506,7 +525,7 @@ export function Component() {
 
                                 {/* no addresses message */}
                                 {
-                                    user?.data?.addresses.length === 0 && (
+                                    user?.data?.addresses?.length === 0 && (
                                         <p className="text-gray-600">
                                             You haven't saved any addresses yet.
                                         </p>
@@ -530,7 +549,7 @@ export function Component() {
                     </div>
 
                     <div>
-                        <Heading className="mt-12">your orders</Heading>
+                        <Heading className="mt-12" id="orders">your orders</Heading>
 
                         {
                             ordersData?.data?.orders.length === 0 && <p
@@ -549,6 +568,9 @@ export function Component() {
                             <div
                                 className="
                                 mt-6
+                                flex
+                                flex-col
+                                gap-3
                             "
                             >
                                 {/* order preview item*/}
@@ -596,8 +618,11 @@ export function Component() {
                                         items-center
                                         gap-2
                                         mt-6
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-50
                                     "
                                     onClick={ handleLoadMoreOrders }
+                                    disabled={ isOrdersLoading || isOrdersFetching }
                                 >
                                     <FaArrowRotateLeft 
                                         className={`

@@ -4,6 +4,7 @@ import { useGetMeQuery } from "../../features/users/services/authApi";
 import { useAddBookToCartMutation, useDeleteBookFromCartMutation, useUpdateBookInCartMutation } from "../services/userApi";
 import { ToastTypes, useToastActions } from "../ui/ToastRenderer";
 import { useDialogActions } from "../ui/DialogRenderer";
+import { getErrorMessage } from "../utils/utils";
 
 export default function BookActions({ id, className = "" }) {
     // get user information through the redux query 
@@ -52,14 +53,6 @@ export default function BookActions({ id, className = "" }) {
         return book.id === id
     })
 
-    function getErrorMessage(error) {
-        return (
-            error?.data?.error?.message ||
-            error?.message ||
-            "Something went wrong. Please try again."
-        );
-    }
-
     async function handleAddToCart() {
         try {
             await addBookToCart({
@@ -75,7 +68,7 @@ export default function BookActions({ id, className = "" }) {
             let dialogId = openDialog({
                 title: "Cart Addition Error",
                 description: `An error occured while trying to add
-                this book to the cart. Error: ${getErrorMessage(error)}`,
+                this book to the cart. Error: ${getErrorMessage( addBookActionError || error)}`,
                 render: function() {
                     return (
                         <Button
@@ -123,7 +116,9 @@ export default function BookActions({ id, className = "" }) {
             let dialogId = openDialog({
                 title: "Cart Update Error",
                 description: `An error occured while trying to update
-                the quantity of this book in the cart. Error: ${getErrorMessage(error)}`,
+                the quantity of this book in the cart. Error: ${
+                    getErrorMessage( updateBookActionError || error)
+                }`,
                 render: function() {
                     return (
                         <Button
@@ -134,6 +129,7 @@ export default function BookActions({ id, className = "" }) {
                             "
                             onClick={ function() {
                                 closeDialog( dialogId )
+                                handleIncreaseQuantity()
                             }}
                         >
                             Retry
@@ -162,7 +158,9 @@ export default function BookActions({ id, className = "" }) {
                 let dialogId = openDialog({
                     title: "Cart Update Error",
                     description: `An error occured while trying to remove
-                    the book from the cart. Error: ${getErrorMessage(error)}`,
+                    the book from the cart. Error: ${
+                        getErrorMessage( deleteBookActionError || error)
+                    }`,
                     render: function() {
                         return (
                             <Button

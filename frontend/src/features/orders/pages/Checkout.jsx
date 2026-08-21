@@ -1,9 +1,97 @@
-import OrderDetailsItem from "../components/OrderDetailsItem";
+import OrderDetailsItem from "../../../shared/components/OrderDetailsItem";
 import { ToggleGroup } from 'radix-ui'
 import Button from "../../../shared/components/Button";
 import { InfoList } from "../../../shared/components/InfoList";
+import { useGetMeQuery } from "../../users/services/authApi";
+import EmptyCartMessage from "../components/EmptyCartMessage";
+import { calculateCartTotal } from "../utils/utils";
+import { useEffect, useState } from "react";
+import { useCheckoutCartMutation } from "../../../shared/services/ordersApi";
+import { useDialogActions } from "../../../shared/ui/DialogRenderer";
+import { getErrorMessage } from "../../../shared/utils/utils";
+import { ToastTypes, useToastActions } from "../../../shared/ui/ToastRenderer";
 
 export function Component() {
+    const { data: user } = useGetMeQuery()
+    
+    const [ shippingAddress, setShippingAddress ] = useState("")
+
+    const [ 
+        checkout, 
+        { 
+            error: checkoutError,
+            isLoading: isCheckoutLoading,
+            isFetching: isCheckoutFetching
+        } 
+    ] = useCheckoutCartMutation()
+
+    const { openDialog, closeDialog } = useDialogActions()
+
+    const { openToast } = useToastActions()
+
+    useEffect( function() {
+        setShippingAddress( user?.data?.addresses[ 0 ] || "" )
+    }, [user ])
+
+    if ( user?.data?.cart.length == 0 ) {
+        return (
+            <EmptyCartMessage />
+        )
+    }
+
+    async function handleCheckout() {
+        try {
+            let { data: checkoutData } = await checkout( shippingAddress ).unwrap()
+
+            openToast({
+                type: ToastTypes.success,
+                message: `
+                    Cart checked out successfully. You will be 
+                    redirected to the payment page shortly.
+                `
+            })
+
+            setTimeout(function() {
+                window.location.href = checkoutData.authorization_url
+            }, 1000)
+        } catch( error ) {
+            let dialogId = openDialog({
+                title: "Cart checkout error",
+                description: `
+                    There was an error while checking out 
+                    your cart. Please try again later. Error: ${ 
+                        getErrorMessage( checkoutError || error ) 
+                    }
+                `,
+                render: function() {
+                    return (
+                        <Button
+                            onClick={ function() {
+                                closeDialog( dialogId )
+
+                                handleCheckout()
+                            }}
+                            className="
+                                w-full
+                                mt-4
+                            "
+                        >
+                            Retry
+                        </Button>
+                    )
+                }
+            })
+        }
+    }
+
+    function getDeliveryDate() {
+        return new Date().toLocaleDateString('en-US', {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        })
+    }
+
     return <div className="pb-12">
         <h1
             className="
@@ -41,19 +129,17 @@ export function Component() {
                             mt-5
                         "
                     >
-                        <OrderDetailsItem
-                            bookName={"How to win friends and influence people"}
-                            quantity={2}
-                            price={100}
-                            photoUrl={"https://picsum.photos/id/24/400"}
-                        />
-                        
-                        <OrderDetailsItem
-                            bookName={"How to win friends and influence people"}
-                            quantity={2}
-                            price={100}
-                            photoUrl={"https://picsum.photos/id/24/400"}
-                        />
+                        { user?.data?.cart.map(function( book ) {
+                            return (
+                                <OrderDetailsItem
+                                    key={ book.id }
+                                    bookName={ book.title }
+                                    quantity={ book.order_quantity }
+                                    price={ book.price }
+                                    photoUrl={ book.cover_photo_url }
+                                />
+                            )
+                        })}
                     </div>
                 </div>
 
@@ -72,70 +158,87 @@ export function Component() {
                         2. shipping information
                     </h2>
 
-                    <div
-                        className="
-                            mt-3
-                        "
-                    >
-                        <p
+                    {
+                        user?.data?.addresses?.length > 0 && <>
+                            <div
+                            className="
+                                mt-3
+                            "
+                        >
+                            <p
+                                className="
+                                    mt-6
+                                "
+                            >
+                                Choose shipping address: 
+                            </p>
+
+                            <ToggleGroup.Root 
+                                type="single"
+                                value={ shippingAddress }
+                                className="
+                                    flex
+                                    gap-2
+                                    mt-6 lg:mt-4
+                                    flex-wrap
+                                    
+                                    *:data-[state=on]:outline-2
+                                    *:data-[state=on]:outline-instabooks-blue
+                                    *:p-4
+                                    *:rounded-md
+                                    *:cursor-pointer
+                                    *:transition
+                                    *:focus-visible:outline-2
+                                    *:focus-visible:outline-instabooks-blue
+                                    *:focus-visible:outline-offset-2
+                                "
+                                onValueChange={ (newValue) => newValue ? setShippingAddress( newValue ) : shippingAddress }
+                            >
+                                {
+                                    user?.data?.addresses.map( function( address ) {
+                                        return (
+                                            <ToggleGroup.Item
+                                                value={ address }
+                                            >
+                                                { address }
+                                            </ToggleGroup.Item>
+                                        )
+                                    })
+                                }
+                            </ToggleGroup.Root>
+                            </div>
+
+                            <h3
+                                className="
+                                    capitalize
+                                    text-xl
+                                    mt-6
+                                "
+                            >
+                                standard free delivery
+                            </h3>
+                            
+                            <InfoList
+                                className="mt-4"
+                                entries={{
+                                    "delivery date": getDeliveryDate(),
+                                    "delivery fee": "$0"
+                                }}
+                            />
+                        </>
+                    }
+
+                    {
+                        user?.data?.addresses?.length == 0 && <p
                             className="
                                 mt-6
                             "
                         >
-                            Choose shipping address: 
+                            You don't have any saved addresses. Please 
+                            add an address in your profile before 
+                            checking out your cart.
                         </p>
-
-                        <ToggleGroup.Root 
-                            type="single"
-                            defaultValue="0"
-                            className="
-                                flex
-                                gap-2
-                                mt-6 lg:mt-4
-                                flex-wrap
-                                
-                                *:data-[state=on]:outline-2
-                                *:data-[state=on]:outline-instabooks-blue
-                                *:p-4
-                                *:rounded-md
-                                *:cursor-pointer
-                                *:transition
-                                *:focus-visible:outline-2
-                                *:focus-visible:outline-instabooks-blue
-                                *:focus-visible:outline-offset-2
-                            "
-                        >
-                            <ToggleGroup.Item
-                                value="0"
-                            >
-                                9, Micheal aransiola street, ibafo, ogun state
-                            </ToggleGroup.Item>
-                            
-                            <ToggleGroup.Item
-                                value="1"   
-                            >
-                                12, Alex ekueme street, iyana ipaja, lagos state
-                            </ToggleGroup.Item>
-                        </ToggleGroup.Root>
-                    </div>
-
-                    <h3
-                        className="
-                            capitalize
-                            text-xl
-                            mt-6
-                        "
-                    >
-                        standard free delivery
-                    </h3>
-                    
-                    <InfoList
-                        className="mt-4"
-                        entries={{
-                            "delivery date": "12/5/26",
-                            "delivery fee": "$0"
-                        }}
-                    />
+                    }
                 </div>
             </div>
 
@@ -152,8 +255,8 @@ export function Component() {
                 <InfoList
                     className="mt-5"
                     entries={{
-                        "delivery date": "12/5/26",
-                        "total payable": "$3500"
+                        "delivery date": `${ getDeliveryDate() }`,
+                        "total payable": `$${ calculateCartTotal( user?.data?.cart )}`
                     }}
                 />
 
@@ -164,9 +267,19 @@ export function Component() {
                         w-full md:w-1/2 lg:w-full
                         mx-auto
                         block
+                        disabled:opacity-50
+                        disabled:cursor-not-allowed
                     "
+                    disabled={ 
+                        isCheckoutLoading || 
+                        isCheckoutFetching ||
+                        user?.data?.addresses?.length == 0
+                    }
+                    onClick={ handleCheckout }
                 >
-                    pay now 
+                    {
+                        ( isCheckoutLoading || isCheckoutFetching ) ? "processing..." : "pay now"
+                    }
                 </Button>
             </div>
         </div>

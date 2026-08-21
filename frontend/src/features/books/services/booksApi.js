@@ -4,6 +4,7 @@ import { baseQueryWithRefreshAuth } from "../../../app/store/baseQuery";
 export const booksApi = createApi({
     reducerPath: "booksApi",
     baseQuery: baseQueryWithRefreshAuth,
+    tagTypes: ["books"],
     endpoints: function( builder ) {
         return {
             getBookDetails: builder.query({

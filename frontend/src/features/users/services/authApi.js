@@ -4,6 +4,7 @@ import { baseQueryWithRefreshAuth } from "../../../app/store/baseQuery.js"
 export const authApi = createApi({
     reducerPath: "authApi",
     baseQuery: baseQueryWithRefreshAuth,
+    tagTypes: ["user"],
     endpoints: function( builder ) {
         return {
             googleVerify: builder.query({

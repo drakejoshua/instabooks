@@ -5,10 +5,19 @@ import AnimatedCheckIcon from "../../../shared/components/AnimatedCheckIcon.jsx"
 import AnimatedWarningIcon from "../../../shared/components/AnimatedWarningIcon.jsx"
 import Heading from "../../../shared/components/Heading.jsx"
 import OrderDetailsItem from "../../../shared/components/OrderDetailsItem.jsx"
+import { useGetOrderQuery } from "../../../shared/services/ordersApi.js"
+import { getErrorMessage } from "../../../shared/utils/utils.js"
 
 export function Component() {
-    let state = "loaded"
-    let { id } = useParams()
+    const { id } = useParams()
+
+    const { 
+        data: orderConfirmationData,
+        isLoading,
+        isFetching,
+        error,
+        refetch
+    } = useGetOrderQuery( id )
 
     let iconStyle = `
         text-6xl
@@ -20,9 +29,9 @@ export function Component() {
 
     let buttonStyle = `
         mt-10
-        block
         mx-auto
-        flex
+        flex!
+        w-fit
         gap-2
         items-center
         capitalize
@@ -33,12 +42,11 @@ export function Component() {
             w-full
             max-w-lg
             mx-auto
-            pt-2 px-6 pb-4 lg:px-2
+            px-6 pb-4 lg:px-2
         "
     >
         {/* loading state */}
-        { state === "loading" && <div>
-            {/* TODO: to be replaced with animated loading icon */}
+        { ( isLoading || isFetching ) && <div>
             <FaCircleNotch className={iconStyle + "animate-spin"} />
 
             <Heading variant="route">
@@ -58,7 +66,7 @@ export function Component() {
         </div>}
         
         {/* error state */}
-        { state === "error" && <div>
+        { error && <div>
             <AnimatedWarningIcon />
 
             <Heading variant="route">
@@ -73,11 +81,14 @@ export function Component() {
             >
                 Please check your internet connection and try again.
                 You can try fetching your order information again
-                by clicking the button below.
+                by clicking the button below. Error: { 
+                    getErrorMessage( error ) 
+                }
             </p>
 
             <Button
                 className={ buttonStyle }
+                onClick={ () => refetch() }
             >
                 <FaArrowRotateRight />
                 refresh order information
@@ -85,48 +96,81 @@ export function Component() {
         </div>}
 
         {/* loaded state */}
-        { state === "loaded" && <div>
-            <AnimatedCheckIcon />
+        { 
+            (
+                !isLoading && !isFetching && 
+                !error && orderConfirmationData?.data
+            ) && 
+            <div>
+                {
+                    orderConfirmationData?.data?.status === "shipped" ?
+                        <AnimatedCheckIcon 
+                            className="mt-2!"
+                        />
+                    :
+                        <AnimatedWarningIcon
+                            className="mt-2!"
+                        />
+                }
 
-            <Heading variant="route">
-                Order ID details: #{ id }
-            </Heading>
+                <Heading variant="route">
+                    Order ID details: #{ id }
+                </Heading>
 
-            <p
-                className="
-                    text-center
-                    mt-4
-                "
-            >
-                Your order status is: {"pending"} and is expected 
-                to be delivered on: {"2024-06-30"}
-            </p>
+                <p
+                    className="
+                        text-center
+                        mt-4
+                    "
+                >
+                    Your order status is: { orderConfirmationData?.data?.status } and 
+                    is expected to be delivered on: { 
+                        new Date(orderConfirmationData?.data?.createdAt)
+                            .toLocaleDateString("en-US", {
+                                day: "numeric",
+                                year: "numeric",
+                                month: "long",
+                            })
+                    }
+                </p>
 
-            <div
-                className="
-                    mt-4
-                    rounded-lg
-                    p-3
-                    bg-gray-100
-                    max-h-48
-                "
-            >
-                <OrderDetailsItem 
-                    bookName="The Great Gatsby"
-                    quantity={ 1 }
-                    price={ 100 }
-                    photoUrl={"https://picsum.photos/id/24/400"}
-                />
+                <div
+                    className="
+                        mt-4
+                        rounded-lg
+                        p-3
+                        bg-gray-100
+                        max-h-48
+                        overflow-y-auto
+                    "
+                >
+                    {
+                        orderConfirmationData?.data?.products?.map( function(book) { 
+                            return (
+                                <OrderDetailsItem 
+                                    key={ book.id }
+                                    bookName={ book.title }
+                                    quantity={ book.order_quantity }
+                                    price={ book.price }
+                                    photoUrl={ book.cover_photo_url }
+                                />
+                            )
+                        })
+                    }
+                </div>
+
+                <Button
+                    className={ buttonStyle }
+                    asChild
+                >
+                    <Link to="/">
+                        <FaArrowLeft />
+                        <span>
+                            Go back to home
+                        </span>
+                    </Link>
+                </Button>
             </div>
-
-            <Button
-                className={ buttonStyle }
-            >
-                <FaArrowLeft />
-                <Link to="..">
-                    Go back to home
-                </Link>
-            </Button>
-        </div>}
+        }
     </div>
 }
