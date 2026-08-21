@@ -1,12 +1,17 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithAdminAuth } from "../../../app/store/baseQuery";
 
+// Demo-only admin authorization.
+// This is intentionally not a production authentication mechanism.
+// A production implementation should authenticate the user and
+// authorize admin access server-side
+
 export const adminApi = createApi({
     reducerPath: "admin",
     baseQuery: baseQueryWithAdminAuth,
     endpoints: function( builder ) {
         return {
-            getAdminBooks: builder.query({
+            getBooks: builder.query({
                 query: function({ limit, page }) {
                     return {
                         url: "/books/admin",
@@ -17,47 +22,32 @@ export const adminApi = createApi({
                     }
                 }
             }),
-            getAdminBookById: builder.query({
+            getBookById: builder.query({
                 query: function( id ) {
                     return {
                         url: `/books/admin/${id}`
                     }
                 }
             }),
-            createAdminNewBook: builder.mutation({
+            createBook: builder.mutation({
                 query: function( newBook ) {
-                    let newBookFormData = new FormData()
-
-                    for ( let key in newBook ) {
-                        newBookFormData.set( key, newBook.key )
-                    }
-
                     return {
                         url: "/books",
                         method: "POST",
-                        body: newBookFormData
+                        body: createFormDataFromObject( newBook )
                     }
                 }
             }),
-            updateAdminBookById: builder.mutation({
+            updateBook: builder.mutation({
                 query: function({ id, updatedBookDetails }) {
-                    let updatedBookDetailsFormData = new FormData()
-
-                    for ( let key in updatedBookDetails ) {
-                        updatedBookDetailsFormData.set( 
-                            key, 
-                            updatedBookDetails.key 
-                        )
-                    }
-
                     return {
                         url: `/books/${ id }`,
                         method: "POST",
-                        body: updatedBookDetailsFormData
+                        body: createFormDataFromObject( updatedBookDetails )
                     }
                 }
             }),
-            deleteAdminBookById: builder.mutation({
+            deleteBook: builder.mutation({
                 query: function( id ) {
                     return {
                         url: `/books/${id}`,
@@ -65,7 +55,7 @@ export const adminApi = createApi({
                     }
                 }
             }),
-            getAllAdminOrders: builder.query({
+            getOrders: builder.query({
                 query: function({ limit, page }) {
                     return {
                         url: "/orders/admin",
@@ -81,11 +71,22 @@ export const adminApi = createApi({
 })
 
 
+function createFormDataFromObject( obj ) {
+    let formData = new FormData()
+
+    for ( let key in obj ) {
+        formData.set( key, obj[key] )
+    }
+
+    return formData
+}
+
+
 export const {
-    useGetAdminBooksQuery,
-    useGetAdminBookByIdQuery,
-    useCreateAdminNewBookMutation,
-    useUpdateAdminBookByIdMutation,
-    useDeleteAdminBookByIdMutation,
-    useGetAllAdminOrdersQuery
+    useGetBooksQuery,
+    useGetBookByIdQuery,
+    useCreateBookMutation,
+    useUpdateBookMutation,
+    useDeleteBookMutation,
+    useGetOrdersQuery
 } = adminApi

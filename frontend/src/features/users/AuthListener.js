@@ -4,9 +4,9 @@ import { authApi } from "./services/authApi";
 
 const LocalStorageAuthKey = import.meta.env.VITE_LOCALSTORAGE_AUTH_KEY
 
-export const AuthListenerMiddlware = createListenerMiddleware();
+export const AuthListenerMiddleware = createListenerMiddleware();
 
-AuthListenerMiddlware.startListening({
+AuthListenerMiddleware.startListening({
     actionCreator: logOut,
     effect: function( action, api ) {
         // remove access token from localstorage
@@ -19,7 +19,7 @@ AuthListenerMiddlware.startListening({
     }
 })
 
-AuthListenerMiddlware.startListening({
+AuthListenerMiddleware.startListening({
     actionCreator: clearToken,
     effect: function() {
         // remove access token from localstorage
@@ -28,7 +28,7 @@ AuthListenerMiddlware.startListening({
 })
 
 
-AuthListenerMiddlware.startListening({
+AuthListenerMiddleware.startListening({
     actionCreator: setToken,
     effect: function( action ) {
         // save access token to localStorage

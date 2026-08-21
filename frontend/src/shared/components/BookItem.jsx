@@ -17,6 +17,8 @@ function BookItem({
     className = "",
     type = "default"
 }) {
+    let bookDetailsLink = type === "default" ? `/books/details/${id}` : `/admin/books/details/${id}`;
+
     return <div
         className={`
             rounded-xl
@@ -27,32 +29,37 @@ function BookItem({
         `}
     >
         {/* book image */}
-        <div
-            className="
-                relative
-            "
+        <Link 
+            to={ bookDetailsLink }
+            className="block"
         >
-            <img 
-                src={ photoUrl }
-                alt="Book cover"
+            <div
                 className="
-                    w-full
-                    h-70
-                    object-cover
-                "
-            />
-        
-            {/* genre */}
-            <Badge
-                className="
-                    absolute
-                    top-3
-                    right-3
+                    relative
                 "
             >
-                { genre }
-            </Badge>
-        </div>
+                <img 
+                    src={ photoUrl }
+                    alt="Book cover"
+                    className="
+                        w-full
+                        h-70
+                        object-cover
+                    "
+                />
+            
+                {/* genre */}
+                <Badge
+                    className="
+                        absolute
+                        top-3
+                        right-3
+                    "
+                >
+                    { genre }
+                </Badge>
+            </div>
+        </Link>
 
         {/* book details */}
         <div
@@ -60,12 +67,17 @@ function BookItem({
                 p-6
             "
         >
-            {/* title */}
-            <Heading
-                className="line-clamp-1"
+            <Link 
+                to={ bookDetailsLink }
+                className="block hover:text-instabooks-blue"
             >
-                { title }
-            </Heading>
+                {/* title */}
+                <Heading
+                    className="line-clamp-1"
+                >
+                    { title }
+                </Heading>
+            </Link>
 
             {/* description */}
             <p
@@ -133,7 +145,7 @@ function BookItem({
                 "
                 asChild
             >
-                <Link to={`/admin/books/details/${id}`}>
+                <Link to={ bookDetailsLink }>
                     View book details
                 </Link>
             </Button>}
