@@ -72,3 +72,16 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
 
     return result
 }
+
+export const baseQueryWithAdminAuth = fetchBaseQuery({
+    baseUrl: backendURL,
+    prepareHeaders: function( headers, _ ) {
+        // get admin access key from env variables
+        let adminKey = import.meta.env.VITE_INSTABOOKS_ADMIN_KEY
+
+        // use admin key for admin-related operations/endpoints
+        headers.set( "Authorization", `Bearer ${adminKey}` )
+
+        return headers
+    }
+})
