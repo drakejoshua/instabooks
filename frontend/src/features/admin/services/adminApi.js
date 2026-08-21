@@ -9,14 +9,14 @@ import { baseQueryWithAdminAuth } from "../../../app/store/baseQuery";
 export const adminApi = createApi({
     reducerPath: "admin",
     baseQuery: baseQueryWithAdminAuth,
+    tagTypes: ["AdminOrders", "AdminBooks"],
     endpoints: function( builder ) {
         return {
             getBooks: builder.query({
-                query: function({ limit, page }) {
+                query: function( page ) {
                     return {
                         url: "/books/admin",
                         params: {
-                            limit,
                             page
                         }
                     }
@@ -56,14 +56,24 @@ export const adminApi = createApi({
                 }
             }),
             getOrders: builder.query({
-                query: function({ limit, page }) {
+                query: function( page ) {
                     return {
                         url: "/orders/admin",
                         params: {
-                            limit,
                             page
                         }
                     }
+                },
+                providesTags: function( result ) {
+                    return [
+                        { type: "AdminOrders", id: "LIST" },
+                        ...(result?.data?.orders ?? []).map(function(order) {
+                            return {
+                                type: "AdminOrders",
+                                id: order.id
+                            }
+                        })
+                    ]
                 }
             })
         }

@@ -73,7 +73,8 @@ export async function getAllOrdersController(req, res, next) {
     try {
         // get the user id from the request user object
         let userId = req.user._id;
-        let { limit, page } = req.query || { limit: 10, page: 1 };
+        let limit = req.query.limit || 10
+        let page = req.query.page || 1
 
         // call the get all orders service to retrieve all the orders
         // for the user with the specified limit
@@ -91,7 +92,8 @@ export async function getAllOrdersController(req, res, next) {
 
 export async function getAllOrdersForAdminController(req, res, next) {
     try {
-        let { limit, page } = req.query || { limit: 10, page: 1 };
+        let limit = req.query.limit || 10
+        let page = req.query.page || 1
 
         // call the get all orders service to retrieve all the orders
         // for the user with the specified limit

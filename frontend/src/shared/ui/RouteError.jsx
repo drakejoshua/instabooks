@@ -1,14 +1,16 @@
-import { FaCircleArrowLeft } from "react-icons/fa6";
+import { FaArrowsRotate, FaCircleArrowLeft } from "react-icons/fa6";
 import AnimatedWarningIcon from "../components/AnimatedWarningIcon";
 import Heading from "../components/Heading";
 import Button from "../components/Button";
+import { getErrorMessage } from "../utils/utils";
 
 function RouteError({
     heading = "An error occurred on this page",
     error = null,
     refetch = () => {},
     text = "Please try again later. Error code:",
-    buttonLabel = "retry"
+    buttonLabel = "retry",
+    retryLoadingStatus = false
 }) {
     return <div
         className="
@@ -26,34 +28,39 @@ function RouteError({
         <Heading
             className="
                 mt-4
+                text-center
             "
         >
             { heading }
         </Heading>
 
-        <p className="mt-2">
-            { text } { error?.status } 
-            { error?.data?.message ?? error?.message }
+        <p className="mt-2 text-center">
+            { text } {
+                getErrorMessage( error )
+            }
         </p>
 
         <Button
             onClick={ () => refetch() }
             className="
-                mt-2
-                flex
+                mt-8
+                flex!
                 gap-2
                 items-center
+                group
+                disabled:opacity-50
+                disabled:cursor-not-allowed
             "
+            disabled={ retryLoadingStatus }
         >
-            {
-                <>
-                    <FaCircleArrowLeft />
-
-                    <span> 
-                        { buttonLabel }
-                    </span>
-                </>
-            }
+            <FaArrowsRotate 
+                className="
+                    group-disabled:animate-spin
+                "
+            />
+            <span> 
+                { buttonLabel }
+            </span>
         </Button>
     </div>;
 }

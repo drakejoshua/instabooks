@@ -965,7 +965,7 @@ Response:
     "totalOrders": 1,
     "orders": [
         {
-            "id": < user id e.g. "sjskejnu3489483den34">,
+            "id": < order id e.g. "sjskejnu3489483den34">,
             "products": [
                 {
                     "id": < book id e.g. "sjskejnu3489483den34">,

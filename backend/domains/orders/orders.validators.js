@@ -120,7 +120,7 @@ export function getAllOrdersValidationFunction(req, res, next) {
     // in the request body and report an invalid request
     // info error if there was
     if (!errors.isEmpty()) {
-        switch (errors.array()[0].param) {
+        switch (errors.array()[0].path) {
             case "limit":
                 return reportInvalidRequestInfoError(
                     next,
