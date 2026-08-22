@@ -3,7 +3,7 @@ import Button from "./Button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-function SearchBar({ className = "" }) {
+function SearchBar({ className = "", type = "home" }) {
     const [ searchQuery, setSearchQuery ] = useState( "" )
     const navigateTo = useNavigate()
 
@@ -11,8 +11,15 @@ function SearchBar({ className = "" }) {
         // normalize search query by trimming whitespace
         // with empty check before redirecting to search 
         // results page
-        if ( searchQuery.trim() !== "" ) {
-            navigateTo( `/books/search?q=${encodeURIComponent(searchQuery)}` )
+
+        if ( type === "home" ) {
+            if ( searchQuery.trim() !== "" ) {
+                navigateTo( `/books/search?q=${encodeURIComponent(searchQuery)}` )
+            }
+        } else if ( type === "admin" ) {
+            if ( searchQuery.trim() !== "" ) {
+                navigateTo( `/admin/books/search?query=${encodeURIComponent(searchQuery)}` )
+            }
         }
     }
 

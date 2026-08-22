@@ -69,7 +69,7 @@ orderSchema.methods.getOrderDetails = async function () {
             cover_photo_id,
             quantity,
             ...bookDetails 
-        } = product.book_id;
+        } = product.book_id || {};
 
         return {
             id: _id,

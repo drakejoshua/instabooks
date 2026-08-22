@@ -20,6 +20,27 @@ export const adminApi = createApi({
                             page
                         }
                     }
+                },
+                providesTags: function( result ) {
+                    return [
+                        { type: "AdminBooks", id: "LIST" },
+                        ...(result?.data?.books ?? []).map(function(book) {
+                            return {
+                                type: "AdminBooks",
+                                id: book.id
+                            }
+                        })
+                    ]
+                }
+            }),
+            searchBooks: builder.query({
+                query: function( query ) {
+                    return {
+                        url: "/books/admin/search",
+                        params: {
+                            query
+                        }
+                    }
                 }
             }),
             getBookById: builder.query({
@@ -27,6 +48,11 @@ export const adminApi = createApi({
                     return {
                         url: `/books/admin/${id}`
                     }
+                },
+                providesTags: function( result, error, id ) {
+                    return [
+                        { type: "AdminBooks", id }
+                    ]
                 }
             }),
             createBook: builder.mutation({
@@ -36,15 +62,21 @@ export const adminApi = createApi({
                         method: "POST",
                         body: createFormDataFromObject( newBook )
                     }
-                }
+                },
+                invalidatesTags: [
+                    { type: "AdminBooks", id: "LIST" }
+                ]
             }),
             updateBook: builder.mutation({
                 query: function({ id, updatedBookDetails }) {
                     return {
                         url: `/books/${ id }`,
-                        method: "POST",
+                        method: "PUT",
                         body: createFormDataFromObject( updatedBookDetails )
                     }
+                },
+                invalidatesTags: function( result, error, { id } ) {
+                    return [{ type: "AdminBooks", id }]
                 }
             }),
             deleteBook: builder.mutation({
@@ -53,6 +85,9 @@ export const adminApi = createApi({
                         url: `/books/${id}`,
                         method: "DELETE"
                     }
+                },
+                invalidatesTags: function( result, error, { id } ) {
+                    return [{ type: "AdminBooks", id }]
                 }
             }),
             getOrders: builder.query({
@@ -94,6 +129,7 @@ function createFormDataFromObject( obj ) {
 
 export const {
     useGetBooksQuery,
+    useSearchBooksQuery,
     useGetBookByIdQuery,
     useCreateBookMutation,
     useUpdateBookMutation,

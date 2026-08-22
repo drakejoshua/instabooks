@@ -166,7 +166,7 @@ export let updateBookValidationRules = [
         .notEmpty()
         .withMessage(ERROR_CODES.INVALID_BOOK_PRICE)
         .bail()
-        .isInt({ min: 2 })
+        .isFloat({ min: 2 })
         .withMessage(ERROR_CODES.INVALID_BOOK_PRICE)
         .bail(),
     body("quantity")

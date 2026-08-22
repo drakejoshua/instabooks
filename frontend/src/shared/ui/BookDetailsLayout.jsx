@@ -18,6 +18,7 @@ function BookDetailsLayout({
         grid
         grid-cols-1 lg:grid-cols-[2fr_3fr]
         gap-8 lg:gap-12
+        pb-12
     "
     >
         <img

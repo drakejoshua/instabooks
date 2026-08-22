@@ -466,7 +466,7 @@ Response:
 }
 
 
-GET /books/admin/search?query={text}  ( search for a book ) [ admin only]
+GET /books/admin/search?query={text}  ( search for a book ) [admin only]
 
 Request body: none
 Request Header: 
