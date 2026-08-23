@@ -1,10 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react"
-import { baseQueryWithRefreshAuth } from "../../../app/store/baseQuery.js"
+import { baseApi } from "../../../app/services/baseApi.js"
 
-export const authApi = createApi({
-    reducerPath: "authApi",
-    baseQuery: baseQueryWithRefreshAuth,
-    tagTypes: ["user"],
+export const authApi = baseApi.injectEndpoints({
     endpoints: function( builder ) {
         return {
             googleVerify: builder.query({

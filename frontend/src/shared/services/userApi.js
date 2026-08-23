@@ -1,10 +1,7 @@
-import { createApi } from "@reduxjs/toolkit/query/react"
-import { baseQueryWithRefreshAuth } from "../../app/store/baseQuery"
 import { authApi } from "../../features/users/services/authApi"
+import { baseApi } from "../../app/services/baseApi"
 
-export const userApi = createApi({
-    reducerPath: "user",
-    baseQuery: baseQueryWithRefreshAuth,
+export const userApi =  baseApi.injectEndpoints({
     endpoints: function( builder ) {
         return {
             addBookToCart: builder.mutation({

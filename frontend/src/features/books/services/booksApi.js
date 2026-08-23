@@ -1,10 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithRefreshAuth } from "../../../app/store/baseQuery";
+import { baseApi } from "../../../app/services/baseApi";
 
-export const booksApi = createApi({
-    reducerPath: "booksApi",
-    baseQuery: baseQueryWithRefreshAuth,
-    tagTypes: ["books"],
+export const booksApi = baseApi.injectEndpoints({
     endpoints: function( builder ) {
         return {
             getBookDetails: builder.query({

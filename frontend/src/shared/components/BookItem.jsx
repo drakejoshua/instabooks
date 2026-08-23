@@ -4,6 +4,7 @@ import BookActions from "./BookActions";
 import Heading from "./Heading";
 import Button from "./Button";
 import { Link } from "react-router-dom";
+import { useGetMeQuery } from "../../features/users/services/authApi";
 
 function BookItem({
     id,
@@ -18,6 +19,8 @@ function BookItem({
     type = "default"
 }) {
     let bookDetailsLink = type === "default" ? `/books/details/${id}` : `/admin/books/details/${id}`;
+
+    const { data } = useGetMeQuery();
 
     return <div
         className={`
@@ -130,25 +133,44 @@ function BookItem({
                 ${ price.toFixed(2) }
             </span>
 
-            {/* book actions */}
-            { type === "default" && <BookActions 
-                id={ id }
-                className="
-                    mt-8
-                "
-            />}
-            
-            { type === "admin" && <Button
-                className="
-                    mt-8
-                    w-full
-                "
-                asChild
-            >
-                <Link to={ bookDetailsLink }>
-                    View book details
-                </Link>
-            </Button>}
+            {
+                data && <>
+                    {/* book actions */}
+                    { type === "default" && <BookActions 
+                        id={ id }
+                        className="
+                            mt-8
+                        "
+                    />}
+                    
+                    { type === "admin" && <Button
+                        className="
+                            mt-8
+                            w-full
+                        "
+                        asChild
+                    >
+                        <Link to={ bookDetailsLink }>
+                            View book details
+                        </Link>
+                    </Button>}
+                </>
+            }
+
+            {
+                !data &&
+                <Button
+                    className="
+                        mt-8
+                        w-full
+                    "
+                    asChild
+                >
+                    <Link to="/auth/google">
+                        Add to cart
+                    </Link>
+                </Button>
+            }
         </div>
     </div>;
 }

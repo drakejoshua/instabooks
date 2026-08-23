@@ -25,21 +25,27 @@ let routes = createBrowserRouter([
                         lazy: () => import("../features/books/pages/BookDetails.jsx"),
                     },
                     {
-                        path: "orders/checkout",
-                        lazy: () => import("../features/orders/pages/Checkout.jsx")
+                        path: "",
+                        lazy: () => import("../shared/layouts/AuthLayout.jsx"),
+                        children: [
+                            {
+                                path: "orders/checkout",
+                                lazy: () => import("../features/orders/pages/Checkout.jsx")
+                            },
+                            {
+                                path: "orders/details/:id",
+                                lazy: () => import("../features/orders/pages/OrderDetails.jsx"),
+                            },
+                            {
+                                path: "cart",
+                                lazy: () => import("../features/orders/pages/Cart.jsx"),
+                            },
+                            {
+                                path: "profile",
+                                lazy: () => import("../features/users/pages/Profile.jsx"),
+                            }
+                        ]
                     },
-                    {
-                        path: "orders/details/:id",
-                        lazy: () => import("../features/orders/pages/OrderDetails.jsx"),
-                    },
-                    {
-                        path: "cart",
-                        lazy: () => import("../features/orders/pages/Cart.jsx"),
-                    },
-                    {
-                        path: "profile",
-                        lazy: () => import("../features/users/pages/Profile.jsx"),
-                    }
                 ],
             },
             {

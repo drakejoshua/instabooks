@@ -1,9 +1,11 @@
 import BookActions from "../../../shared/components/BookActions";
 import BookDetailsLayout from "../../../shared/ui/BookDetailsLayout";
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { useGetBookDetailsQuery } from "../services/booksApi";
 import RouteLoading from "../../../shared/ui/RouteLoading";
 import RouteError from "../../../shared/ui/RouteError";
+import { useGetMeQuery } from "../../users/services/authApi";
+import Button from "../../../shared/components/Button";
 
 export function Component() {
     const { id } = useParams()
@@ -13,6 +15,8 @@ export function Component() {
         error, 
         refetch 
     } = useGetBookDetailsQuery( id )
+
+    const { data } = useGetMeQuery();
 
     if ( isLoading ) {
         return (
@@ -59,13 +63,31 @@ export function Component() {
             author={ book.data.author }
             pages={ book.data.pages }
         >
-            <BookActions 
-                id={ id }
-                className="
-                    w-fit
-                    mt-8 lg:mt-12
-                "
-            />
+            {
+                data && 
+                <BookActions 
+                    id={ id }
+                    className="
+                        w-fit
+                        mt-8 lg:mt-12
+                    "
+                />
+            }
+
+            {
+                !data &&
+                <Button
+                    className="
+                        mt-8 lg:mt-12
+                        w-fit
+                    "
+                    asChild
+                >
+                    <Link to="/auth/google">
+                        Add to cart
+                    </Link>
+                </Button>
+            }
         </BookDetailsLayout>
     );
 }

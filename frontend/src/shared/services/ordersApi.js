@@ -1,11 +1,7 @@
-import { createApi } from "@reduxjs/toolkit/query/react"
-import { baseQueryWithRefreshAuth } from "../../app/store/baseQuery"
 import { authApi } from "../../features/users/services/authApi"
+import { baseApi } from "../../app/services/baseApi"
 
-export const ordersApi = createApi({
-    reducerPath: "orders",
-    baseQuery: baseQueryWithRefreshAuth,
-    tagTypes: ["orders"],
+export const ordersApi =  baseApi.injectEndpoints({
     endpoints: function( builder ) {
         return {
             getOrders: builder.query({
