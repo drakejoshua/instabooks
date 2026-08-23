@@ -27,18 +27,13 @@ import {
     searchBooksController,
     updateBookController,
 } from "./books.controllers.js";
-import bookModel from "../../database/models/book.model.js";
+
 
 const BookRouter = express.Router();
 
-BookRouter.use(
-    bearerAuthValidationRules,
-    bearerAuthValidationFunction
-);
 
-BookRouter.get(
+BookRouter.get(  // non-auth
     "/search",
-    passport.authenticate("jwt", { session: false }),
     searchBooksValidationRule,
     searchBooksValidationFunction,
     searchBooksController,
@@ -46,6 +41,8 @@ BookRouter.get(
 
 BookRouter.get(
     "/admin/search",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
     passport.authenticate("admin-key", { session: false }),
     searchBooksValidationRule,
     searchBooksValidationFunction,
@@ -55,6 +52,8 @@ BookRouter.get(
 
 BookRouter.get(
     "/admin/:book_id",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
     passport.authenticate("admin-key", { session: false }),
     bookIdValidationRule,
     bookIdValidationFunction,
@@ -64,6 +63,8 @@ BookRouter.get(
 
 BookRouter.get(
     "/admin",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
     passport.authenticate("admin-key", { session: false }),
     getBooksValidationRule,
     getBooksValidationFunction,
@@ -72,6 +73,8 @@ BookRouter.get(
 
 BookRouter.post(
     "/",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
     passport.authenticate("admin-key", { session: false }),
     upload.single("photo"),
     addBookValidationRules,
@@ -81,6 +84,8 @@ BookRouter.post(
 
 BookRouter.put(
     "/:book_id",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
     passport.authenticate("admin-key", { session: false }),
     upload.single("photo"),
     bookIdValidationRule,
@@ -93,6 +98,8 @@ BookRouter.put(
 
 BookRouter.delete(
     "/:book_id",
+    bearerAuthValidationRules,
+    bearerAuthValidationFunction,
     passport.authenticate("admin-key", { session: false }),
     bookIdValidationRule,
     bookIdValidationFunction,
@@ -100,21 +107,19 @@ BookRouter.delete(
 );
 
 
-BookRouter.get(
-    "/:book_id",
-    passport.authenticate("jwt", { session: false }),
-    bookIdValidationRule,
-    bookIdValidationFunction,
-    getBookController,
-);
-
-
-BookRouter.get(
+BookRouter.get( // non-auth
     "/",
-    passport.authenticate("jwt", { session: false }),
     getBooksValidationRule,
     getBooksValidationFunction,
     getBooksController,
+);
+
+
+BookRouter.get( // non-auth
+    "/:book_id",
+    bookIdValidationRule,
+    bookIdValidationFunction,
+    getBookController,
 );
 
 export default BookRouter;

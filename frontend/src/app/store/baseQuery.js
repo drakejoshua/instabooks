@@ -33,7 +33,7 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
     // if access token expired
     if ( result.error?.status === 401 ) {
         // refresh access token
-
+        
         // check if there's a pending refresh and instantiate
         // a new refresh request if none
         if (!pendingRefresh) {

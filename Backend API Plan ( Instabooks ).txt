@@ -525,8 +525,7 @@ Response:
 GET /books?limit={number}&page={number}  ( get all books )
 
 Request body: none
-Request Header: 
-- Authorization: Bearer <JWT token>
+Request Header: none 
 Response Header: none
 Response:
 - 200: {
@@ -558,11 +557,10 @@ Response:
 }
 
 
-GET /books/search?query={text}  ( search for a book )
+GET /books/search?query={text}  ( search for a book ) 
 
 Request body: none
-Request Header: 
-- Authorization: Bearer < JWT token >
+Request Header: none
 Response Header: none
 Response:
 - 200: {
@@ -591,11 +589,10 @@ Response:
 }
 
 
-GET /books/{id}  ( get book by id )
+GET /books/{id}  ( get book by id ) 
 
 Request body: none
-Request Header: 
-- Authorization: Bearer <JWT token>
+Request Header: none
 Response Header: none
 Response:
 - 200: {
