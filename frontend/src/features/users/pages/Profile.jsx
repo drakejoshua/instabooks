@@ -15,6 +15,7 @@ import { DialogComponent, useDialogActions } from "../../../shared/ui/DialogRend
 import { useAddAddressMutation, useDeleteAddressMutation } from "../../../shared/services/userApi";
 import ScrollSpy from 'react-scrollspy-navigation';
 import { getErrorMessage } from "../../../shared/utils/utils";
+import { logger } from "../../../infra/logging/logger";
 
 export function Component() {
     const defaultLimit = 20
@@ -30,7 +31,8 @@ export function Component() {
     const { 
         data: ordersData, 
         isLoading: isOrdersLoading,
-        isFetching: isOrdersFetching
+        isFetching: isOrdersFetching,
+        error: ordersError
     } = useGetOrdersQuery({ limit: defaultLimit, page })
 
     const [ 
@@ -67,6 +69,18 @@ export function Component() {
         }
     }, [ user ])
 
+    if ( ordersError ) {
+        // log the error using the app's dedicated logger
+        logger.error(
+            "Error fetching orders for user",
+            ordersError,
+            {
+                requestId: ordersError?.requestId,
+                userId: user?.data?.id
+            }
+        );
+    }
+
     function handleLoadMoreOrders() {
         // perform bounds check to ensure that the 
         // next page of orders is within the total 
@@ -87,6 +101,16 @@ export function Component() {
                 message: "Profile photo deleted successfully"
             })
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error deleting user's profile photo",
+                error,
+                {
+                    requestId: error?.requestId,
+                    userId: user?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Profile Photo Deletion Error",
                 description: `An error occured while trying to delete
@@ -156,6 +180,16 @@ export function Component() {
                 message: "Profile info updated successfully"
             })
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error updating user's profile info",
+                error,
+                {
+                    requestId: error?.requestId,
+                    userId: user?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Profile Info Update Error",
                 description: `An error occured while trying to update
@@ -188,6 +222,15 @@ export function Component() {
                 message: "Address deleted successfully"
             })
         } catch( error ) {
+            logger.error(
+                "Error deleting user's address",
+                error,
+                {
+                    requestId: error?.requestId,
+                    userId: user?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Address Deletion Error",
                 description: `An error occured while trying to delete
@@ -252,6 +295,16 @@ export function Component() {
                 message: "Address added successfully"
             })
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error adding new address for user",
+                error,
+                {
+                    requestId: error?.requestId,
+                    userId: user?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Address Addition Error",
                 description: `An error occured while trying to add
@@ -295,6 +348,16 @@ export function Component() {
                 message: "Profile photo updated successfully"
             })
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error updating user's profile photo",
+                error,
+                {
+                    requestId: error?.requestId,
+                    userId: user?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Profile Photo Update Error",
                 description: `An error occured while trying to update

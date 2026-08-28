@@ -1,5 +1,7 @@
 import { CacheOperations, CacheUpdate } from "../../cache/utils.js";
 import Orders from "../../database/models/order.model.js";
+import { trackOrderCancellation, trackPurchase } from "../../infra/utils/google analytics/events.js";
+import { logOrderCancellation, logOrderCheckout, logOrderPaymentConfirmed, logOrderPaymentFailed, logOrderRevalidation, logOrderRevalidationFailure } from "../../infra/utils/logging/logFunctions.js";
 import {
     InvalidAddressError,
     OrderNotFoundError,
@@ -65,6 +67,13 @@ export async function checkoutOrderService(shippingAddress, user, req) {
     // as well
     await CacheUpdate.updateUserById( user, req )
 
+    // log order checkout as info using backend logger
+    logOrderCheckout( 
+        newOrder._id, 
+        newOrder.user_id, 
+        newOrder.price_at_purchase
+    );
+
     return paymentData.data;
 }
 
@@ -76,6 +85,15 @@ export async function confirmOrderPaymentService(reference, req) {
     // check if there was an error verifying the payment
     // and throw a PaymentGatewayError if there was
     if (verificationData.status === "error") {
+        PaymentGatewayError.message = verificationData.error.message;
+
+        // log order payment failure as error using backend logger
+        logOrderPaymentFailed( 
+            reference, 
+            req.user._id,
+            verificationData.error.message || "Payment verification failed"
+        );
+
         throw PaymentGatewayError;
     }
 
@@ -87,6 +105,22 @@ export async function confirmOrderPaymentService(reference, req) {
     // if it doesn't
     if (!orderToConfirm) {
         throw OrderNotFoundError;
+    }
+
+    // check if the order has already been confirmed and 
+    // and just return the verification data if it has, to avoid
+    // double confirmation of the order ( silent confirmation )
+    if (
+        orderToConfirm.payment_status === "paid" && 
+        orderToConfirm.status === "shipped"
+    ) {
+        // log order payment confirmation as info using backend logger
+        logOrderPaymentConfirmed( 
+            orderToConfirm._id, 
+            orderToConfirm.user_id
+        );
+
+        return verificationData.data;
     }
 
     // extract the payment status from the verification data
@@ -112,6 +146,15 @@ export async function confirmOrderPaymentService(reference, req) {
 
             await CacheUpdate.updateBookById( book, req )
         }
+
+        // send purchase event to google analytics
+        trackPurchase( req.header("x-google-analytics-client-id"), orderToConfirm )
+
+        // log order payment confirmation as info using backend logger
+        logOrderPaymentConfirmed( 
+            orderToConfirm._id, 
+            orderToConfirm.user_id
+        );
     } else {
         orderToConfirm.payment_status = "failed";
     }
@@ -148,15 +191,27 @@ export async function revalidateOrderPaymentService(orderId, userData) {
     // check if there was an error initializing the payment
     // and throw a PaymentGatewayError if there was
     if (paymentData.status === "error") {
+        // log order revalidation failure as error using backend logger
+        logOrderRevalidationFailure( 
+            duplicateOrder._id, 
+            duplicateOrder.user_id,
+            paymentData.error.message || "Payment revalidation failed"
+        );
+
         PaymentGatewayError.message = paymentData.error.message;
-        PaymentGatewayError.details = paymentData.error.details;
         throw PaymentGatewayError;
     }
+
+    // log order revalidation as info using backend logger
+    logOrderRevalidation( 
+        duplicateOrder._id, 
+        duplicateOrder.user_id
+    );
 
     return paymentData.data;
 }
 
-export async function cancelOrderService(orderId) {
+export async function cancelOrderService(orderId, req) {
     // get the existing order from the database
     let orderToCancel = await Orders.findById(orderId);
 
@@ -183,6 +238,15 @@ export async function cancelOrderService(orderId) {
 
     // save the updated order to the database
     await orderToCancel.save();
+
+    // send order cancellation event to google analytics
+    trackOrderCancellation( req.header("x-google-analytics-client-id"), orderToCancel )
+
+    // log order cancellation as info using backend logger
+    logOrderCancellation( 
+        orderToCancel._id, 
+        orderToCancel.user_id
+    );
 }
 
 export async function getOrderDetailsService(userId, orderId) {

@@ -21,10 +21,42 @@ export function trackAdminBookDeletion( book ) {
 
 
 // admin book edit
-export function trackAdminBookEdit( book ) {
-    trackEvent("admin_book_edit", {
+export function trackAdminBookUpdate( book ) {
+    trackEvent("admin_book_update", {
         item_id: book.id,
         item_name: book.title,
         price: book.price
+    })
+}
+
+
+// admin book list view
+export function trackAdminBookListView( books ) {
+    trackEvent("admin_book_list_view", {
+        items: books.map( function( book ) {
+            return {
+                item_id: book.id,
+                item_name: book.title,
+                price: book.price
+            }
+        })
+    })
+}
+
+
+// admin book view
+export function trackAdminBookView( book ) {
+    trackEvent("admin_book_view", {
+        item_id: book.id,
+        item_name: book.title,
+        price: book.price
+    })
+}
+
+
+// admin book search
+export function trackAdminBookSearch( searchTerm ) {
+    trackEvent("admin_book_search", {
+        search_term: searchTerm
     })
 }

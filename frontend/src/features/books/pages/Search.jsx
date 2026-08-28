@@ -5,10 +5,22 @@ import { useSearchParams } from "react-router-dom";
 import { useSearchBooksQuery } from "../services/booksApi";
 import RouteLoading from "../../../shared/ui/RouteLoading";
 import RouteError from "../../../shared/ui/RouteError";
+import { trackBookListingsView, trackSearch } from "../../../infra/analytics/general";
+import { logger } from "../../../infra/logging/logger";
+import { useAuthUserData } from "../../../shared/hooks/useAuthUserData";
+import { useEffect } from "react";
+import { useRouteLogger } from "../../../shared/hooks/useRouteLogger";
 
 export function Component() {
     const [ searchParams ] = useSearchParams()
     const searchQuery = searchParams.get("q")
+
+    useEffect( function() {
+        // send search event to google analytics
+        if ( searchQuery ) {
+            trackSearch( searchQuery )
+        }
+    }, [ searchQuery ])
 
     const { 
         data: searchResults,
@@ -16,6 +28,21 @@ export function Component() {
         error,
         refetch
     } = useSearchBooksQuery(searchQuery)
+
+    const { data } = useAuthUserData();
+
+    useEffect( function() {
+        if ( searchResults.data ) {
+            // send book listings view event to google analytics
+            trackBookListingsView( searchResults.data, "search" )
+        }
+    }, [ searchResults.data ])
+
+    useRouteLogger( 
+        "Error searching books for user",
+        error, 
+        data 
+    )
 
     if ( isLoading ) {
         return <RouteLoading

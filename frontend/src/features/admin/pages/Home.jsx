@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AltButton from "../../../shared/components/AltButton";
 import { Link } from "react-router-dom";
 import Button from "../../../shared/components/Button";
@@ -13,6 +13,8 @@ import { useDialogActions } from "../../../shared/ui/DialogRenderer";
 import { ToastTypes, useToastActions } from "../../../shared/ui/ToastRenderer";
 import { getErrorMessage } from "../../../shared/utils/utils";
 import { BookDialog } from "../ui/BookDialog";
+import { trackAdminBookAddition, trackAdminBookListView } from "../../../infra/analytics/admin";
+import { logger } from "../../../infra/logging/logger";
 
 export function Component() {
     const [ page, setPage ] = useState( 1 )
@@ -52,6 +54,13 @@ export function Component() {
     
     const { openDialog, closeDialog } = useDialogActions()
 
+    useEffect( function() {
+        if ( booksData ) {
+            // send book listings view event to google analytics
+            trackAdminBookListView( booksData?.data?.books )
+        }
+    }, [ booksData ])
+
 
     if ( isLoading ) {
         return (
@@ -62,6 +71,15 @@ export function Component() {
     }
 
     if ( !isLoading && !isFetching && error ) {
+        // log the error using the app's dedicated logger
+        logger.error(
+            "Error fetching books for admin",
+            error,
+            {
+                requestId: error?.requestId
+            }
+        );
+
         return (
             <RouteError
                 heading="An error occurred while fetching books"
@@ -127,8 +145,21 @@ export function Component() {
                 message: "Book created successfully"
             })
 
+            // send admin book creation event to google analytics
+            trackAdminBookAddition( newBookDetails )
+
             closeCreateBookDialog()
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error creating new book for admin",
+                error,
+                {
+                    requestId: error?.requestId,
+                    bookDetails: newBookDetails
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Book creation error",
                 description: `An error occured while trying to create
@@ -156,7 +187,6 @@ export function Component() {
             })
         }
     }
-
 
     return (<>
         <div

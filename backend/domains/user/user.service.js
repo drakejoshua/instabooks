@@ -1,4 +1,5 @@
 import { CacheOperations, CacheUpdate } from "../../cache/utils.js"
+import { trackAddToCart, trackRemoveFromCart } from "../../infra/utils/google analytics/events.js"
 
 
 
@@ -13,7 +14,16 @@ export async function addToCartService( user, bookId, quantity, req = null ) {
     // consistency
     await CacheUpdate.updateUserById( user, req )
 
-    return user.getCartData()
+    let cartData = await user.getCartData()
+
+    // send add to cart event to google analytics
+    trackAddToCart( 
+        req.header("x-google-analytics-client-id"),
+        cartData[0], 
+        quantity 
+    )
+
+    return cartData
 }
 
 
@@ -23,11 +33,17 @@ export async function addToCartService( user, bookId, quantity, req = null ) {
 // removeFromCart method on the user object, and returns the 
 // updated cart.
 export async function deleteFromCartService( user, bookId, req ) {
-    await user.removeFromCart( bookId )
+    const deletedItem = await user.removeFromCart( bookId )
 
     // update user data in cache to maintain data 
     // consistency
     await CacheUpdate.updateUserById( user, req )
+
+    // send remove from cart event to google analytics
+    trackRemoveFromCart( 
+        req.header("x-google-analytics-client-id"),
+        deletedItem 
+    )
 
     return user.getCartData()
 }

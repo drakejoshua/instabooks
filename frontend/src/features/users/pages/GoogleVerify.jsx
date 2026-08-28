@@ -8,6 +8,8 @@ import { useGoogleVerifyQuery } from "../services/authApi";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setToken } from "../authSlice.js";
+import { trackGoogleLoginEvent } from "../../../infra/analytics/auth.js";
+import { logger } from "../../../infra/logging/logger.js";
 
 export function Component() {
     let { id } = useParams()
@@ -33,6 +35,18 @@ export function Component() {
         mx-auto
     `;
 
+    if ( error ) {
+        // log the error using the app's dedicated logger
+        // log the error using the app's dedicated logger
+        logger.error(
+            "Error verifying google login details",
+            error,
+            {
+                requestId: error?.requestId
+            }
+        );
+    }
+
     useEffect( function() {
         if ( !isLoading && data ) {
             // dispatch the access token to the redux store
@@ -42,6 +56,9 @@ export function Component() {
             let timeout = setTimeout( function() {
                 navigateTo("/")
             }, 2500 )
+
+            // send google login event to google analytics
+            trackGoogleLoginEvent()
 
             return function() {
                 clearTimeout( timeout )

@@ -5,6 +5,7 @@ import { useAddBookToCartMutation, useDeleteBookFromCartMutation, useUpdateBookI
 import { ToastTypes, useToastActions } from "../ui/ToastRenderer";
 import { useDialogActions } from "../ui/DialogRenderer";
 import { getErrorMessage } from "../utils/utils";
+import { logger } from "../../infra/logging/logger";
 
 export default function BookActions({ id, className = "" }) {
     // get user information through the redux query 
@@ -64,7 +65,29 @@ export default function BookActions({ id, className = "" }) {
                 type: ToastTypes.success,
                 message: "Book added to Cart"
             })
+
+            // log the action of adding a book to the cart
+            // using the app's dedicated logger
+            logger.info(
+                "Book added to user's cart",
+                {
+                    bookId: id,
+                    requestId: user?.requestId,
+                    userId: user?.data?.id
+                }
+            )
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error adding book to user's cart",
+                error,
+                {
+                    bookId: id,
+                    requestId: error?.requestId,
+                    userId: user?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Cart Addition Error",
                 description: `An error occured while trying to add
@@ -112,7 +135,30 @@ export default function BookActions({ id, className = "" }) {
                 type: ToastTypes.success,
                 message: "Book quantity updated"
             })
+
+            // log the action of updating the quantity of a 
+            // book in the cart using the app's dedicated logger
+            logger.info(
+                "Book quantity updated in user's cart",
+                {
+                    bookId: id,
+                    newQuantity: bookDetails.order_quantity + 1,
+                    requestId: user?.requestId,
+                    userId: user?.data?.id
+                }
+            )
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error updating book quantity in user's cart",
+                error,
+                {
+                    bookId: id,
+                    requestId: error?.requestId,
+                    userId: user?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Cart Update Error",
                 description: `An error occured while trying to update
@@ -154,7 +200,29 @@ export default function BookActions({ id, className = "" }) {
                     type: ToastTypes.success,
                     message: "Book removed from cart"
                 })
+
+                // log the action of removing a book from the
+                // cart using the app's dedicated logger
+                logger.info(
+                    "Book removed from user's cart",
+                    {
+                        bookId: id,
+                        requestId: user?.requestId,
+                        userId: user?.data?.id
+                    }
+                )
             } catch( error ) {
+                // log the error using the app's dedicated logger
+                logger.error(
+                    "Error removing book from user's cart",
+                    error,
+                    {
+                        bookId: id,
+                        requestId: error?.requestId,
+                        userId: user?.data?.id
+                    }
+                )
+
                 let dialogId = openDialog({
                     title: "Cart Update Error",
                     description: `An error occured while trying to remove
@@ -193,7 +261,30 @@ export default function BookActions({ id, className = "" }) {
                     type: ToastTypes.success,
                     message: "Book quantity updated"
                 })
+
+                // log the action of updating the quantity of a 
+                // book in the cart using the app's dedicated logger
+                logger.info(
+                    "Book quantity updated in user's cart",
+                    {
+                        bookId: id,
+                        newQuantity: bookDetails.order_quantity - 1,
+                        requestId: user?.requestId,
+                        userId: user?.data?.id
+                    }
+                )
             } catch( error ) {
+                // log the error using the app's dedicated logger
+                logger.error(
+                    "Error updating book quantity in user's cart",
+                    error,
+                    {
+                        bookId: id,
+                        requestId: error?.requestId,
+                        userId: user?.data?.id
+                    }
+                )
+
                 let dialogId = openDialog({
                     title: "Cart Update Error",
                     description: `An error occured while trying to update

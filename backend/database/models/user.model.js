@@ -52,6 +52,7 @@ UserSchema.methods.getProfileData = async function () {
     await this.populate("cart.book_id");
 
     return {
+        id: this._id,
         name: this.name,
         email: this.email,
         photo_url: this.photo_url,
@@ -145,6 +146,8 @@ UserSchema.methods.addToCart = async function (book_id, quantity) {
 // returning.
 UserSchema.methods.removeFromCart = async function (book_id) {
     try {
+        let cartData = await this.getCartData() 
+
         // get index of book with book_id if it has already been
         // added to the cart
         let bookIndex = this.cart.findIndex((book) => book.book_id.equals(book_id));
@@ -158,6 +161,10 @@ UserSchema.methods.removeFromCart = async function (book_id) {
             // save updated user document to the database
             await this.save();
         }
+
+        return cartData.find( function( book ) {
+            return book.id == book_id
+        })
     } catch (err) {
         // if any errors occured during cart updates, tag the
         // error as a db operation error and throw it to the

@@ -9,10 +9,7 @@ winston.loggers.add("development", {
     format: winston.format.json(),
     transports: [
         new winston.transports.Console()
-    ],
-    defaultMeta: {
-        service: "dev-logger"
-    }
+    ]
 })
 
 winston.loggers.add("production", {
@@ -20,8 +17,7 @@ winston.loggers.add("production", {
     format: winston.format.json(),
     transports: [
         new LogtailTransport(logtail),
-    ],
-    defaultMeta: { service: 'prod-logger' } 
+    ]
 })
 
 

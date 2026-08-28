@@ -2,9 +2,11 @@
 // server
 import redis from "redis";
 
-// import logger based on winston to log errors and
-// critical information during redis usage
-import logger from "../infra/utils/winston.js";
+import { 
+    logRedisConnect, 
+    logRedisConnectSuccess, 
+    logRedisError 
+} from "../infra/utils/logging/logFunctions.js";
 
 // initialize redis client with connection url
 const redisClient = redis.createClient({
@@ -25,26 +27,16 @@ const redisClient = redis.createClient({
 // handle redis cache errors and log them using configured
 // logger
 redisClient.on("error", function(err) {
-    logger.error({
-        event: "redis_error",
-        message: `Redis error: ${err?.message || "Unknown error"}`,
-        stack: err?.stack,
-    });
+    logRedisError(err)
 });
 
 
 redisClient.on("connect", function() {
-    logger.info({
-        event: "redis_connect",
-        message: "TCP connection established with Redis."
-    });
+    logRedisConnect()
 })
 
 redisClient.on("ready", function() {
-    logger.info({
-        event: "redis_connect_success",
-        message: `Server successfully connected to redis`
-    });
+    logRedisConnectSuccess()
 })
 
 

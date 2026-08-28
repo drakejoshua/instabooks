@@ -7,6 +7,8 @@ import { getErrorMessage } from "../../../shared/utils/utils";
 import { BookDialog } from "../ui/BookDialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { trackAdminBookDeletion, trackAdminBookUpdate } from "../../../infra/analytics/admin";
+import { logger } from "../../../infra/logging/logger";
 
 function AdminBookActions({ book }) {
     const { openToast } = useToastActions()
@@ -84,10 +86,23 @@ function AdminBookActions({ book }) {
                 message: "Book deleted successfully"
             })
 
+            // send admin book deletion event to google analytics
+            trackAdminBookDeletion( book )
+
             // navigate back to admin books to indicate 
             // deletion
             navigateTo("/admin/books")
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error deleting book for admin",
+                error,
+                {
+                    bookId: book.id,
+                    requestId: error?.requestId
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Book deletion error",
                 description: `There was an error while deleting the book.
@@ -133,8 +148,21 @@ function AdminBookActions({ book }) {
                 message: "Book updated successfully"
             })
 
+            // send admin book update event to google analytics
+            trackAdminBookUpdate( updateBookDetails )
+
             closeUpdateBookDialog()
         } catch( error ) { 
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error updating book for admin",
+                error,
+                {
+                    bookId: book.id,
+                    requestId: error?.requestId
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Book update error",
                 description: `There was an error while updating the book.

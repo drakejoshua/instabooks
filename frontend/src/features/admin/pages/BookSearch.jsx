@@ -5,6 +5,9 @@ import RouteError from '../../../shared/ui/RouteError'
 import RouteLoading from '../../../shared/ui/RouteLoading'
 import { useSearchBooksQuery } from '../services/adminApi'
 import { useSearchParams } from 'react-router-dom'
+import { trackAdminBookListView, trackAdminBookSearch } from '../../../infra/analytics/admin'
+import { logger } from '../../../infra/logging/logger'
+import { useEffect } from 'react'
 
 export function Component() {
     const [ searchParams ] = useSearchParams()
@@ -16,6 +19,19 @@ export function Component() {
         refetch
     } = useSearchBooksQuery( searchParams.get("query") )
 
+    useEffect(function() {
+        // send admin book search event to google analytics
+        if ( searchParams.get("query") ) {
+            trackAdminBookSearch( searchParams.get("query") )
+        }
+    }, [ searchParams ])
+
+    useEffect( function() {
+        if ( searchData?.data ) {
+            // send admin book listings view event to google analytics
+            trackAdminBookListView( searchData?.data )
+        }
+    }, [ searchData ])
 
     if ( isLoading ) {
         return (
@@ -26,6 +42,16 @@ export function Component() {
     }
 
     if ( !isLoading && !isFetching && error ) {
+        // log the error using the app's dedicated logger
+        logger.error(
+            "Error searching for books for admin",
+            error,
+            {
+                searchQuery: searchParams.get("query"),
+                requestId: error?.requestId
+            }
+        );
+
         return (
             <RouteError
                 heading="An error occurred while searching for books"

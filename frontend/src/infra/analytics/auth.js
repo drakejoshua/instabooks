@@ -1,18 +1,10 @@
 import { trackEvent } from "./GoogleAnalytics"
 
-// intialize auth
-export function trackGoogleAuthInitEvent() {
-    trackEvent("google_auth_init", {
+// login event tracking - login because of google auth 
+// button click which ends up in a successful login
+export function trackGoogleLoginEvent() {
+    trackEvent("login", {
         method: "Google"
-    })
-}
-
-
-// auth verification
-export function trackGoogleAuthVerifyEvent( status ) {
-    trackEvent("google_auth_verify", {
-        method: "Google",
-        status: status || GOOGLE_AUTH_STATUS.FAILURE
     })
 }
 

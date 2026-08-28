@@ -1,16 +1,8 @@
-import logger from '../../../infra/utils/winston.js';
-import generateURLFromReq from '../utils/generateURLFromReq.js';
 import { ERROR_CODES } from '../utils/errors.js';
+import { logServerError } from '../../../infra/utils/logging/logFunctions.js';
 
 export default function errorHandler( err, req, res, next ) {
-    logger.error({
-        event: 'server_error',
-        message: err?.message,
-        stack: err?.stack,
-        code: err?.code,
-        url: generateURLFromReq(req),
-        method: req.method
-    })
+    logServerError( err, req );
 
     if ( err.status ) {
         res.status( err.status ).json({

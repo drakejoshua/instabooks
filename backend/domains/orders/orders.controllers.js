@@ -137,7 +137,7 @@ export async function cancelOrderController(req, res, next) {
         let { order_id } = req.params;
 
         // call the cancel order service to cancel the order
-        await cancelOrderService(order_id);
+        await cancelOrderService(order_id, req);
 
         // send a success response
         res.json({

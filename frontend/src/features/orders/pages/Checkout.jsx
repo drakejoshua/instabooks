@@ -10,6 +10,8 @@ import { useCheckoutCartMutation } from "../../../shared/services/ordersApi";
 import { useDialogActions } from "../../../shared/ui/DialogRenderer";
 import { getErrorMessage } from "../../../shared/utils/utils";
 import { ToastTypes, useToastActions } from "../../../shared/ui/ToastRenderer";
+import { trackBeginCheckout } from "../../../infra/analytics/ecommerce";
+import { logger } from "../../../infra/logging/logger";
 
 export function Component() {
     const { data: user } = useGetMeQuery()
@@ -31,7 +33,7 @@ export function Component() {
 
     useEffect( function() {
         setShippingAddress( user?.data?.addresses[ 0 ] || "" )
-    }, [user ])
+    }, [user])
 
     if ( user?.data?.cart.length == 0 ) {
         return (
@@ -51,10 +53,34 @@ export function Component() {
                 `
             })
 
+            // send begin checkout event to google analytics
+            trackBeginCheckout( {
+                currency: "USD",
+                total: calculateCartTotal( user?.data?.cart ),
+                items: user?.data?.cart.map( function(book) {
+                    return {
+                        id: book.id,
+                        title: book.title,
+                        price: book.price,
+                        quantity: book.order_quantity || 1
+                    }
+                })
+            })
+
             setTimeout(function() {
                 window.location.href = checkoutData.authorization_url
             }, 1000)
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error checking out user's cart",
+                error,
+                {
+                    requestId: error?.requestId,
+                    userId: user?.data?.id,
+                }
+            );
+
             let dialogId = openDialog({
                 title: "Cart checkout error",
                 description: `

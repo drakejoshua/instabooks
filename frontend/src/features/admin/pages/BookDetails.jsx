@@ -4,6 +4,9 @@ import AdminBookActions from "../components/AdminBookActions";
 import { useGetBookByIdQuery } from "../services/adminApi";
 import RouteLoading from "../../../shared/ui/RouteLoading";
 import RouteError from "../../../shared/ui/RouteError";
+import { trackAdminBookView } from "../../../infra/analytics/admin";
+import { logger } from "../../../infra/logging/logger";
+import { useEffect } from "react";
 
 export function Component() {
     const { id } = useParams()
@@ -16,6 +19,15 @@ export function Component() {
         refetch
     } = useGetBookByIdQuery( id )
 
+    const bookDetail = bookDetailsData?.data
+
+    useEffect( function() {
+        if ( bookDetailsData ) {
+            // send admin book view event to google analytics
+            trackAdminBookView( bookDetail )
+        }
+    }, [bookDetailsData])
+
 
     if ( isLoading ) {
         return (
@@ -26,6 +38,16 @@ export function Component() {
     }
 
     if ( !isLoading && !isFetching && error ) {
+        // log the error using the app's dedicated logger
+        logger.error(
+            "Error fetching book details for admin", 
+            error, 
+            { 
+                bookId: id,
+                requestId: error?.requestId
+            }
+        );
+
         return (
             <RouteError
                 heading="An error occurred while fetching books"
@@ -58,7 +80,6 @@ export function Component() {
     }
 
 
-    const bookDetail = bookDetailsData?.data
     return (
         <BookDetailsLayout
             src={bookDetail.cover_photo_url}

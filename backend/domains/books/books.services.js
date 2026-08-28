@@ -1,8 +1,8 @@
 import { cloudinaryDelete, cloudinaryUpload } from "../../infra/utils/cloudinary.js";
 import Books from "../../database/models/book.model.js";
 import { BookNotFoundError } from "../shared/utils/errors.js";
-import upload from "../../infra/middleware/multer.js";
 import { CacheKeys, CacheOperations, CacheUpdate } from "../../cache/utils.js";
+import { logStoreBookAddition, logStoreBookDeletion, logStoreBookUpdate } from "../../infra/utils/logging/logFunctions.js";
 
 export async function addBookService(bookDetails, bookCoverPhoto) {
     // upload the cover photo file to cloudinary and
@@ -17,6 +17,9 @@ export async function addBookService(bookDetails, bookCoverPhoto) {
         cover_photo_url: uploadResult.secure_url,
         cover_photo_id: uploadResult.public_id,
     });
+
+    // log the book addition event as info using backend logger
+    logStoreBookAddition( newBook._id )
 
     // return newly created book details
     return newBook.getBookDetails();
@@ -72,6 +75,12 @@ export async function updateBookService(
         req
     )
 
+    // log the book update event as info using backend logger
+    logStoreBookUpdate( 
+        bookToUpdate._id,
+        bookToUpdate.quantity
+    )
+
     // return updated book information
     return bookToUpdate.getBookDetails();
 }
@@ -99,6 +108,14 @@ export async function deleteBookService( bookId, req ) {
         req, 
         CacheKeys.bookById( bookToDelete._id )
     )
+
+    // log the book deletion event as info using backend logger
+    logStoreBookDeletion({
+        bookId: bookToDelete._id,
+        bookTitle: bookToDelete.title,
+        bookAuthor: bookToDelete.author,
+        bookPrice: bookToDelete.price,
+    })
 }
 
 

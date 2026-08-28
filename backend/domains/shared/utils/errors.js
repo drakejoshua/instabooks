@@ -33,6 +33,8 @@ export const ERROR_CODES = {
     INVALID_REQUEST_INFO: "INVALID_REQUEST_INFO",
     INVALID_ORDER_REFERENCE: "INVALID_ORDER_REFERENCE",
     ORDER_NOT_FOUND: "ORDER_NOT_FOUND",
+    INVALID_LOGGER_DATA: "INVALID_LOGGER_DATA",
+    RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
 };
 
 export const RouteNotFoundError = new Error(
@@ -102,7 +104,7 @@ InvalidUsernameError.status = 400;
 InvalidUsernameError.code = ERROR_CODES.INVALID_USER_NAME;
 
 export function reportInvalidUsernameError(next) {
-    next(InvalidFileTypeError);
+    next(InvalidUsernameError);
 }
 
 export const InvalidOperationError = new Error(
@@ -301,4 +303,26 @@ OrderNotFoundError.code = ERROR_CODES.ORDER_NOT_FOUND;
 
 export function reportOrderNotFoundError(next) {
     next(OrderNotFoundError);
+}
+
+
+export const InvalidLoggerDataError = new Error(
+    "The provided logger data is invalid, Please check and try again",
+);
+InvalidLoggerDataError.status = 400;
+InvalidLoggerDataError.code = ERROR_CODES.INVALID_LOGGER_DATA;
+
+export function reportInvalidLoggerDataError(next) {
+    next(InvalidLoggerDataError);
+}
+
+
+export const RateLimitExceededError = new Error(
+    "Too many requests from this IP, please try again later",
+);
+RateLimitExceededError.status = 429;
+RateLimitExceededError.code = ERROR_CODES.RATE_LIMIT_EXCEEDED;
+
+export function reportRateLimitExceededError(next) {
+    next(RateLimitExceededError);
 }

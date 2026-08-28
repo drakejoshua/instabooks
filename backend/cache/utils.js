@@ -1,7 +1,3 @@
-// import logger for logging any errors or critial info
-// encountered during cache operations
-import logger from "../infra/utils/winston.js";
-
 // import redis client from setup file to allow cache
 // operations
 import redisClient from "./setup.js";
@@ -17,6 +13,14 @@ import Books from "../database/models/book.model.js";
 // import the Orders model for interaction with the orders
 // collection on the database
 import Orders from "../database/models/order.model.js"
+import { 
+    logCacheDelete,
+    logCacheError, 
+    logCacheHit, 
+    logCacheMiss, 
+    logCachePendingRequest, 
+    logCacheSet 
+} from "../infra/utils/logging/logFunctions.js";
 
 // pendingRequests map to track in-flight requests and prevent
 // duplicate async/cache calls for the same async operation and
@@ -36,11 +40,7 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
         // check if cached data exists for the provided key, if so,
         // log a "cache_hit" event and return parsed cache data
         if (cachedData) {
-            logger.info({
-                event: "cache_hit",
-                cacheKey: key,
-                requestId: req.requestId,
-            });
+            logCacheHit(key);
 
             return JSON.parse(cachedData);
         }
@@ -50,11 +50,7 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
         // return it's result to prevent duplicate API calls and cache
         // stampeding
         if (pendingRequests.has(key)) {
-            logger.info({
-                event: "cache_pend_request",
-                requestId: req.requestId,
-                cacheKey: key,
-            });
+            logCachePendingRequest(key);
 
             return await pendingRequests.get(key);
         }
@@ -71,19 +67,10 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
 
             // log a "cache_miss" event and cache the fresh data in redis
             // with the specified expiration time
-            logger.info({
-                event: "cache_miss",
-                cacheKey: key,
-                requestId: req.requestId,
-            });
+            logCacheMiss(key);
 
             // log a "cache_set" event for tracking cache set operations
-            logger.info({
-                event: "cache_set",
-                cacheKey: key,
-                requestId: req.requestId,
-                expiration: expiration,
-            });
+            logCacheSet(key, expiration);
 
             await redisClient.setEx(key, expiration, JSON.stringify(data));
 
@@ -98,13 +85,7 @@ async function getOrSetCache(req, key, asyncFunction, expiration = 3600) {
         // if any errors occur during the cache retrival operation,
         // log the error and rethrow it to be handled up in the execution
         // chain
-        logger.error({
-            event: "cache_error",
-            message: `Cache error: ${err.message || "Unknown error"}`,
-            stack: err.stack,
-            cacheKey: key,
-            requestId: req.requestId,
-        });
+        logCacheError(key, err);
 
         throw err;
     }
@@ -121,34 +102,20 @@ async function getCache(req, key) {
         // check if cached data exists for the provided key, if so,
         // log a "cache_hit" event and return parsed cache data
         if (cachedData) {
-            logger.info({
-                event: "cache_hit",
-                cacheKey: key,
-                requestId: req.requestId,
-            });
+            logCacheHit(key);
 
             return JSON.parse(cachedData);
         }
 
         // if no cached data is found for the key, log a "cache_miss" event
-        logger.info({
-            event: "cache_miss",
-            cacheKey: key,
-            requestId: req.requestId,
-        });
+        logCacheMiss(key);
 
         return null;
     } catch (err) {
         // if any errors occur during the cache retrival operation,
         // log the error and rethrow it to be handled up in the execution
         // chain
-        logger.error({
-            event: "cache_error",
-            message: `Cache error: ${err.message || "Unknown error"}`,
-            stack: err.stack,
-            cacheKey: key,
-            requestId: req.requestId,
-        });
+        logCacheError(key, err);
 
         throw err;
     }
@@ -164,22 +131,12 @@ async function deleteCache(req, key) {
         await redisClient.del(key);
 
         // log a "cache_delete" event for tracking cache delete operations
-        logger.info({
-            event: "cache_delete",
-            cacheKey: key,
-            requestId: req.requestId,
-        });
+        logCacheDelete(key);
     } catch (err) {
         // if any errors occur during the cache delete operation,
         // log the error and rethrow it to be handled up in the execution
         // chain
-        logger.error({
-            event: "cache_error",
-            message: `Cache error: ${err.message || "Unknown error"}`,
-            stack: err.stack,
-            cacheKey: key,
-            requestId: req.requestId,
-        });
+        logCacheError(key, err);
 
         throw err;
     }
@@ -192,25 +149,14 @@ async function deleteCache(req, key) {
 async function setCache(req, key, data, expiration = 3600) {
     try {
         // log a "cache_set" event for tracking cache set operations
-        logger.info({
-            event: "cache_set",
-            cacheKey: key,
-            requestId: req.requestId,
-            expiration: expiration,
-        });
+        logCacheSet(key, expiration);
 
         await redisClient.setEx(key, expiration, JSON.stringify(data));
     } catch (err) {
         // if any errors occur during the cache set operation,
         // log the error and rethrow it to be handled up in the execution
         // chain
-        logger.error({
-            event: "cache_error",
-            message: `Cache error: ${err.message || "Unknown error"}`,
-            stack: err.stack,
-            cacheKey: key,
-            requestId: req.requestId,
-        });
+        logCacheError(key, err);
 
         throw err;
     }
@@ -302,16 +248,14 @@ async function getAndHydrateBooks(limit, req = null) {
         return []
     }
 
-    {
-        // hydrate each book object to a mongoose model instance if
-        // it is not already a mongoose model instance
-        books = books.map((book) => {
-            if (!(book instanceof Books)) {
-                return Books.hydrate(book);
-            }
-            return book;
-        });
-    }
+    // hydrate each book object to a mongoose model instance if
+    // it is not already a mongoose model instance
+    books = books.map((book) => {
+        if (!(book instanceof Books)) {
+            return Books.hydrate(book);
+        }
+        return book;
+    });
 
     return books;
 }
@@ -447,8 +391,8 @@ export const CacheOperations = {
 // keys used in this application, specifying how long each type of cached
 // data should be retained in Redis before expiring.
 export const CacheTTL = {
-    bookById: 60 * 60, // 30 mins
-    bookCount: 60 * 60, // 60 mins
+    bookById: 30 * 60, // 30 mins
+    bookCount: 10 * 60, // 10 mins
     searchResults: 3 * 60, // 3 mins
     userById: 60 * 60, // 60 mins
     userByGoogleAuthId: 5 * 60, // 5 mins
@@ -456,7 +400,7 @@ export const CacheTTL = {
     userByRefreshToken: 120 * 60, // 120 mins
     orders: 5 * 60, // 5 mins
     ordersCount: 5 * 60, // 5 mins
-    books: 60 * 60 // 60 mins
+    books: 10 * 60 // 10 mins
 };
 
 // CacheKeys Repository
@@ -491,7 +435,7 @@ export const CacheKeys = {
         return `books:count`;
     },
     searchResults: function (query) {
-        return `books:search:${query}`;
+        return `books:search:${query?.trim()?.toLowerCase()}`;
     },
     orders: function( limit, page ) {
         return `orders:limit:${limit}:page:${page}`

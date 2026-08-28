@@ -7,6 +7,7 @@ import { useState } from "react";
 import RouteLoading from "../../../shared/ui/RouteLoading";
 import RouteError from "../../../shared/ui/RouteError";
 import { FaArrowsRotate } from "react-icons/fa6";
+import { logger } from "../../../infra/logging/logger";
 
 export function Component() {
     const [ page, setPage ] = useState( 1 )
@@ -34,6 +35,15 @@ export function Component() {
     }
 
     if ( !isLoading && !isFetching && error ) {
+        // log the error using the app's dedicated logger
+        logger.error(
+            "Error fetching orders for admin",
+            error,
+            {
+                requestId: error?.requestId
+            }
+        );
+
         return (
             <RouteError
                 heading="An error occurred while fetching orders"

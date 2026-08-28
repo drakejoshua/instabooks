@@ -4,8 +4,11 @@ import { Link, useParams } from "react-router-dom"
 import { useGetBookDetailsQuery } from "../services/booksApi";
 import RouteLoading from "../../../shared/ui/RouteLoading";
 import RouteError from "../../../shared/ui/RouteError";
-import { useGetMeQuery } from "../../users/services/authApi";
 import Button from "../../../shared/components/Button";
+import { trackBookView } from "../../../infra/analytics/general";
+import { useAuthUserData } from "../../../shared/hooks/useAuthUserData";
+import { useEffect } from "react";
+import { useRouteLogger } from "../../../shared/hooks/useRouteLogger";
 
 export function Component() {
     const { id } = useParams()
@@ -16,8 +19,22 @@ export function Component() {
         refetch 
     } = useGetBookDetailsQuery( id )
 
-    const { data } = useGetMeQuery();
+    const { data } = useAuthUserData();
 
+    useRouteLogger( 
+        "Error fetching book details for user",
+        error, 
+        data 
+    )
+
+    useEffect(function() {
+        if ( book ) {
+            // since a book was successfully fetched, send a book view 
+            // event to google analytics
+            trackBookView( book.data )
+        }
+    }, [ book ])
+    
     if ( isLoading ) {
         return (
             <RouteLoading

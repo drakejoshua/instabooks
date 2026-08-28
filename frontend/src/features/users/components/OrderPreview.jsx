@@ -9,6 +9,8 @@ import { useCancelOrderMutation, useRevalidateOrderMutation } from "../../../sha
 import { ToastTypes, useToastActions } from "../../../shared/ui/ToastRenderer";
 import { useDialogActions } from "../../../shared/ui/DialogRenderer";
 import { getErrorMessage } from "../../../shared/utils/utils";
+import { useGetMeQuery } from "../services/authApi";
+import { logger } from "../../../infra/logging/logger";
 
 export function OrderPreview({ 
     orderId, 
@@ -37,6 +39,8 @@ export function OrderPreview({
         } 
     ] = useCancelOrderMutation()
 
+    const { data } = useGetMeQuery();
+
     const { openDialog, closeDialog } = useDialogActions()
     
     const { openToast } = useToastActions()
@@ -57,6 +61,17 @@ export function OrderPreview({
                 window.location.href = revalidationData?.authorization_url
             }, 1000 )
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error revalidating order for user",
+                error,
+                {
+                    orderId: orderId,
+                    requestId: error?.requestId,
+                    userId: data?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Order revalidation error",
                 description: `
@@ -94,6 +109,17 @@ export function OrderPreview({
                 message: "Order cancelled successfully"
             })
         } catch( error ) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error cancelling order for user",
+                error,
+                {
+                    orderId: orderId,
+                    requestId: error?.requestId,
+                    userId: data?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Order cancellation error",
                 description: `

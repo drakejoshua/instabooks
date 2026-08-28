@@ -73,6 +73,7 @@ Response:
 - 200: {
     "status":"success",
     "data":{
+        "id": < user's id: "64a52e390f8d57538d01efcf" >,
         "name": < user's name: "John Doe" >,
         "email": < user's email: "john.doe@example.com" >,
         "photo_url": < user's photo url: "https://example.com/photo.jpg" >,
@@ -147,6 +148,7 @@ Response:
 - 200: {
     "status":"success",
     "data": {
+        "id": < user's id: "64a52e390f8d57538d01efcf" >,
         "name": < user's name: "Joshua Ligron" >,
         "email": < user's email: "joshuanathan086@gmail.com" >,
         "photo_url": < user's photo URL: "https://lh3.googleusercontent.com/a/***" >,
@@ -225,6 +227,7 @@ Response:
     "status": "success",
     "data":{
         "user": {
+            "id": < user's id: "64a52e390f8d57538d01efcf" >,
             "name": < user's name: "Joshua Nathan Ligron" >,
             "email": < user's email: "joshuanathan086@gmail.com" >,
             "photo_url": < user's photo URL: "http://example.com/photo.jpg" >,
@@ -1014,6 +1017,28 @@ Response:
 }
 
 
+Logger 
+
+POST /logger  ( log events and errors )
+
+Request body ( required fields since logs can contain variable data ):
+- JSON: {
+    "level": < log level e.g. "info" | "error" | "warn" >,
+    "timestamp": < timestamp e.g. "2026-07-14T21:19:01.728Z" >,
+    "event": < event description e.g. "User logged in" >,
+    ...( optional fields for additional context, e.g. user_id, request_id, order_id, etc. )
+}
+Request Header: none
+Response Header: none
+Response:
+- 202: ( No data returned, log accepted for processing )
+- 400: {
+    "status":"error",
+    error: {
+        "message": < error message >,
+        "code": < error code >
+    }
+}
 
 
 

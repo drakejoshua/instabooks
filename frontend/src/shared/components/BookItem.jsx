@@ -4,7 +4,7 @@ import BookActions from "./BookActions";
 import Heading from "./Heading";
 import Button from "./Button";
 import { Link } from "react-router-dom";
-import { useGetMeQuery } from "../../features/users/services/authApi";
+import { useAuthUserData } from "../hooks/useAuthUserData";
 
 function BookItem({
     id,
@@ -20,7 +20,7 @@ function BookItem({
 }) {
     let bookDetailsLink = type === "default" ? `/books/details/${id}` : `/admin/books/details/${id}`;
 
-    const { data } = useGetMeQuery();
+    const { data } = useAuthUserData();
 
     return <div
         className={`

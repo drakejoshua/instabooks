@@ -5,11 +5,31 @@ import Button from "../../../shared/components/Button";
 import { Link } from "react-router-dom"
 import EmptyCartMessage from "../components/EmptyCartMessage";
 import { calculateCartTotal } from "../utils/utils";
+import { trackViewCart } from "../../../infra/analytics/ecommerce";
+import { useEffect } from "react";
 
 export function Component() {
     // get user information through the redux query 
     // or from cache
     const { data: user } = useGetMeQuery()
+
+    useEffect( function() {
+        if ( !user?.data?.cart ) return;
+        
+        // send view cart event to google analytics
+        trackViewCart( {
+            currency: "USD",
+            total: calculateCartTotal( user?.data?.cart ),
+            items: user?.data?.cart.map( function(book) {
+                return {
+                    id: book.id,
+                    title: book.title,
+                    price: book.price,
+                    quantity: book.order_quantity || 1
+                }
+            } ) 
+        })
+    }, [])
 
     return <div className="pb-6">
         <Heading>

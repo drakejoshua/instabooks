@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithAdminAuth } from "../../../app/store/baseQuery";
+import { baseQueryAdminAuthWithRequestId } from "../../../app/store/baseQuery";
 
 // Demo-only admin authorization.
 // This is intentionally not a production authentication mechanism.
@@ -8,7 +8,7 @@ import { baseQueryWithAdminAuth } from "../../../app/store/baseQuery";
 
 export const adminApi = createApi({
     reducerPath: "admin",
-    baseQuery: baseQueryWithAdminAuth,
+    baseQuery: baseQueryAdminAuthWithRequestId,
     tagTypes: ["AdminOrders", "AdminBooks"],
     endpoints: function( builder ) {
         return {
@@ -49,11 +49,9 @@ export const adminApi = createApi({
                         url: `/books/admin/${id}`
                     }
                 },
-                providesTags: function( result, error, id ) {
-                    return [
-                        { type: "AdminBooks", id }
-                    ]
-                }
+                providesTags: (result, error, id) => [
+                    { type: "AdminBooks", id }
+                ]
             }),
             createBook: builder.mutation({
                 query: function( newBook ) {
@@ -75,9 +73,10 @@ export const adminApi = createApi({
                         body: createFormDataFromObject( updatedBookDetails )
                     }
                 },
-                invalidatesTags: function( result, error, { id } ) {
-                    return [{ type: "AdminBooks", id }]
-                }
+                invalidatesTags: (result, error, { id }) => [
+                    { type: "AdminBooks", id },
+                    { type: "AdminBooks", id: "LIST" }
+                ]
             }),
             deleteBook: builder.mutation({
                 query: function( id ) {
@@ -86,9 +85,10 @@ export const adminApi = createApi({
                         method: "DELETE"
                     }
                 },
-                invalidatesTags: function( result, error, { id } ) {
-                    return [{ type: "AdminBooks", id }]
-                }
+                invalidatesTags: (result, error, { id }) => [
+                    { type: "AdminBooks", id },
+                    { type: "AdminBooks", id: "LIST" }
+                ]
             }),
             getOrders: builder.query({
                 query: function( page ) {

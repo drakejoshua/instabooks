@@ -7,9 +7,13 @@ import Heading from "../../../shared/components/Heading.jsx"
 import OrderDetailsItem from "../../../shared/components/OrderDetailsItem.jsx"
 import { useGetOrderQuery } from "../../../shared/services/ordersApi.js"
 import { getErrorMessage } from "../../../shared/utils/utils.js"
+import { useGetMeQuery } from "../../users/services/authApi.js"
+import { logger } from "../../../infra/logging/logger.js"
 
 export function Component() {
     const { id } = useParams()
+
+    const { data: user } = useGetMeQuery();
 
     const { 
         data: orderConfirmationData,
@@ -36,6 +40,19 @@ export function Component() {
         items-center
         capitalize
     `;
+
+    if ( error ) {
+        // log the error using the app's dedicated logger
+        logger.error(
+            "Error fetching order details for user",
+            error,
+            {
+                orderId: id,
+                requestId: error?.requestId,
+                userId: user?.data?.id
+            }
+        );
+    }
 
     return <div
         className="

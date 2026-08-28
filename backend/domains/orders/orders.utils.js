@@ -9,16 +9,6 @@ const paystackCurrency = process.env.PAYSTACK_CURRENCY;
 // and returns the authorization URL for the user to complete the
 // payment.
 export async function paystackInitialize(userData, orderData) {
-    console.log("Initializing paystack transaction for user:", userData.email, {
-        email: userData.email,
-        reference: orderData.id,
-        currency: paystackCurrency,
-        // convert amount to kobo/cents ( paystack expects
-        // amount in subcurrency )
-        amount: orderData.price_at_purchase * 100,
-        callback_url: `${backendURL}/orders/confirm`,
-    });
-
     // make a POST request to the paystack initialize endpoint
     let resp = await fetch("https://api.paystack.co/transaction/initialize", {
         method: "POST",
@@ -80,10 +70,13 @@ export async function paystackVerify(reference) {
     // check if the response is not ok and return an
     // error object
     if (!resp.ok) {
+        let errorData = await resp.json();
+
         return {
             status: "error",
             error: {
-                message: `There was an error verifying the transaction. ${resp.status} ${resp.statusText}`,
+                message: errorData.message ||
+                    `There was an error verifying the transaction. ${resp.status} ${resp.statusText}`,
             },
         };
     }

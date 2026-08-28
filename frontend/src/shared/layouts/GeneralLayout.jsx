@@ -10,15 +10,21 @@ import { useToastActions, ToastTypes } from "../ui/ToastRenderer.jsx";
 import { useDialogActions } from "../ui/DialogRenderer.jsx";
 import { useDispatch } from "react-redux";
 import { logOut } from "../../features/users/authSlice.js"
-
+import { logger } from "../../infra/logging/logger.js";
+import { useAuthUserData } from "../hooks/useAuthUserData.jsx";
 
 export function Component() {
+    const LocalStorageAuthKey = import.meta.env.VITE_LOCALSTORAGE_AUTH_KEY
     const isMobile = window.innerWidth < 768;
     let [isMobileMenuOpen, setIsMobileMenuOpen] = useState(
         isMobile ? false : true,
     );
 
-    const { data } = useGetMeQuery();
+    useGetMeQuery(undefined, {
+        skip: !localStorage.getItem( LocalStorageAuthKey )
+    });
+
+    const { data } = useAuthUserData();
     const dispatch = useDispatch();
 
     // toast utility functions via the useToastActions to
@@ -52,7 +58,17 @@ export function Component() {
             })
 
             dispatch(logOut());
-        } catch {
+        } catch (error) {
+            // log the error using the app's dedicated logger
+            logger.error(
+                "Error logging out user",
+                error,
+                {
+                    requestId: error?.requestId,
+                    userId: data?.data?.id
+                }
+            )
+
             let dialogId = openDialog({
                 title: "Account Logout Error",
                 description: "There was an error logging out of your account. " +

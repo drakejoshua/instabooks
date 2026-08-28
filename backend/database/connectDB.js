@@ -4,7 +4,7 @@
 // the MONGO_URI environment variable to connect to the database and logs 
 // the connection status using a logger utility.
 import mongoose from "mongoose";
-import logger from "../infra/utils/winston.js";
+import { logDBConnectionError, logDBConnectionSuccess } from "../infra/utils/logging/logFunctions.js";
 
 // connectDB()
 // This function connects to the MongoDB database using Mongoose. It 
@@ -19,19 +19,11 @@ export async function connectDB() {
 
         // log a success message if the connection is established 
         // successfully
-        logger.info({
-            event: "db_connection_success",
-            message: "Successfully connected to the database.",
-        });
+        logDBConnectionSuccess();
     } catch (err) {
         // log an error message if the connection fails and exit 
         // the process
-        logger.error({
-            event: "db_connection_error",
-            message: err?.message,
-            stack: err?.stack,
-            code: err?.code,
-        });
+        logDBConnectionError(err);
 
         process.exit(1);
     }

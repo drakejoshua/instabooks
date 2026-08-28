@@ -27,13 +27,14 @@ import {
     searchBooksController,
     updateBookController,
 } from "./books.controllers.js";
+import { publicBooksLimiter } from "./books.middleware.js";
 
 
 const BookRouter = express.Router();
 
-
 BookRouter.get(  // non-auth
     "/search",
+    publicBooksLimiter,
     searchBooksValidationRule,
     searchBooksValidationFunction,
     searchBooksController,
@@ -109,6 +110,7 @@ BookRouter.delete(
 
 BookRouter.get( // non-auth
     "/",
+    publicBooksLimiter,
     getBooksValidationRule,
     getBooksValidationFunction,
     getBooksController,
@@ -117,6 +119,7 @@ BookRouter.get( // non-auth
 
 BookRouter.get( // non-auth
     "/:book_id",
+    publicBooksLimiter,
     bookIdValidationRule,
     bookIdValidationFunction,
     getBookController,

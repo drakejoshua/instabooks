@@ -7,9 +7,12 @@ import Carousel from "./components/Carousel";
 import Button from "../../shared/components/Button";
 import { Link } from "react-router-dom";
 import { useGetBooksQuery } from "../books/services/booksApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RouteLoading from "../../shared/ui/RouteLoading";
 import RouteError from "../../shared/ui/RouteError";
+import { trackBookListingsView } from "../../infra/analytics/general";
+import { useAuthUserData } from "../../shared/hooks/useAuthUserData.jsx";
+import { useRouteLogger } from "../../shared/hooks/useRouteLogger.jsx";
 
 export function Home() {
     const [ page, setPage ] = useState( 1 )
@@ -20,6 +23,8 @@ export function Home() {
         isFetching
     } = useGetBooksQuery( page )
 
+    const { data } = useAuthUserData();
+
     const DefaultLimit = 10
 
     function handleRetry() {
@@ -27,6 +32,19 @@ export function Home() {
             setPage( page + 1 )
         }
     }
+
+    useRouteLogger( 
+        "Error fetching books for user",
+        error, 
+        data 
+    )
+
+    useEffect( function() {
+        if ( bookResponse ) {
+            // send book listings view event to google analytics
+            trackBookListingsView( bookResponse?.data?.books, "home" )
+        }
+    }, [ bookResponse ])
 
     if ( isLoading ) {
         return (
@@ -44,7 +62,7 @@ export function Home() {
                 refetch={ () => setPage( 1 ) }
                 text="
                     There was an error while fetching the books. 
-                    Please try again later. Error code:
+                    Please try again later. Error:
                 "
             />
         )
