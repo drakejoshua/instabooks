@@ -122,6 +122,8 @@ async function startServer() {
             `Attempting to connect to Redis at ${process.env.REDIS_URL}`,
         );
 
+        console.log(`Attempting to connect to Redis at ${process.env.REDIS_URL}`);
+
         await redisClient.connect();
 
         server.listen(PORT, () => {
@@ -129,6 +131,7 @@ async function startServer() {
         });
     } catch (err) {
         logRedisConnectionError(err);
+        console.error("Error connecting to Redis:", err);
 
         process.exit(1);
     }
