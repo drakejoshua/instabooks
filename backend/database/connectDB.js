@@ -20,14 +20,10 @@ export async function connectDB() {
         // log a success message if the connection is established 
         // successfully
         logDBConnectionSuccess();
-
-        console.log("MongoDB connected successfully");
     } catch (err) {
         // log an error message if the connection fails and exit 
         // the process
         logDBConnectionError(err);
-
-        console.error("Error connecting to MongoDB:", err);
 
         process.exit(1);
     }

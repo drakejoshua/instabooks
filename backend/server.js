@@ -78,6 +78,11 @@ server.use(function (req, res, next) {
     );
 });
 
+// home route to check if the server is running
+server.get("/", (req, res) => {
+    res.send("Instabooks backend server is running");
+});
+
 // attach the routes from the auth domains to the server
 server.use("/auth", authRouter);
 
@@ -122,8 +127,6 @@ async function startServer() {
             `Attempting to connect to Redis at ${process.env.REDIS_URL}`,
         );
 
-        console.log(`Attempting to connect to Redis at ${process.env.REDIS_URL}`);
-
         await redisClient.connect();
 
         server.listen(PORT, () => {
@@ -131,7 +134,6 @@ async function startServer() {
         });
     } catch (err) {
         logRedisConnectionError(err);
-        console.error("Error connecting to Redis:", err);
 
         process.exit(1);
     }
