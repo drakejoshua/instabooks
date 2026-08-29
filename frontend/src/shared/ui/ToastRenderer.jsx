@@ -8,22 +8,37 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { addToast, removeToast } from "../uiSlice";
 
+
+// ToastTypes object
+// This object defines the different types of toasts that can be displayed.
+// Each type corresponds to a specific icon and styling for the toast message.
 export const ToastTypes = {
     info: "info",
     error: "error",
     success: "success",
 };
 
+// ToastIcons object
+// This object maps each toast type to its 
+// corresponding icon component.
+// It is used to render the appropriate icon based on the 
+// type of toast being displayed.
 let ToastIcons = {
     [ToastTypes.info]: <FaCircleExclamation />,
     [ToastTypes.success]: <FaCircleCheck />,
     [ToastTypes.error]: <FaTriangleExclamation />,
 };
 
+// useToastActions() hook
+// This is a custom hook that provides functions for 
+// opening and closing toasts.
+// It uses the Redux dispatch function to manage the state 
+// of toasts in the application.
 export function useToastActions() {
     const dispatch = useDispatch();
 
     return {
+        // openToast function - opens a new toast with the specified message and type
         openToast(toast) {
             let toastId = crypto.randomUUID();
 
@@ -39,17 +54,25 @@ export function useToastActions() {
 
             return toastId;
         },
+        // closeToast function - closes an existing toast by its ID
         closeToast(toastId) {
             dispatch(removeToast(toastId));
         },
     };
 }
 
+// ToastRenderer component
+// This component is responsible for rendering toasts 
+// based on the state of the application.
+// It listens to the Redux store for any toasts that need 
+// to be displayed and renders them accordingly.
 function ToastRenderer({ children }) {
+    // get the list of toasts from the Redux store
     const toasts = useSelector(function (state) {
         return state.ui.toasts;
     });
 
+    // get the closeToast function from the useToastActions hook
     const { closeToast } = useToastActions();
 
     return (
@@ -71,6 +94,14 @@ function ToastRenderer({ children }) {
 
             {children}
 
+            {/* 
+                map over the list of toasts and render a 
+                ToastComponent for each one. The onOpenChange 
+                prop is used to handle the closing of the toast 
+                when the user dismisses it. It calls the closeToast 
+                function with the toast's ID to remove it from the 
+                Redux store.
+            */}
             {toasts.map(function (toast) {
                 return (
                     <ToastComponent
@@ -91,6 +122,10 @@ function ToastRenderer({ children }) {
 
 export default ToastRenderer;
 
+// ToastComponent component
+// This component is responsible for rendering an individual toast message.
+// It takes in the type and message of the toast as props, and uses the 
+// appropriate icon and styling based on the type of toast.
 export function ToastComponent({ type, message, ...props }) {
     return (
         <Toast.Root
@@ -116,6 +151,7 @@ export function ToastComponent({ type, message, ...props }) {
             "
             {...props}
         >
+            {/* toast icon */}
             <Toast.Title
                 asChild
                 className="
@@ -127,6 +163,7 @@ export function ToastComponent({ type, message, ...props }) {
                 {ToastIcons[type]}
             </Toast.Title>
 
+            {/* toast message */}
             <Toast.Description
                 className="
                     text-instabooks-black
@@ -136,6 +173,7 @@ export function ToastComponent({ type, message, ...props }) {
                 {message}
             </Toast.Description>
 
+            {/* close button */}
             <Toast.Close
                 asChild
                 className="

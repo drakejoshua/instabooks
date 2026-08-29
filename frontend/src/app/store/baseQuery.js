@@ -20,21 +20,23 @@ export const baseQuery = fetchBaseQuery({
         const token = getState().auth.token || localStorage.getItem( LocalStorageAuthKey )
 
         // get client ID from Google Analytics ( or use mock value in development )
-        // const clientId = await getClientId() 
-        const clientId = "mock-client-id-for-frontend-operations"
+        const clientId = await getClientId() 
 
         // generate request id to be used for logging and 
         // debugging purposes
         const requestId = crypto.randomUUID()
 
+        // set the Authorization header with the access token if it exists
         if ( token ) {
             headers.set("Authorization", `Bearer ${ token }`)
         }
 
+        // set the Google Analytics client ID header if it exists
         if ( clientId ) {
             headers.set("X-Google-Analytics-Client-ID", clientId )
         }
 
+        // set the request ID header for tracing and debugging purposes
         headers.set("X-Request-ID", requestId )
 
         return headers
@@ -72,8 +74,11 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
 
         // proceed with the refresh result
         if ( refreshResult.data ) {
+            // extract the new access token from the refresh result 
             let accessToken = refreshResult.data.data.access_token
 
+            // store the new access token in the auth slice of 
+            // the Redux store for future requests
             api.dispatch(
                 setToken( accessToken )
             )
@@ -81,6 +86,8 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
             // retry original request with new access token
             result = await baseQuery( args, api, extraOptions )
         } else {
+            // if refresh failed, clear the access token from the auth slice of
+            // the Redux store and localStorage to prevent further unauthorized requests
             api.dispatch(clearToken());
         }
     }
@@ -88,8 +95,11 @@ export const baseQueryWithRefreshAuth = async function( args, api, extraOptions 
     // retrieve the request ID from the result meta's 
     // response header and add it to the result's error
     if ( result.meta?.response?.headers ) {
+        // retrieve the request ID from the response headers
         const requestId = result.meta.response.headers.get("X-Request-ID")
         
+        // if a request ID exists, add it to the result's error and data 
+        // objects for tracing and debugging purposes
         if (requestId) {
             if (result.error) {
                 result.error.requestId = requestId;
@@ -118,10 +128,12 @@ const baseQueryWithAdminAuth = fetchBaseQuery({
         // debugging purposes
         const requestId = crypto.randomUUID()
 
+        // set the Google Analytics client ID header if it exists
         if ( clientId ) {
             headers.set("X-Google-Analytics-Client-ID", clientId )
         }
 
+        // set the request ID header for tracing and debugging purposes
         headers.set("X-Request-ID", requestId )
 
         // use admin key for admin-related operations/endpoints
@@ -132,6 +144,7 @@ const baseQueryWithAdminAuth = fetchBaseQuery({
 })
 
 export async function baseQueryAdminAuthWithRequestId( args, api, extraOptions ) {
+    // make initial request with admin auth
     let result = await baseQueryWithAdminAuth( args, api, extraOptions )
 
     // retrieve the request ID from the result meta's 

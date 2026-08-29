@@ -12,6 +12,15 @@ import { getErrorMessage } from "../../../shared/utils/utils";
 import { useGetMeQuery } from "../services/authApi";
 import { logger } from "../../../infra/logging/logger";
 
+
+// OrderPreview component 
+// This component displays a summary of an order, including its 
+// ID, status, shipping address, order date, delivery date, total 
+// paid, payment status, and a list of ordered items. It also 
+// provides buttons for revalidating or cancelling the order, 
+// with appropriate loading states and error handling.
+
+
 export function OrderPreview({ 
     orderId, 
     status, 
@@ -22,6 +31,8 @@ export function OrderPreview({
     paymentStatus,
     items
 }) {
+    // revalidateOrder and useRevalidateOrderMutation hook to revalidate
+    // orders and redirect the user to the payment page.
     const [ 
         revalidateOrder, 
         { 
@@ -30,6 +41,9 @@ export function OrderPreview({
             error: revalidateError
         } 
     ] = useRevalidateOrderMutation()
+
+    // cancelOrder and useCancelOrderMutation hook to cancel orders and
+    // handle the loading and error states during the cancellation process.
     const [ 
         cancelOrder, 
         { 
@@ -39,16 +53,33 @@ export function OrderPreview({
         } 
     ] = useCancelOrderMutation()
 
+    // get the authenticated user data using the useGetMeQuery hook
     const { data } = useGetMeQuery();
 
+    // dialog actions to display and manage dialogs for
+    // showing alert messages and confirmation prompts
     const { openDialog, closeDialog } = useDialogActions()
     
+    // toast actions to display and manage toast notifications for
+    // showing success or error messages to the user
     const { openToast } = useToastActions()
 
+    // handleOrderRevalidation()
+    // This function is called when the user clicks the 
+    // "Revalidate Order" button. It attempts to revalidate 
+    // the order by calling the revalidateOrder mutation. 
+    // If successful, it shows a success toast and redirects 
+    // the user to the payment page. If an error occurs, it 
+    // logs the error and displays a dialog with an option 
+    // to retry the revalidation.
     async function handleOrderRevalidation() {
         try {
+            // call the revalidateOrder mutation and unwrap 
+            // the result to get the revalidation data
             const { data: revalidationData } = await revalidateOrder( orderId ).unwrap()
 
+            // show a success toast notification to the user since 
+            // revalidation was successful
             openToast({
                 type: "success",
                 message: `
@@ -57,6 +88,7 @@ export function OrderPreview({
                 `
             })
 
+            // redirect the user to the payment page after a short delay
             setTimeout(function() {
                 window.location.href = revalidationData?.authorization_url
             }, 1000 )
@@ -72,6 +104,8 @@ export function OrderPreview({
                 }
             )
 
+            // show a dialog to the user with an error message and an 
+            // option to retry the revalidation
             let dialogId = openDialog({
                 title: "Order revalidation error",
                 description: `
@@ -100,10 +134,20 @@ export function OrderPreview({
         }
     }
 
+    // handleOrderCancellation()
+    // This function is called when the user clicks the "Cancel Order" 
+    // button. It attempts to cancel the order by calling the cancelOrder 
+    // mutation. If successful, it shows a success toast notification. 
+    // If an error occurs, it logs the error and displays a dialog with 
+    // an option to retry the cancellation.
     async function handleOrderCancellation() {
         try {
+            // call the cancelOrder mutation and unwrap the result to get
+            // the cancellation data
             await cancelOrder( orderId ).unwrap()
 
+            // show a success toast notification to the user since
+            // cancellation was successful
             openToast({
                 type: ToastTypes.success,
                 message: "Order cancelled successfully"
@@ -120,6 +164,8 @@ export function OrderPreview({
                 }
             )
 
+            // show a dialog to the user with an error message and an 
+            // option to retry the cancellation
             let dialogId = openDialog({
                 title: "Order cancellation error",
                 description: `
@@ -148,7 +194,14 @@ export function OrderPreview({
         }
     }
 
+    // confirmOrderDeletion()
+    // This function is called when the user clicks the "Cancel Order" 
+    // button. It opens a confirmation dialog asking the user to confirm 
+    // the cancellation of the order. If the user confirms, it calls the 
+    // handleOrderCancellation function to proceed with the cancellation.
     function confirmOrderDeletion() {
+        // open a confirmation dialog asking the user to confirm the 
+        // order cancellation and proceed with the cancellation if confirmed
         let dialogId = openDialog({
             title: "Confirm order cancellation",
             description: `
@@ -205,7 +258,7 @@ export function OrderPreview({
                         "
                     />
                     
-
+                    {/* order id */}
                     <span
                         className="
                             font-medium
@@ -215,6 +268,7 @@ export function OrderPreview({
                         Order ID: #{ orderId }
                     </span>
 
+                    {/* order status */}
                     <Badge
                         className="
                             ml-auto
@@ -252,6 +306,8 @@ export function OrderPreview({
                         "
                     >
                         {
+                            // map through the order items and render an OrderDetailsItem
+                            // for each item in the order
                             items.map((item) => (
                                 <OrderDetailsItem
                                     key={ item.id }
@@ -280,6 +336,9 @@ export function OrderPreview({
                         "
                     >
                         { 
+                            // allow users to revalidate the order only if the 
+                            // payment status is not "paid" and the order 
+                            // status has not been "cancelled"
                             (
                                 paymentStatus != "paid" &&
                                 status != "cancelled"
@@ -296,6 +355,9 @@ export function OrderPreview({
                         }
 
                         { 
+                            // allow users to cancel the order only if the 
+                            // payment status is not "paid" and the order 
+                            // status has not been "cancelled"
                             status != "cancelled"  && 
                             <AltButton
                                 onClick={ confirmOrderDeletion }

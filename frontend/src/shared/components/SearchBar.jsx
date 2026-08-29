@@ -3,6 +3,13 @@ import Button from "./Button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+// SearchBar component
+// This component provides a search bar for users to input search queries. 
+// It accepts props such as "className" for custom styling and "type" to 
+// determine the context of the search (home or admin). The component 
+// manages the search query state and handles navigation to the appropriate 
+// search results page based on the user's input.
+
 function SearchBar({ className = "", type = "home" }) {
     const [ searchQuery, setSearchQuery ] = useState( "" )
     const navigateTo = useNavigate()

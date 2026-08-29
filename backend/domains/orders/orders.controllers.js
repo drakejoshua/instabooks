@@ -8,6 +8,14 @@ import {
     revalidateOrderPaymentService
 } from "./orders.service.js";
 
+
+// checkoutOrderController()
+// This function is a controller that handles the checkout of an order.
+// It receives the shipping address from the request body and calls the
+// checkout order service to create a new order and retrieve payment data.
+// Payment data in this context refers to the payment information required 
+// to complete the order checkout process and redirect the user to the 
+// payment gateway for payment processing.
 export async function checkoutOrderController(req, res, next) {
     try {
         // get the shipping address from the request body
@@ -31,6 +39,15 @@ export async function checkoutOrderController(req, res, next) {
     }
 }
 
+// confirmOrderPaymentController()
+// This function is a controller that handles the confirmation of an order payment.
+// It receives the order reference from the request query and calls the confirm order 
+// payment service to verify the order payment and update the order status.
+// The order reference is the same thing as th order id from mongoDB. Once an order is
+// confirmed, the order status is updated to "shipped" as no admin confirmation is 
+// required for the order to be shipped( This is a dummy implementation ) and 
+// the user is redirected to the frontend order confirmation page with the order 
+// reference as a route parameter.
 export async function confirmOrderPaymentController(req, res, next) {
     try {
         // get the order reference from the request query
@@ -49,6 +66,11 @@ export async function confirmOrderPaymentController(req, res, next) {
     }
 }
 
+// getOrderDetailsController()
+// This function is a controller that handles the retrieval of order details.
+// It receives the order id from the request params and calls the get order 
+// service to retrieve the order details for the user. The order details are 
+// then sent as a response to the client.
 export async function getOrderDetailsController(req, res, next) {
     try {
         // get the user id from the request user object
@@ -69,6 +91,11 @@ export async function getOrderDetailsController(req, res, next) {
     }
 }
 
+// getAllOrdersController()
+// This function is a controller that handles the retrieval of all orders for a user.
+// It receives the user id from the request user object and calls the get all orders 
+// service to retrieve all the orders for the user. The orders are then sent as a 
+// response to the client.
 export async function getAllOrdersController(req, res, next) {
     try {
         // get the user id from the request user object
@@ -90,6 +117,11 @@ export async function getAllOrdersController(req, res, next) {
     }
 }
 
+// getAllOrdersForAdminController()
+// This function is a controller that handles the retrieval of all orders for an admin.
+// It receives the limit and page from the request query and calls the get all orders 
+// for admin service to retrieve all the orders for the admin. The orders are then sent 
+// as a response to the client.
 export async function getAllOrdersForAdminController(req, res, next) {
     try {
         let limit = req.query.limit || 10
@@ -109,7 +141,11 @@ export async function getAllOrdersForAdminController(req, res, next) {
     }
 }
 
-
+// revalidateOrderPaymentController()
+// This function is a controller that handles the revalidation of an order payment.
+// It receives the order id from the request params and calls the revalidate order 
+// payment service to verify the order payment and update the order status. The 
+// verification data is then sent as a response to the client.
 export async function revalidateOrderPaymentController(req, res, next) {
     try {
         // get the order id from the request params
@@ -129,7 +165,11 @@ export async function revalidateOrderPaymentController(req, res, next) {
     } 
 }
     
-
+// cancelOrderController()
+// This function is a controller that handles the cancellation of an order.
+// It receives the order id from the request params and calls the cancel order 
+// service to cancel the order. A success message is then sent as a response 
+// to the client.
 export async function cancelOrderController(req, res, next) {
     try {
         // get the user id from the request user object

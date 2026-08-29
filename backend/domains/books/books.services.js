@@ -4,6 +4,11 @@ import { BookNotFoundError } from "../shared/utils/errors.js";
 import { CacheKeys, CacheOperations, CacheUpdate } from "../../cache/utils.js";
 import { logStoreBookAddition, logStoreBookDeletion, logStoreBookUpdate } from "../../infra/utils/logging/logFunctions.js";
 
+// addBookService()
+// This service function handles the addition of a new book to the database.
+// It uploads the book cover photo to Cloudinary, creates a new book document
+// in the database with the provided details and the uploaded photo information,
+// logs the addition event, and returns the newly created book details.
 export async function addBookService(bookDetails, bookCoverPhoto) {
     // upload the cover photo file to cloudinary and
     // store the upload results
@@ -25,6 +30,10 @@ export async function addBookService(bookDetails, bookCoverPhoto) {
     return newBook.getBookDetails();
 }
 
+// updateBookService()
+// This service function handles the update of an existing book's details in the database.
+// It checks if the book exists, uploads a new cover photo if provided, updates the book
+// document with the new details, logs the update event, and returns the updated book details.
 export async function updateBookService(
     bookId,
     updatedbookDetails,
@@ -86,7 +95,11 @@ export async function updateBookService(
 }
 
 
-
+// deleteBookService()
+// This service function handles the deletion of a book from the database.
+// It checks if the book exists, deletes the book document, removes the cover
+// photo from Cloudinary, clears related cache entries, logs the deletion event,
+// and returns nothing.
 export async function deleteBookService( bookId, req ) {
     // find and delete the book with book id in the 
     // database
@@ -119,10 +132,17 @@ export async function deleteBookService( bookId, req ) {
 }
 
 
+// getBookService()
+// This service function handles the retrieval of a single book's details from the database.
+// It checks if the book exists, fetches the book document, and returns a lean version of
+// the book details.
 export async function getBookService( bookId, req ) {
-    // get the book details from cache or database
+    // get the book details from cache or database using the book id provided
+    // ( cache is checked first, if not found, retrieve from database )
     let book = await CacheOperations.getAndHydrateBookById( bookId, req )
 
+    // check if book was found in the database, else,
+    // report error stating book was not found
     if ( !book ) {
         throw BookNotFoundError
     }
@@ -133,9 +153,14 @@ export async function getBookService( bookId, req ) {
 }
 
 
+// getBooksService()
+// This service function handles the retrieval of a list of books from the database.
+// It fetches the books with optional pagination, retrieves the total count of books,
+// and returns a lean version of the book details along with the total count.
 export async function getBooksService( limit, page, req ) {
-    // get the books from the database using the 
-    // limit specified
+    // get the books from the database/cache using the 
+    // limit specified and the page number specified
+    // ( cache is checked first, if not found, retrieve from database )
     let books = await CacheOperations.getAndHydrateBooks( page * limit, req )
     let totalBooks = await CacheOperations.getTotalBooksCount( req )
 
@@ -148,8 +173,17 @@ export async function getBooksService( limit, page, req ) {
 }
 
 
+// searchBooksService()
+// This service function handles the search for books in the database or cache.
+// It retrieves the search results based on the provided query and returns a lean
+// version of the book details for each matching book.
 export async function searchBooksService( query, req ) {
+    // get the search results from the database/cache using the
+    // search query provided ( try to retrieve from cache first, 
+    // if not found, retrieve from database )
     let searchResults = await CacheOperations.getAndHydrateSearchResults( query, req )
 
+    // return a lean version of the search results from the database/cache
+    // by mapping over the search results and calling getBookDetails() on each book
     return searchResults.map( book => book.getBookDetails() )
 }

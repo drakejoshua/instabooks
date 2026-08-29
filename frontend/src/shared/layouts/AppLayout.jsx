@@ -1,5 +1,12 @@
 import { Outlet, useNavigation } from "react-router-dom";
 
+// AppLayout component
+// This component serves as the main layout for the application. 
+// It includes a loading indicator that is displayed when the
+// application is in a loading state. The loading indicator consists
+// of a fixed bar at the top of the page with an animated loading bar
+// that moves back and forth to indicate that the application is loading.
+
 function AppLayout() {
     let { state } = useNavigation();
 

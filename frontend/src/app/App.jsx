@@ -11,7 +11,9 @@ function App() {
             min-h-screen
         "
         >
+            {/* ToastRenderer - handles rendering toasts in the application */}
             <ToastRenderer>
+                {/* DialogRenderer - handles rendering dialogs in the application */}
                 <DialogRenderer>
                     <RouterProvider router={routes} />
                 </DialogRenderer>

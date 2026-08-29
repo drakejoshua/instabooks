@@ -10,11 +10,26 @@ import { getErrorMessage } from "../../../shared/utils/utils.js"
 import { useGetMeQuery } from "../../users/services/authApi.js"
 import { logger } from "../../../infra/logging/logger.js"
 
+
+// OrderDetails page - displays the details of a specific order, 
+// including the order status, expected delivery date, and a list 
+// of ordered products. It also provides options to refresh the 
+// order information or navigate back to the home page.
+
+
 export function Component() {
+    // get the order ID from the URL parameters using the 
+    // useParams hook
     const { id } = useParams()
 
+    // get the authenticated user data using the useGetMeQuery 
+    // hook
     const { data: user } = useGetMeQuery();
 
+    // fetch the order details using the useGetOrderQuery hook,
+    // passing the order ID as a parameter. The hook returns 
+    // the order data, loading state, error state, and a 
+    // refetch function to manually refresh the data.
     const { 
         data: orderConfirmationData,
         isLoading,
@@ -23,6 +38,9 @@ export function Component() {
         refetch
     } = useGetOrderQuery( id )
 
+    // iconStyle and buttonStyle are CSS class strings used to style the
+    // icons and buttons in the component. They define properties
+    // such as size, color, margin, and layout for consistent styling.
     let iconStyle = `
         text-6xl
         block
@@ -41,8 +59,8 @@ export function Component() {
         capitalize
     `;
 
+    // log an error message if there was an error fetching the order details.
     if ( error ) {
-        // log the error using the app's dedicated logger
         logger.error(
             "Error fetching order details for user",
             error,
@@ -99,6 +117,10 @@ export function Component() {
                 Please check your internet connection and try again.
                 You can try fetching your order information again
                 by clicking the button below. Error: { 
+                    // use the getErrorMessage utility function 
+                    // to extract the error message from the 
+                    // error object as the error message may be 
+                    // nested in different properties
                     getErrorMessage( error ) 
                 }
             </p>
@@ -119,6 +141,10 @@ export function Component() {
                 !error && orderConfirmationData?.data
             ) && 
             <div>
+                {/* 
+                    status icon - can be a check icon or warning icon 
+                    based on the order status.
+                */}
                 {
                     orderConfirmationData?.data?.status === "shipped" ?
                         <AnimatedCheckIcon 
@@ -162,6 +188,8 @@ export function Component() {
                     "
                 >
                     {
+                        // map over the products in the order and render an OrderDetailsItem
+                        // component for each product, passing the necessary props
                         orderConfirmationData?.data?.products?.map( function(book) { 
                             return (
                                 <OrderDetailsItem 
@@ -176,6 +204,7 @@ export function Component() {
                     }
                 </div>
 
+                {/* back to home button */}
                 <Button
                     className={ buttonStyle }
                     asChild

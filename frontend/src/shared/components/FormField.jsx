@@ -1,5 +1,13 @@
 import { Form } from "radix-ui";
 
+// FormField component
+// This component is a reusable form field that can be used 
+// to create input fields with labels and validation messages.
+// It accepts props such as name, label, className, inputClassName,
+// valueMissingMessage, and typeMismatchMessage to customize its 
+// behavior and appearance. It uses the Radix UI Form components 
+// to handle form field rendering and validation.
+
 function FormField({ 
     name,
     label, 

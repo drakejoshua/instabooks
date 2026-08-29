@@ -13,7 +13,6 @@ import {
 import {
     ERROR_CODES,
     reportInvalidAuthIdError,
-    reportInvalidAuthorizationTokenError,
     reportInvalidOperationError,
     reportInvalidUsernameError,
 } from "../shared/utils/errors.js";

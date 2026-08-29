@@ -1,10 +1,20 @@
+// import necessary libraries and components
 import { Collapsible } from 'radix-ui'
-import React from 'react'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
+import { FaChevronUp } from 'react-icons/fa6'
 import Badge from '../../../shared/components/Badge'
 import Heading from '../../../shared/components/Heading'
 import { InfoList } from '../../../shared/components/InfoList'
 import OrderDetailsItem from '../../../shared/components/OrderDetailsItem'
+
+
+// OrderDetails component - This component is used to display the 
+// details of an order in a collapsible format. It accepts various 
+// props such as id, status, orderDate, totalAmount, user, paymentStatus, 
+// shippingAddress, and books. The component uses the Collapsible component 
+// from Radix UI to create a collapsible section that displays the order 
+// details when expanded. The order details include user information and 
+// a list of books associated with the order.
+
 
 function OrderDetails({
     id = "",
@@ -24,6 +34,7 @@ function OrderDetails({
                 rounded-lg
             "
         >
+            {/* collapsible trigger */}
             <Collapsible.Trigger
                 className="
                     flex
@@ -42,6 +53,7 @@ function OrderDetails({
                         gap-4
                     "
                 >
+                    {/* collapsible trigger icon */}
                     <FaChevronUp 
                         className="
                             group-data-[state=open]:rotate-0
@@ -51,6 +63,7 @@ function OrderDetails({
                         "
                     />
 
+                    {/* order ID */}
                     <span
                         className="
                             font-medium
@@ -61,10 +74,12 @@ function OrderDetails({
                     </span>
                 </div>
 
+                {/* order date */}
                 <span>
                     { orderDate.toLocaleString() }
                 </span>
 
+                {/* order total amount */}
                 <span
                     className="
                         text-lg
@@ -74,16 +89,17 @@ function OrderDetails({
                     ${ totalAmount.toFixed(2) }
                 </span>
 
+                {/* order status */}
                 <Badge
                     className="
                         w-fit
                     "
                 >
-
                     { status }
                 </Badge>
             </Collapsible.Trigger>
 
+            {/* collapsible content */}
             <Collapsible.Content
                 className="
                     mt-4
@@ -91,6 +107,7 @@ function OrderDetails({
             >
                 {/* user details */}
                 <div>
+                    {/* user information heading */}
                     <Heading
                         className="
                             text-xl
@@ -100,6 +117,7 @@ function OrderDetails({
                         user information
                     </Heading>
 
+                    {/* user information - name, email, shipping address, payment status */}
                     <InfoList 
                         className="
                             mt-1

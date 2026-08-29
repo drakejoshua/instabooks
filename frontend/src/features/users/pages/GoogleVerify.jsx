@@ -11,16 +11,35 @@ import { setToken } from "../authSlice.js";
 import { trackGoogleLoginEvent } from "../../../infra/analytics/auth.js";
 import { logger } from "../../../infra/logging/logger.js";
 
+
+// GoogleVerify page 
+// This page handles the verification of Google sign-in 
+// credentials. It fetches the verification status from 
+// the backend, displays loading, error, or success states, 
+// and manages user redirection and token storage upon 
+// successful verification.
+
+
 export function Component() {
+    // get the id parameter from the URL using the useParams hook
     let { id } = useParams()
+
     const dispatch = useDispatch()
 
+    // fetch the google verification status using the 
+    // useGoogleVerifyQuery hook,
+    // passing the id parameter as a query. The hook returns the
+    // verification data, loading state, and error state.
     const { data, isLoading, error } = useGoogleVerifyQuery( 
         id || ""
     )
 
+    // derive the navigate function from the useNavigate hook 
+    // for programmatic navigation
     const navigateTo = useNavigate()
 
+    // button and icon styles for consistent styling across 
+    // the component
     let iconStyle = `
         text-6xl
         block
@@ -35,8 +54,9 @@ export function Component() {
         mx-auto
     `;
 
+    // log any errors that occur during the google verification 
+    // process using the app's dedicated logger
     if ( error ) {
-        // log the error using the app's dedicated logger
         // log the error using the app's dedicated logger
         logger.error(
             "Error verifying google login details",
@@ -47,6 +67,8 @@ export function Component() {
         );
     }
 
+    // useEffect to handle login success and redirection 
+    // after successful google verification
     useEffect( function() {
         if ( !isLoading && data ) {
             // dispatch the access token to the redux store

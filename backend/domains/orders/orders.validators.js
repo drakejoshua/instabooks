@@ -6,6 +6,13 @@ import {
     reportInvalidRequestInfoError,
 } from "../shared/utils/errors.js";
 
+// checkout order validator rules
+// This validator checks if the shipping address is provided 
+// in the request body and if it is valid. It ensures that 
+// the shipping address exists, is not empty, and has a 
+// minimum length of 5 characters. If any of these conditions 
+// are not met, it will return an error message indicating 
+// that the address is invalid.
 export let checkoutOrderValidatorRules = [
     body("shipping_address")
         .exists()
@@ -19,6 +26,12 @@ export let checkoutOrderValidatorRules = [
         .bail(),
 ];
 
+// checkoutOrderValidationFunction()
+// This function is a middleware that validates the request for 
+// checking out an order. It verifies if there's a invalid shipping 
+// address in the request body. If there are validation errors, 
+// it will report an invalid address error, else, it will 
+// proceed to the next middleware.
 export function checkoutOrderValidationFunction(req, res, next) {
     // get validation errors from the request
     // if any
@@ -36,6 +49,13 @@ export function checkoutOrderValidationFunction(req, res, next) {
     next();
 }
 
+// confirmOrderPaymentValidatorRules
+// This validator checks if the order reference is provided 
+// in the request query and if it is valid. It ensures that 
+// the order reference exists, is not empty, and is a valid 
+// MongoDB ObjectId. If any of these conditions are not met, 
+// it will return an error message indicating that the order
+// reference is invalid.
 export let confirmOrderPaymentValidatorRules = [
     query("reference")
         .exists()
@@ -49,6 +69,12 @@ export let confirmOrderPaymentValidatorRules = [
         .bail(),
 ];
 
+// confirmOrderPaymentValidationFunction()
+// This function is a middleware that validates the request for 
+// confirming an order payment. It verifies if there's an invalid
+// order reference in the request query. If there are validation errors, 
+// it will report an invalid order reference error, else, it will 
+// proceed to the next middleware.
 export function confirmOrderPaymentValidationFunction(req, res, next) {
     // get validation errors from the request
     // if any
@@ -59,8 +85,7 @@ export function confirmOrderPaymentValidationFunction(req, res, next) {
     // frontend invalid order reference page if there
     // was an invalid order reference
     if (!errors.isEmpty()) {
-        let frontendURL = process.env.FRONTEND_URL;
-        return res.redirect(`${frontendURL}/orders/invalid`);
+        return reportInvalidOrderReferenceError(next);
     }
 
     // proceed to the next middleware if there are no
@@ -68,6 +93,12 @@ export function confirmOrderPaymentValidationFunction(req, res, next) {
     next();
 }
 
+// orderIdValidatorRules - This array of validation rules is used 
+// to validate the "order_id" parameter in requests that require 
+// an order ID. It checks for the existence, non-emptiness, and 
+// validity of the order ID as a MongoDB ObjectId. If any of these 
+// conditions are not met, it will return an error message 
+// indicating that the order reference is invalid.
 export let orderIdValidatorRules = [
     param("order_id")
         .exists()
@@ -81,6 +112,12 @@ export let orderIdValidatorRules = [
         .bail(),
 ];
 
+// orderIdValidationFunction()
+// This function is a middleware that validates the request for 
+// operations that require an order ID. It verifies if there's an
+// invalid order reference in the request parameters. If there are 
+// validation errors, it will report an invalid order reference error, 
+// else, it will proceed to the next middleware.
 export function orderIdValidationFunction(req, res, next) {
     // get validation errors from the request
     // if any
@@ -98,6 +135,13 @@ export function orderIdValidationFunction(req, res, next) {
     next();
 }
 
+// getAllOrdersValidatorRules - This array of validation rules is used
+// to validate the query parameters for requests that retrieve all orders.
+// It checks for the existence, non-emptiness, and validity of the "limit"
+// and "page" query parameters. The "limit" parameter must be an integer
+// between 1 and 100, while the "page" parameter must be a positive integer.
+// If any of these conditions are not met, it will return an error message
+// indicating that the request information is invalid.
 export let getAllOrdersValidatorRules = [
     query("limit")
         .default(10)
@@ -111,6 +155,12 @@ export let getAllOrdersValidatorRules = [
         .bail(),
 ];
 
+// getAllOrdersValidationFunction()
+// This function is a middleware that validates the request for 
+// retrieving all orders. It verifies if there are invalid "limit"
+// or "page" query parameters in the request. If there are validation 
+// errors, it will report an invalid request information error, 
+// else, it will proceed to the next middleware.
 export function getAllOrdersValidationFunction(req, res, next) {
     // get validation errors from the request
     // if any

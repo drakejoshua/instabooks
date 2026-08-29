@@ -1,5 +1,11 @@
 import AnimatedCheckIconImage from "../../assets/animated-check-icon.webp";
 
+// AnimatedCheckIcon component
+// This component displays an animated check icon, 
+// typically used to indicate a successful action or 
+// completion of a task. It accepts additional props 
+// and className for customization.
+
 function AnimatedCheckIcon({ className, ...props }) {
     return <img 
         src={ AnimatedCheckIconImage } 

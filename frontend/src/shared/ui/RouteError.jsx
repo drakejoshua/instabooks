@@ -4,6 +4,13 @@ import Heading from "../components/Heading";
 import Button from "../components/Button";
 import { getErrorMessage } from "../utils/utils";
 
+// RouteError component
+// This component is responsible for displaying an error message 
+// when an error occurs on a specific route. It takes in various
+// props such as the heading, error object, refetch function,
+// text to display, button label, and retry loading status. It 
+// provides a user-friendly interface for handling route errors.
+
 function RouteError({
     heading = "An error occurred on this page",
     error = null,
@@ -34,12 +41,17 @@ function RouteError({
             { heading }
         </Heading>
 
+        {/* 
+            error message - merging text and actual error 
+            message to provide more context to the user
+        */}
         <p className="mt-2 text-center">
             { text } {
                 getErrorMessage( error )
             }
         </p>
 
+        {/* retry button */}
         <Button
             onClick={ () => refetch() }
             className="

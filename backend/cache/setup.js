@@ -30,11 +30,14 @@ redisClient.on("error", function(err) {
     logRedisError(err)
 });
 
-
+// handle redis cache connection events and log them using configured
+// logger
 redisClient.on("connect", function() {
     logRedisConnect()
 })
 
+// handle redis cache ready events and log them using configured
+// logger
 redisClient.on("ready", function() {
     logRedisConnectSuccess()
 })

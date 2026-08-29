@@ -1,6 +1,10 @@
 import { ERROR_CODES } from '../utils/errors.js';
 import { logServerError } from '../../../infra/utils/logging/logFunctions.js';
 
+// errorHandler() - This function is a middleware that handles errors in the application.
+// It logs the error details and sends an appropriate response to the client.
+// If the error has a status code, it uses that status code in the response.
+// Otherwise, it defaults to a 500 Internal Server Error status code.
 export default function errorHandler( err, req, res, next ) {
     logServerError( err, req );
 

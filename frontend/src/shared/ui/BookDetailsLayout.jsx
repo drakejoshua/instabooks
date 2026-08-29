@@ -2,6 +2,11 @@ import React from "react";
 import { FaCircleUser, FaFileLines } from "react-icons/fa6";
 import Badge from "../components/Badge";
 
+// BookDetailsLayout component - a layout component for displaying book details.
+// It takes in various props such as the book's image source, genre, title,
+// description, price, quantity, author, and number of pages. It also accepts
+// children components that can be rendered within the layout.
+
 function BookDetailsLayout({
     src = "",
     genre = "",

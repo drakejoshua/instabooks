@@ -8,11 +8,18 @@ import { calculateCartTotal } from "../utils/utils";
 import { trackViewCart } from "../../../infra/analytics/ecommerce";
 import { useEffect } from "react";
 
+// Cart page - displays the user's cart with a list of books, 
+// their details, and the total price. It also includes a 
+// checkout button for proceeding to the checkout page.
+
+
 export function Component() {
     // get user information through the redux query 
     // or from cache
     const { data: user } = useGetMeQuery()
 
+    // track the view cart event in google analytics when 
+    // the component mounts and the cart data is available
     useEffect( function() {
         if ( !user?.data?.cart ) return;
         
@@ -32,6 +39,7 @@ export function Component() {
     }, [])
 
     return <div className="pb-6">
+        {/* cart heading */}
         <Heading>
             Your cart
         </Heading>
@@ -44,7 +52,7 @@ export function Component() {
         {/* cart list */}
         {
             user?.data?.cart.length != 0 && <>
-                <div
+            <div
                 className="
                     mt-6
                     flex
@@ -55,6 +63,8 @@ export function Component() {
             >
                 {/* book item */}
                 {
+                    // map through the user's cart and render a CartBookItem 
+                    // component for each book in the cart
                     user?.data?.cart?.map( function(book) {
                         return (
                             <CartBookItem

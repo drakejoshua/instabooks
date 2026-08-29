@@ -15,7 +15,10 @@ import { useAuthUserData } from "../../shared/hooks/useAuthUserData.jsx";
 import { useRouteLogger } from "../../shared/hooks/useRouteLogger.jsx";
 
 export function Home() {
+    // state for managing the current page of books to fetch
     const [ page, setPage ] = useState( 1 )
+
+    // fetch the books data using the useGetBooksQuery hook
     const { 
         isLoading, 
         data: bookResponse, 
@@ -23,22 +26,35 @@ export function Home() {
         isFetching
     } = useGetBooksQuery( page )
 
+    // get the authenticated user data using the useAuthUserData hook
     const { data } = useAuthUserData();
 
+    // define the defaultLimit for the number of books to fetch per page
     const DefaultLimit = 10
 
+    // handleRetry()
+    // This function is called when the user clicks the 
+    // "Load more books" button. It checks if there are 
+    // more books to fetch based on the current page and 
+    // the total number of books available. If there are 
+    // more books, it increments the page state to fetch 
+    // the next set of books.
     function handleRetry() {
         if ( ( page * DefaultLimit ) < bookResponse?.data?.totalBooks ) {
             setPage( page + 1 )
         }
     }
 
+    // log any errors that occur while fetching books using the 
+    // useRouteLogger hook
     useRouteLogger( 
         "Error fetching books for user",
         error, 
         data 
     )
 
+    // track the book listings view event in google analytics when 
+    // the bookResponse data is successfully fetched
     useEffect( function() {
         if ( bookResponse ) {
             // send book listings view event to google analytics
@@ -46,6 +62,7 @@ export function Home() {
         }
     }, [ bookResponse ])
 
+    // show a loading indicator while the books data is being fetched
     if ( isLoading ) {
         return (
             <RouteLoading
@@ -54,6 +71,7 @@ export function Home() {
         )
     }
 
+    // show an error message if there was an error fetching the books data
     if ( error ) {
         return (
             <RouteError
@@ -86,6 +104,10 @@ export function Home() {
                 top-0
             "
             >
+                {/* 
+                    carousel track - to house slides and provide the 
+                    sliding transition/animation
+                */}
                 <Carousel.Track
                     className="
                     h-full
@@ -99,6 +121,8 @@ export function Home() {
                 "
                 >
                     {
+                        // map over the first 3 books in the bookResponse data to create
+                        // individual BookItem components for the carousel slides
                         bookResponse?.data?.books.slice( 1, 4 ).map( ( book ) => (
                             <BookItem
                                 key={ book.id }
@@ -111,6 +135,7 @@ export function Home() {
                     }
                 </Carousel.Track>
 
+                {/* carousel navigation buttons and indicators */}
                 <div
                     className="
                     absolute
@@ -123,6 +148,7 @@ export function Home() {
                     flex-col-reverse lg:flex-row
                 "
                 >
+                    {/* carousel navigation buttons */}
                     <div
                         className="
                         flex
@@ -131,15 +157,18 @@ export function Home() {
                         text-3xl
                     "
                     >
+                        {/* prev button */}
                         <Carousel.PrevButton>
                             <FaArrowLeft />
                         </Carousel.PrevButton>
 
+                        {/* next button */}
                         <Carousel.NextButton>
                             <FaArrowRight />
                         </Carousel.NextButton>
                     </div>
 
+                    {/* carousel indicators */}
                     <Carousel.Indicators
                         className="
                         flex
@@ -168,8 +197,10 @@ export function Home() {
                 mt-16
             "
             >
+                {/* section heading */}
                 <Heading variant="route">Browse all books</Heading>
 
+                {/* section description */}
                 <p
                     className="
                     text-center
@@ -186,6 +217,8 @@ export function Home() {
                 <BookList
                     className="mt-14"
                     books={
+                        // map the bookResponse data to the format expected by 
+                        // the BookList component
                         bookResponse?.data?.books.map( book => ({
                             id: book.id,
                             title: book.title,
@@ -228,6 +261,9 @@ export function Home() {
 export default Home;
 
 
+// BookItem component - represents an individual book item in the carousel
+// acts as a wrapper for the carousel's slide item and displays the book's 
+// title, description, cover photo and a link to the book's details page. 
 function BookItem({ title, description, to = "", src = "" }) {
     return (
         <Carousel.Item
@@ -253,6 +289,7 @@ function BookItem({ title, description, to = "", src = "" }) {
                 *:text-center lg:*:text-left
             "
             >
+                {/* book title */}
                 <Heading
                     className="
                     text-white
@@ -263,6 +300,7 @@ function BookItem({ title, description, to = "", src = "" }) {
                     {title}
                 </Heading>
 
+                {/* book description */}
                 <p
                     className="
                     mt-4
@@ -272,6 +310,7 @@ function BookItem({ title, description, to = "", src = "" }) {
                     {description}
                 </p>
 
+                {/* learn more button */}
                 <Button
                     asChild
                     className="
@@ -289,6 +328,7 @@ function BookItem({ title, description, to = "", src = "" }) {
                 </Button>
             </div>
 
+            {/* book cover photo */}
             <img
                 src={src}
                 alt="book photo"

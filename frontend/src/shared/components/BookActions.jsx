@@ -7,6 +7,18 @@ import { useDialogActions } from "../ui/DialogRenderer";
 import { getErrorMessage } from "../utils/utils";
 import { logger } from "../../infra/logging/logger";
 
+
+// BookActions component
+// This component provides actions for managing books 
+// in the user's cart. It allows users to add a book 
+// to the cart, increase or decrease the quantity of 
+// a book in the cart, and remove a book from the cart. 
+// The component handles loading states, error handling, 
+// and displays appropriate messages using toasts and 
+// dialogs. It also logs user actions and errors for 
+// analytics and debugging purposes.
+
+
 export default function BookActions({ id, className = "" }) {
     // get user information through the redux query 
     // or from cache
@@ -32,6 +44,8 @@ export default function BookActions({ id, className = "" }) {
         }
     ] = useUpdateBookInCartMutation()
 
+    // deleteBookFromCart mutation to remove books from
+    // user's cart
     const [
         deleteBookFromCart,
         {
@@ -54,13 +68,24 @@ export default function BookActions({ id, className = "" }) {
         return book.id === id
     })
 
+    // handleAddToCart()
+    // This function is called when the user clicks the "Add to Cart" button.
+    // It attempts to add the book to the user's cart using the 
+    // addBookToCart mutation. If successful, it shows a success
+    // toast and logs the action. If there's an error, it logs the error
+    // and opens a dialog with the error message and a retry option.
     async function handleAddToCart() {
         try {
+            // attempt to add the book to the user's cart using the
+            // addBookToCart mutation and unwrap the result to 
+            // handle any errors that may occur
             await addBookToCart({
                 book_id: id,
                 quantity: 1
             }).unwrap()
 
+            // show a success toast to the user indicating that the book
+            // has been added to the cart
             openToast({
                 type: ToastTypes.success,
                 message: "Book added to Cart"
@@ -88,6 +113,9 @@ export default function BookActions({ id, className = "" }) {
                 }
             )
 
+            // open a dialog to inform the user of the error and 
+            // provide a retry option to attempt adding the book 
+            // to the cart again
             let dialogId = openDialog({
                 title: "Cart Addition Error",
                 description: `An error occured while trying to add
@@ -114,6 +142,14 @@ export default function BookActions({ id, className = "" }) {
         }
     }
 
+    // handleIncreaseQuantity() 
+    // This function is called when the user clicks the "+" 
+    // button to increase the quantity of a book in the cart. 
+    // It checks if the new quantity exceeds the available stock. 
+    // If it does, it shows an error toast. If not, it attempts 
+    // to update the quantity using the updateBookInCart mutation. 
+    // On success, it shows a success toast and logs the action. 
+    // On error, it logs the error and opens a dialog with a retry option.
     async function handleIncreaseQuantity() {
         // perform a bounds check to ensure that the 
         // quantity of the book in the cart does not 
@@ -126,11 +162,16 @@ export default function BookActions({ id, className = "" }) {
         }
 
         try {
+            // attempt to update the quantity of the book in the 
+            // user's cart using the updateBookInCart mutation 
+            // and unwrap the result to handle any errors that may occur
             await updateBookInCart({
                 book_id: id,
                 quantity: bookDetails.order_quantity + 1
             }).unwrap()
 
+            // show a success toast to the user indicating that the quantity
+            // of the book in the cart has been updated
             openToast({
                 type: ToastTypes.success,
                 message: "Book quantity updated"
@@ -159,6 +200,9 @@ export default function BookActions({ id, className = "" }) {
                 }
             )
 
+            // open a dialog to inform the user of the error and 
+            // provide a retry option to attempt updating the quantity 
+            // of the book in the cart again
             let dialogId = openDialog({
                 title: "Cart Update Error",
                 description: `An error occured while trying to update
@@ -186,6 +230,16 @@ export default function BookActions({ id, className = "" }) {
         }
     }
 
+    // handleDecreaseQuantity()
+    // This function is called when the user clicks the "-" 
+    // button to decrease the quantity of a book in the cart.
+    // It checks if the new quantity would be zero or less.
+    // If it is, it attempts to remove the book from the cart 
+    // using the deleteBookFromCart mutation. If the new quantity
+    // is greater than zero, it attempts to update the quantity
+    // using the updateBookInCart mutation. On success, it shows 
+    // a success toast and logs the action. On error, it logs 
+    // the error and opens a dialog with a retry option.
     async function handleDecreaseQuantity() {
         // perform a bounds check to decide whether 
         // to update the quantity of the book in the cart 
@@ -194,8 +248,13 @@ export default function BookActions({ id, className = "" }) {
             // if the quantity of the book in the cart is 1,
             // then remove the book from the cart
             try {
+                // attempt to remove the book from the user's cart using the
+                // deleteBookFromCart mutation and unwrap the result to 
+                // handle any errors that may occur
                 await deleteBookFromCart( id ).unwrap()
 
+                // show a success toast to the user indicating that the book
+                // has been removed from the cart
                 openToast({
                     type: ToastTypes.success,
                     message: "Book removed from cart"
@@ -223,6 +282,9 @@ export default function BookActions({ id, className = "" }) {
                     }
                 )
 
+                // open a dialog to inform the user of the error and 
+                // provide a retry option to attempt removing the book 
+                // from the cart again
                 let dialogId = openDialog({
                     title: "Cart Update Error",
                     description: `An error occured while trying to remove
@@ -252,11 +314,16 @@ export default function BookActions({ id, className = "" }) {
             // if the quantity of the book in the cart is greater than 1,
             // then update the quantity of the book in the cart
             try {
+                // attempt to update the quantity of the book in the 
+                // user's cart using the updateBookInCart mutation 
+                // and unwrap the result to handle any errors that may occur
                 await updateBookInCart({
                     book_id: id,
                     quantity: bookDetails.order_quantity - 1
                 }).unwrap()
     
+                // show a success toast to the user indicating that the quantity
+                // of the book in the cart has been updated
                 openToast({
                     type: ToastTypes.success,
                     message: "Book quantity updated"
@@ -285,6 +352,9 @@ export default function BookActions({ id, className = "" }) {
                     }
                 )
 
+                // open a dialog to inform the user of the error and 
+                // provide a retry option to attempt updating the quantity 
+                // of the book in the cart again
                 let dialogId = openDialog({
                     title: "Cart Update Error",
                     description: `An error occured while trying to update
@@ -326,6 +396,10 @@ export default function BookActions({ id, className = "" }) {
             ${className}
         `}
     >
+        {/*
+            if the book is not in the user's cart, show an "Add to Cart" button
+            with a loading state if the addBookToCart mutation is in progress.
+        */}
         { !bookDetails && 
             <Button
                 className="
@@ -339,6 +413,11 @@ export default function BookActions({ id, className = "" }) {
             </Button>
         }
 
+        {/* 
+            if the book is in the user's cart, show a quantity selector with
+            "+" and "-" buttons to increase or decrease the quantity of the book
+            in the cart. Show a loading state if any of the cart actions are in progress.
+        */}
         { bookDetails && <div
             className="
                 flex
@@ -347,6 +426,7 @@ export default function BookActions({ id, className = "" }) {
                 justify-between
             "
         >
+            {/* decrease quantity button */}
             <Button
                 className="
                     px-2.5!
@@ -358,6 +438,7 @@ export default function BookActions({ id, className = "" }) {
                 <FaMinus />
             </Button>
 
+            {/* quantity display */}
             <span
                 className="
                     text-xl
@@ -380,6 +461,7 @@ export default function BookActions({ id, className = "" }) {
                 }
             </span>
 
+            {/* increase quantity button */}
             <Button
                 className="
                     px-2.5!

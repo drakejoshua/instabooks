@@ -1,6 +1,24 @@
 import mongoose from "mongoose";
 import { ERROR_CODES } from "../../domains/shared/utils/errors.js";
 
+
+// User Schema
+// This schema defines the structure of the user documents 
+// in the Instabooks MongoDB database. It includes fields for
+// name, email, addresses, photo URL and ID, cart, Google auth ID,
+// and refresh token. The schema is used for storing information
+// about the users of the application, including their personal
+// details, addresses, and cart contents.
+
+// The cart is held as part of the user document due to the fact 
+// that it is a temporary storage of books that the user intends 
+// to purchase and is always requested alongside the user profile data. 
+// The cart is also not a large data structure that may require pagination 
+// or other optimizations, so it is more efficient to store it
+// within the user document rather than as a separate collection. 
+// This allows for faster retrieval of the cart data when the user 
+// profile is requested, and simplifies the data model by keeping 
+// related information together in a single document.
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -49,6 +67,8 @@ const UserSchema = new mongoose.Schema({
 // name, email, photo URL, addresses, and cart. It populates the
 // cart with book details before returning the data.
 UserSchema.methods.getProfileData = async function () {
+    // populate the user data with book details before 
+    // returning the data
     await this.populate("cart.book_id");
 
     return {
@@ -82,9 +102,14 @@ UserSchema.methods.getProfileData = async function () {
 // details and quantities. It populates the cart with book details
 // before returning the data.
 UserSchema.methods.getCartData = async function () {
+    // populate the cart with book details before 
+    // returning the data
     await this.populate("cart.book_id");
 
     return this.cart.map( function( book ) {
+        // strip out the book id and other sensitive fields 
+        // from the book document before returning the cart
+        // data
         let { 
             __v, 
             _id, 

@@ -32,7 +32,9 @@ import { publicBooksLimiter } from "./books.middleware.js";
 
 const BookRouter = express.Router();
 
-BookRouter.get(  // non-auth
+// GET /books/search - search for books based on a query string. 
+// This route is publicly accessible and rate-limited to prevent abuse.
+BookRouter.get(  // public
     "/search",
     publicBooksLimiter,
     searchBooksValidationRule,
@@ -40,6 +42,9 @@ BookRouter.get(  // non-auth
     searchBooksController,
 );
 
+// GET /books/admin/search - search for books based on a query string.
+// This route is protected and requires dummy admin authentication using
+// the admin key. It is intended for authenticated use and is not rate-limited.
 BookRouter.get(
     "/admin/search",
     bearerAuthValidationRules,
@@ -50,7 +55,9 @@ BookRouter.get(
     searchBooksController,
 );
 
-
+// GET /books/admin/:book_id - retrieve details of a specific book by its ID.
+// This route is protected and requires dummy admin authentication using
+// the admin key. It is intended for authenticated use and is not rate-limited.
 BookRouter.get(
     "/admin/:book_id",
     bearerAuthValidationRules,
@@ -61,7 +68,9 @@ BookRouter.get(
     getBookController,
 );
 
-
+// GET /books/admin - retrieve a list of books with optional pagination.
+// This route is protected and requires dummy admin authentication using
+// the admin key. It is intended for authenticated use and is not rate-limited.
 BookRouter.get(
     "/admin",
     bearerAuthValidationRules,
@@ -72,6 +81,9 @@ BookRouter.get(
     getBooksController,
 );
 
+// POST /books - add a new book to the collection. This route is protected and requires
+// dummy admin authentication using the admin key. It is intended for authenticated use
+// and is not rate-limited. The request can include a photo file for the book cover.
 BookRouter.post(
     "/",
     bearerAuthValidationRules,
@@ -83,6 +95,9 @@ BookRouter.post(
     addBookController,
 );
 
+// PUT /books/:book_id - update the details of an existing book by its ID. This route 
+// is protected and requires dummy admin authentication using the admin key. It is intended for
+// authenticated use and is not rate-limited. The request can include a photo file for the book cover.
 BookRouter.put(
     "/:book_id",
     bearerAuthValidationRules,
@@ -96,7 +111,8 @@ BookRouter.put(
     updateBookController,
 );
 
-
+// DELETE /books/:book_id - delete an existing book by its ID. This route is protected and requires
+// dummy admin authentication using the admin key. It is intended for authenticated use and is not rate-limited.
 BookRouter.delete(
     "/:book_id",
     bearerAuthValidationRules,
@@ -107,8 +123,9 @@ BookRouter.delete(
     deleteBookController,
 );
 
-
-BookRouter.get( // non-auth
+// GET /books - retrieve a list of books with optional pagination. This route is publicly accessible
+// and rate-limited to prevent abuse.
+BookRouter.get( // public
     "/",
     publicBooksLimiter,
     getBooksValidationRule,
@@ -116,8 +133,9 @@ BookRouter.get( // non-auth
     getBooksController,
 );
 
-
-BookRouter.get( // non-auth
+// GET /books/:book_id - retrieve details of a specific book by its ID. This route is publicly accessible
+// and rate-limited to prevent abuse.
+BookRouter.get( // public
     "/:book_id",
     publicBooksLimiter,
     bookIdValidationRule,

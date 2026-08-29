@@ -6,6 +6,13 @@ import Button from "./Button";
 import { Link } from "react-router-dom";
 import { useAuthUserData } from "../hooks/useAuthUserData";
 
+// BookItem component 
+// This component displays a book item with its details, 
+// including title, author, price, genre, description, and 
+// pages. It also provides options to view book details or 
+// add the book to the cart based on the user's authentication 
+// status and the specified type (default or admin).
+
 function BookItem({
     id,
     title,
@@ -18,8 +25,12 @@ function BookItem({
     className = "",
     type = "default"
 }) {
+    // generate the link to the book details page 
+    // based on the type of the component
     let bookDetailsLink = type === "default" ? `/books/details/${id}` : `/admin/books/details/${id}`;
 
+    // get the authenticated user data using the useAuthUserData hook
+    // in order to determine whether to show the book actions or a login prompt
     const { data } = useAuthUserData();
 
     return <div
@@ -41,6 +52,7 @@ function BookItem({
                     relative
                 "
             >
+                {/* cover image */}
                 <img 
                     src={ photoUrl }
                     alt="Book cover"
@@ -70,11 +82,11 @@ function BookItem({
                 p-6
             "
         >
+            {/* title */}
             <Link 
                 to={ bookDetailsLink }
                 className="block hover:text-instabooks-blue"
             >
-                {/* title */}
                 <Heading
                     className="line-clamp-1"
                 >
@@ -108,11 +120,13 @@ function BookItem({
                     [&_.metadata-icon]:text-xl
                 "
             >
+                {/* author */}
                 <span>
                     <FaCircleUser className="metadata-icon"/>
                     { author }
                 </span>
                 
+                {/* pages */}
                 <span>
                     <FaFileLines className="metadata-icon"/>
                     { pages } pages
@@ -134,15 +148,19 @@ function BookItem({
             </span>
 
             {
+                // if the user is authenticated, show the book actions 
+                // for users or a view book link for admins based on 
+                // the type of the component
                 data && <>
-                    {/* book actions */}
+                    {/* book actions for users */}
                     { type === "default" && <BookActions 
                         id={ id }
                         className="
                             mt-8
                         "
                     />}
-                    
+
+                    {/* view book link for admins */}
                     { type === "admin" && <Button
                         className="
                             mt-8
@@ -158,6 +176,9 @@ function BookItem({
             }
 
             {
+                // if the user is not authenticated, show a login link
+                // to redirect the user to the login page before they 
+                // can add the book to their cart
                 !data &&
                 <Button
                     className="

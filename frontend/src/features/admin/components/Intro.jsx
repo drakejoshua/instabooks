@@ -1,5 +1,13 @@
 import Heading from "../../../shared/components/Heading";
 
+// Intro component - This component is used to display an 
+// introductory section with a title and optional actions for the
+// admin dashboard. It accepts a title, children (for actions),
+// and an optional className for additional styling. The title is 
+// displayed using the Heading component, and the children are 
+// rendered in a flex container for layout.
+
+
 function Intro({ title = "", children, className = ""}) {
     return <section 
         className={`
@@ -12,6 +20,7 @@ function Intro({ title = "", children, className = ""}) {
             ${className}
         `}
     >
+        {/* intro title */}
         <Heading>
             { title }
         </Heading>

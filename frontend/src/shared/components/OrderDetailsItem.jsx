@@ -1,3 +1,10 @@
+// OrderDetailsItem component
+// This component is responsible for rendering the details of a single 
+// item in an order. It accepts props such as bookName, quantity, price, 
+// and photoUrl to display the relevant information about the ordered item. 
+// The component uses a flex layout to arrange the item's image, name, 
+// quantity, and price in a visually appealing manner.
+
 function OrderDetailsItem(
     { bookName, quantity, price, photoUrl }
 ) {

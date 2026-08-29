@@ -16,8 +16,20 @@ import { BookDialog } from "../ui/BookDialog";
 import { trackAdminBookAddition, trackAdminBookListView } from "../../../infra/analytics/admin";
 import { logger } from "../../../infra/logging/logger";
 
+
+// AdminHome component - This component is used to display the
+// admin dashboard home page. It fetches the list of books 
+// using the useGetBooksQuery hook and displays them in a
+// BookList component. The component also includes an Intro
+// component that provides a title and actions for managing
+// the books, such as adding a new book or viewing orders.
+
+
 export function Component() {
+    // state to manage the current page for pagination
     const [ page, setPage ] = useState( 1 )
+
+    // fetch the list of books using the useGetBooksQuery hook
     const {
         data: booksData,
         isLoading,
@@ -25,8 +37,11 @@ export function Component() {
         error,
         refetch
     } = useGetBooksQuery( page )
+
+    // default limit for the number of books to fetch per page
     const defaultLimit = 10
 
+    // mutation hook to create a new book
     const [
         createBook,
         {
@@ -35,10 +50,13 @@ export function Component() {
         }
     ] = useCreateBookMutation()
 
+    // state to manage the visibility of the create book dialog
     const [ 
         isCreateBookDialogOpen, 
         setIsCreateBookDialogOpen
     ] = useState( false )
+
+    // state to manage the details of the new book being created
     const [ newBookDetails, setNewBookDetails ] = useState({
         title: "",
         description: "",
@@ -50,10 +68,16 @@ export function Component() {
         quantity: 0
     })
 
+    // get toast actions from the useToastActions hook to display
+    // toast notifications for success or error messages
     const { openToast } = useToastActions()
     
+    // get dialog actions from the useDialogActions hook to open and close
+    // dialogs for error handling during book creation
     const { openDialog, closeDialog } = useDialogActions()
 
+    // useEffect hook to track the book listings view event for 
+    // Google Analytics
     useEffect( function() {
         if ( booksData ) {
             // send book listings view event to google analytics
@@ -61,7 +85,7 @@ export function Component() {
         }
     }, [ booksData ])
 
-
+    // show loading state while the search results are being fetched
     if ( isLoading ) {
         return (
             <RouteLoading
@@ -70,8 +94,10 @@ export function Component() {
         )
     }
 
+    // show error state if there is an error while fetching the search results
     if ( !isLoading && !isFetching && error ) {
         // log the error using the app's dedicated logger
+        // if there is an error while fetching the books
         logger.error(
             "Error fetching books for admin",
             error,
@@ -95,6 +121,7 @@ export function Component() {
         )
     }
 
+    // show empty state if there are no books in the store
     if ( 
         !isLoading && !isFetching &&
         booksData?.data?.books?.length === 0
@@ -111,12 +138,22 @@ export function Component() {
         )
     }
 
+    // handleLoadMore()
+    // This function is called when the "Load more books" button 
+    // is clicked. It checks if there are more books to load based on the
+    // total number of books and the current page. If there are more 
+    // books to load, it increments the page state to fetch the next 
+    // set of books.
     function handleLoadMore() {
         if ( booksData?.data?.totalBooks > ( page * defaultLimit ) ) {
             setPage( prev => prev + 1 )
         }
     }
 
+    // closeCreateBookDialog()
+    // This function is called to close the create book dialog. It resets
+    // the state of the dialog visibility and clears the new book details
+    // state to prepare for a new book creation.
     function closeCreateBookDialog() {
         // reset create book dialog state
         setIsCreateBookDialogOpen( false )
@@ -134,12 +171,23 @@ export function Component() {
         })
     }
 
+    // handleCreateBookSubmit()
+    // This function is called when the form to create a new book is submitted.
+    // It prevents the default form submission behavior, attempts to create the
+    // new book using the createBook mutation, and handles success or error
+    // scenarios. On success, it displays a success toast and tracks the book
+    // addition event. On error, it logs the error and opens a dialog to allow
+    // the user to retry the book creation.
     async function handleCreateBookSubmit( e ) {
+        // prevent the default form submission behavior
         e?.preventDefault()
 
         try {
+            // attempt to create the new book using the createBook mutation
             await createBook( newBookDetails ).unwrap()
 
+            // display a success toast notification for successful 
+            // book creation
             openToast({
                 type: ToastTypes.success,
                 message: "Book created successfully"
@@ -148,6 +196,7 @@ export function Component() {
             // send admin book creation event to google analytics
             trackAdminBookAddition( newBookDetails )
 
+            // close the create book dialog after successful creation
             closeCreateBookDialog()
         } catch( error ) {
             // log the error using the app's dedicated logger
@@ -160,6 +209,7 @@ export function Component() {
                 }
             )
 
+            // open a dialog to allow the user to retry the book creation
             let dialogId = openDialog({
                 title: "Book creation error",
                 description: `An error occured while trying to create
@@ -197,20 +247,20 @@ export function Component() {
                 title="Manage books"
                 className="mt-4"
             >
+                {/* add book button */}
                 <Button
                     onClick={ () => setIsCreateBookDialogOpen( true ) }
                 >
                     Add new book
                 </Button>
 
+                {/* view orders link */}
                 <AltButton asChild>
                     <Link to="/admin/orders">
                         view orders
                     </Link>
                 </AltButton>
             </Intro>
-
-                
 
             {/* search bar */}
             <SearchBar 

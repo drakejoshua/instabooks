@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
 
+// Book Schema
+// This schema defines the structure of the book documents 
+// in the Instabooks MongoDB database. It includes fields for 
+// title, description, pages, author, price, cover photo ID 
+// and URL, quantity, and genre. The schema is used for storing 
+// information about the books held in store, how many are available, 
+// and the price of each book.
 const BookSchema = mongoose.Schema({
     title: {
         type: String,
@@ -40,6 +47,8 @@ const BookSchema = mongoose.Schema({
 })
 
 
+// Instance method to get book details without sensitive fields
+// and return them directly back to the frontend.
 BookSchema.methods.getBookDetails = function() {
     let { _id, __v, cover_photo_id, ...bookDetails } = this.toObject()
 

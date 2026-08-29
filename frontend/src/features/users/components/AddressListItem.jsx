@@ -1,5 +1,12 @@
 import { FaCircleNotch, FaTrash } from "react-icons/fa6";
 
+
+// AddressListItem component
+// This component displays a single address in the user's 
+// address list. It includes the address text and a delete 
+// button to remove the address from the list.
+
+
 export function AddressListItem({ 
     address = "",
     handleDeleteAddress = () => {},
@@ -17,10 +24,12 @@ export function AddressListItem({
             rounded-md
         "
     >
+        {/* address text */}
         <span>
             { address }
         </span>
 
+        {/* delete button */}
         <button
             className="
                 cursor-pointer disabled:cursor-not-allowed
@@ -31,6 +40,8 @@ export function AddressListItem({
         >
             {
                 deleteLoading ? (
+                    // loading spinner icon displayed 
+                    // while the address is being deleted
                     <FaCircleNotch 
                         className="
                             animate-spin 

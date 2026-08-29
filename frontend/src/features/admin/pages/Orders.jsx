@@ -10,8 +10,14 @@ import { FaArrowsRotate } from "react-icons/fa6";
 import { logger } from "../../../infra/logging/logger";
 
 export function Component() {
+    // state to keep track of the current page for pagination
     const [ page, setPage ] = useState( 1 )
+
+    // fetch the orders data using the useGetOrdersQuery hook
     let defaultLimit = 10;
+
+    // fetch the orders data using the useGetOrdersQuery hook, 
+    // passing the current page as a parameter
     const { 
         data: ordersData, 
         error, 
@@ -20,12 +26,18 @@ export function Component() {
         refetch
     } = useGetOrdersQuery(page)
 
+    // handleLoadMore() - This function is called when the 
+    // "Load more orders" button is clicked. It checks if there 
+    // are more orders to load based on the current page and 
+    // the total number of orders. If there are more orders, 
+    // it increments the page state to fetch the next set of orders.
     function handleLoadMore() {
         if ( ( page * defaultLimit ) < ordersData?.data?.totalOrders ) {
             setPage( page + 1 )
         }
     }
 
+    // show loading state while the orders data is being fetched
     if ( isLoading ) {
         return (
             <RouteLoading
@@ -34,6 +46,8 @@ export function Component() {
         )
     }
 
+    // show error state if there is an error while fetching the 
+    // orders data
     if ( !isLoading && !isFetching && error ) {
         // log the error using the app's dedicated logger
         logger.error(
@@ -59,6 +73,7 @@ export function Component() {
         )
     }
 
+    // show empty state if there are no orders in the store
     if ( 
         !isLoading && !isFetching &&
         ordersData?.data?.orders?.length === 0
@@ -80,6 +95,7 @@ export function Component() {
         <Intro
             title="Manage orders"
         >
+            {/* view books link */}
             <AltButton asChild>
                 <Link to="/admin/books">
                     view books
@@ -97,6 +113,7 @@ export function Component() {
             "
         >
             {
+                // show the list of orders if there are orders in the store
                 ordersData?.data?.orders?.map( function( order ) {
                     return (
                         <OrderDetails 

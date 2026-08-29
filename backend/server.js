@@ -111,6 +111,11 @@ process.on("unhandledRejection", (reason) => {
 
 const PORT = process.env.PORT || 8000;
 
+// startServer() - This function starts the server by first 
+// attempting to connect to the Redis database. If the connection 
+// is successful, it starts the Express server and listens on 
+// the specified port. If there is an error connecting to Redis, 
+// it logs the error and exits the process with a non-zero status code.
 async function startServer() {
     try {
         logDebugInfo(

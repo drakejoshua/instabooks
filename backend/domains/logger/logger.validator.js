@@ -1,6 +1,8 @@
 import { body, validationResult } from 'express-validator';
 import { ERROR_CODES, reportInvalidLoggerDataError } from '../shared/utils/errors.js';
 
+// loggerValidationRules
+// This array defines the validation rules for the logger endpoint.
 export const loggerValidationRules = [
     body("log")
         .exists()
@@ -14,6 +16,9 @@ export const loggerValidationRules = [
         .bail()
 ]
 
+// loggerValidatorFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the loggerValidationRules.
 export function loggerValidatorFunction(req, res, next) {
     const errors = validationResult(req);
 

@@ -5,14 +5,18 @@ import { Link } from "react-router-dom";
 
 export function Component() {
     let headingStyle = "mt-12 lg:mt-14";
+
+    // get the backend URL from the environment variables. 
     let backendURL = import.meta.env.VITE_BACKEND_URL
 
     return (
         <div>
+            {/* page heading */}
             <Heading variant="route" className={headingStyle}>
                 Sign in with your Google account
             </Heading>
 
+            {/* page description */}
             <p
                 className="
                 text-center
@@ -24,6 +28,7 @@ export function Component() {
                 sign-in page.
             </p>
 
+            {/* sign in with google button */}
             <Button
                 className="
                     mt-12

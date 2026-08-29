@@ -1,5 +1,7 @@
 import { FaCartArrowDown } from "react-icons/fa6";
 
+// EmptyCartMessage component - displays a message indicating that the user's cart is empty.
+
 export default function EmptyCartMessage() {
     return (
         <div 

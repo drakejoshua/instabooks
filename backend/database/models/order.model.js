@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+// Order Schema
+// This schema defines the structure of the order documents 
+// in the Instabooks MongoDB database. It includes fields for
+// user ID, status, price at purchase, shipping address, payment status,
+// and products. The schema is used for storing information about the 
+// orders placed by users, including the books ordered and their quantities.
+
+// Quick note: Orders in the application aren't real orders. Orders become
+// "shipped" when the user has paid for the order, and "cancelled" when the
+// user has cancelled the order. The "pending" status is used for orders that
+// are still being processed and haven't been paid for yet. There's no 
+// admin control over the order status, as the status is automatically 
+// updated based on user actions.
 let orderSchema = mongoose.Schema(
     {
         user_id: {
@@ -48,7 +61,10 @@ let orderSchema = mongoose.Schema(
 
 // getOrderDetails()
 // This is a method that retrieves the details of the current
-// order
+// order stripping out sensitive fields from the user and book documents. It returns
+// an object containing the order details, including the order ID, products, 
+// user ID, and other relevant information. The method uses Mongoose's populate
+// function to retrieve the related book and user documents based on their IDs.
 orderSchema.methods.getOrderDetails = async function () {
     await this.populate([ "products.book_id", "user_id" ])
     let { _id, __v, products, user_id, ...orderDetails } = this.toObject();

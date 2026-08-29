@@ -13,11 +13,21 @@ import { ToastTypes, useToastActions } from "../../../shared/ui/ToastRenderer";
 import { trackBeginCheckout } from "../../../infra/analytics/ecommerce";
 import { logger } from "../../../infra/logging/logger";
 
+
+// Checkout page - displays the checkout process for the user's cart, 
+// including order confirmation, shipping information, and order summary. 
+// It allows the user to select a shipping address and proceed to payment.
+
+
 export function Component() {
+    // get user information through the redux query 
+    // or from rtk cache
     const { data: user } = useGetMeQuery()
     
+    // state to hold the selected shipping address
     const [ shippingAddress, setShippingAddress ] = useState("")
 
+    // checkout mutation hook from the ordersApi service
     const [ 
         checkout, 
         { 
@@ -27,24 +37,41 @@ export function Component() {
         } 
     ] = useCheckoutCartMutation()
 
+    // dialog actions for opening and closing dialogs from this
+    // page to alert the user of errors or important information
     const { openDialog, closeDialog } = useDialogActions()
 
+    // toast actions for opening and closing toast notifications from this
+    // page to alert the user of success or error messages
     const { openToast } = useToastActions()
 
+    // set the default shipping address to the first address in the 
+    // user's address book if any
     useEffect( function() {
         setShippingAddress( user?.data?.addresses[ 0 ] || "" )
     }, [user])
 
+    // if the user's cart is empty, display an empty cart message
     if ( user?.data?.cart.length == 0 ) {
         return (
             <EmptyCartMessage />
         )
     }
 
+    // handleCheckout()
+    // This function is called when the user clicks the "Pay Now" button. 
+    // It attempts to checkout the user's cart using the selected shipping 
+    // address. If successful, it opens a success toast and redirects the 
+    // user to the payment page. If there is an error, it logs the error 
+    // and opens a dialog with an option to retry the checkout process.
     async function handleCheckout() {
         try {
+            // checkout the user's cart with the selected shipping address
             let { data: checkoutData } = await checkout( shippingAddress ).unwrap()
 
+            // open a success toast notification to inform the user that
+            // the checkout was successful and they will be redirected to 
+            // the payment page shortly
             openToast({
                 type: ToastTypes.success,
                 message: `
@@ -67,6 +94,8 @@ export function Component() {
                 })
             })
 
+            // redirect the user to the payment page after a short 
+            // delay to allow them to read the success message
             setTimeout(function() {
                 window.location.href = checkoutData.authorization_url
             }, 1000)
@@ -81,6 +110,8 @@ export function Component() {
                 }
             );
 
+            // open a dialog to inform the user that there was an error
+            // while checking out their cart and provide an option to retry
             let dialogId = openDialog({
                 title: "Cart checkout error",
                 description: `
@@ -110,6 +141,10 @@ export function Component() {
         }
     }
 
+    // getDeliveryDate()
+    // This function returns the estimated delivery date for the order 
+    // based on the current date. It formats the date in a human-readable 
+    // format (e.g., "Jan 1, 2024").
     function getDeliveryDate() {
         return new Date().toLocaleDateString('en-US', {
             day: "numeric",
@@ -119,6 +154,7 @@ export function Component() {
     }
 
     return <div className="pb-12">
+        {/* checkout heading */}
         <h1
             className="
                 text-4xl
@@ -185,6 +221,8 @@ export function Component() {
                     </h2>
 
                     {
+                        // if the user has saved addresses, display a toggle 
+                        // group to select a shipping address
                         user?.data?.addresses?.length > 0 && <>
                             <div
                             className="
@@ -221,6 +259,8 @@ export function Component() {
                                 onValueChange={ (newValue) => newValue ? setShippingAddress( newValue ) : shippingAddress }
                             >
                                 {
+                                    // map through the user's saved addresses and render a 
+                                    // ToggleGroup.Item for each address
                                     user?.data?.addresses.map( function( address ) {
                                         return (
                                             <ToggleGroup.Item
@@ -255,6 +295,8 @@ export function Component() {
                     }
 
                     {
+                        // if the user has no saved addresses, display a message
+                        // informing them to add an address in their profile before checking out
                         user?.data?.addresses?.length == 0 && <p
                             className="
                                 mt-6
@@ -268,6 +310,7 @@ export function Component() {
                 </div>
             </div>
 
+            {/* order summary and checkout button */}
             <div>
                 <h2
                     className="
@@ -278,6 +321,7 @@ export function Component() {
                     Order summary
                 </h2>
 
+                {/* order total and deliery information */}
                 <InfoList
                     className="mt-5"
                     entries={{
@@ -286,6 +330,7 @@ export function Component() {
                     }}
                 />
 
+                {/* checkout button */}
                 <Button
                     className="
                         mt-12 lg:mt-8

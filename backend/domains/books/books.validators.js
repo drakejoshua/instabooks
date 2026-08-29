@@ -13,6 +13,11 @@ import {
     reportInvalidRequestInfoError,
 } from "../shared/utils/errors.js";
 
+// addBookValidationRules - This array of validation rules is used 
+// to validate the request body for adding a new book. It checks for 
+// the existence, non-emptiness, and specific constraints 
+// (like length and type) of various fields such as title, 
+// description, pages, author, price, quantity, genre, and photo.
 export let addBookValidationRules = [
     body("title")
         .exists()
@@ -95,6 +100,9 @@ export let addBookValidationRules = [
         .withMessage(ERROR_CODES.INVALID_BOOK_COVER_PHOTO),
 ];
 
+// addBookValidationFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the addBookValidationRules.
 export function addBookValidationFunction(req, res, next) {
     // get validation errors from request if
     // any
@@ -128,6 +136,11 @@ export function addBookValidationFunction(req, res, next) {
     next();
 }
 
+// updateBookValidationRules - This array of validation rules is used 
+// to validate the request body for updating an existing book. It checks 
+// for the existence, non-emptiness, and specific constraints (like length 
+// and type) of various fields such as title, description, pages, author, 
+// price, quantity, genre, and photo.
 export let updateBookValidationRules = [
     body("title")
         .optional()
@@ -199,6 +212,9 @@ export let updateBookValidationRules = [
         .withMessage(ERROR_CODES.INVALID_BOOK_COVER_PHOTO),
 ];
 
+// updateBookValidationFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the updateBookValidationRules.
 export function updateBookValidationFunction(req, res, next) {
     // get validation errors from request if
     // any
@@ -232,7 +248,8 @@ export function updateBookValidationFunction(req, res, next) {
     next();
 }
 
-
+// bookIdValidationRule - This array of validation rules is 
+// used to validate the book ID parameter in the request.
 export let bookIdValidationRule = [
     param("book_id")
         .exists()
@@ -246,6 +263,9 @@ export let bookIdValidationRule = [
         .bail(),
 ]
 
+// bookIdValidationFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the bookIdValidationRule.
 export function bookIdValidationFunction(req, res, next) {
     // get validation errors from request if
     // any
@@ -265,7 +285,10 @@ export function bookIdValidationFunction(req, res, next) {
     next();
 }
 
-
+// getBooksValidationRule - This array of validation rules is 
+// used to validate the query parameters for retrieving a list of books.
+// It checks for the optional "limit" and "page" query parameters, ensuring
+// that if provided, they are positive integers.
 export let getBooksValidationRule = [
     query("limit")
         .default( 10 )
@@ -308,7 +331,10 @@ export function getBooksValidationFunction( req, res, next ) {
     next();
 }
 
-
+// searchBooksValidationRule - This array of validation rules is used to
+// validate the query parameters for searching books. It checks for the
+// existence and non-emptiness of the "query" parameter, ensuring that
+// a valid search query is provided.
 export let searchBooksValidationRule = [
     query("query")
         .exists()
@@ -319,7 +345,9 @@ export let searchBooksValidationRule = [
         .bail()
 ]
 
-
+// searchBooksValidationFunction()
+// This function is a middleware that checks for validation errors
+// in the request object after applying the searchBooksValidationRule.
 export function searchBooksValidationFunction( req, res, next ) {
     // get validation errors from request if
     // any

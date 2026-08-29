@@ -1,21 +1,27 @@
 import { logGoogleAnalyticsError, logInvalidAnalyticsClientId, logInvalidAnalyticsEvent } from "../logging/logFunctions.js"
 
 export async function trackServerEvent(clientId, event, params) {
-    // check for clientId to use if absent, 
+    // check for clientId is valid if invalid, log error and
     // exit function early
     if ( !clientId ) {
         logInvalidAnalyticsClientId()
         return
     }
 
+    // check for event is valid if invalid, log error and
+    // exit function early
     if ( !event ) {
         logInvalidAnalyticsEvent()
         return
     }
 
+    // get google analytics measurement protocol api 
+    // secret and measurement id from environment variables
     const GA_MP_API_SECRET = process.env.GA_MP_API_SECRET
     const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID
 
+    // construct the google analytics measurement protocol api url
+    // using the measurement id and api secret from environment variables
     const url = `https://www.google-analytics.com/mp/collect?` +
     `measurement_id=${GA_MEASUREMENT_ID}&api_secret=${GA_MP_API_SECRET}`
 
@@ -41,7 +47,7 @@ export async function trackServerEvent(clientId, event, params) {
     )
 
     // check if the request resolved successfully else
-    // throw an error to prevent further execution
+    // log the error to the server logs with the event and params
     if ( !resp.ok ) {
         let googleAnalyticsRequestError = new Error(
             `Google analytics Error: Request not sent ` +

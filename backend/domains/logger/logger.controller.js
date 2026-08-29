@@ -1,8 +1,13 @@
 import { reportInvalidLoggerDataError } from "../shared/utils/errors.js";
 import { loggerService } from "./logger.service.js";
 
+// define the allowed log levels for the logger
 const ALLOWED_LOG_LEVELS = ["info", "warn", "error"];
 
+// loggerController()
+// This function is a controller that handles the logging of events
+// in the application. It validates the log data received in the 
+// request body and calls the logger service to process the log data.
 export async function loggerController(req, res, next) {
     // get the log data from the request body
     const { log } = req.body || {};

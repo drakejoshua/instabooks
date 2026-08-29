@@ -1,5 +1,12 @@
 import BookActions from "../../../shared/components/BookActions";
 
+
+// CartBookItem component - represents an individual book item in the cart.
+// It displays the book's title, price, cover photo, and the total 
+// price based on the order quantity. It also includes the BookActions 
+// component for managing the book in the cart.
+
+
 function CartBookItem({
     id,
     title = "Book title",
@@ -27,6 +34,7 @@ function CartBookItem({
                 w-full md:max-w-[50%]
             "
         >
+            {/* book cover photo */}
             <img 
                 src={ photoUrl }
                 alt={`book cover of ${title}`}
@@ -38,6 +46,7 @@ function CartBookItem({
                 "
             />
 
+            {/* book details */}
             <div 
                 className="
                     flex 
@@ -46,6 +55,7 @@ function CartBookItem({
                     overflow-hidden
                 "
             >
+                {/* book title */}
                 <span
                     className="
                         font-medium
@@ -59,12 +69,14 @@ function CartBookItem({
                     {title}
                 </span>
                 
+                {/* book price */}
                 <span>
                     Price: ${price.toFixed(2)}
                 </span>
             </div>
         </div>
 
+        {/* book actions */}
         <BookActions 
             id={id}
             className="
@@ -72,13 +84,14 @@ function CartBookItem({
             "
         />
 
+        {/* total price */}
         <span 
             className="
                 text-xl
                 font-medium
             "
         >
-            {/* to be calculated using cart functionality later */}
+            {/* total price is calculated using the book's price and order quantity */}
             ${ ( price * orderQuantity ).toFixed(2) }
         </span>
     </div>;

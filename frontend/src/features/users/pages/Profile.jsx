@@ -18,16 +18,33 @@ import { getErrorMessage } from "../../../shared/utils/utils";
 import { logger } from "../../../infra/logging/logger";
 
 export function Component() {
+    // set the default limit for the number of orders 
+    // to fetch per page
     const defaultLimit = 20
+
+    // state for managing the current page of orders to
+    // display on the user's profile
     const [ page, setPage ] = useState( 1 )
     
+    // state for controlling the user's name input 
+    // field in the profile form
     const [ name, setName ] = useState("")
+
+    // state for controlling the profile photo update dialog
+    // and the selected profile photo file
     const [ isPhotoUpdateDialogOpen, setIsPhotoUpdateDialogOpen ] = useState( false )
     const [ profilePhoto, setProfilePhoto ] = useState( null )
+
+    // state for controlling the address addition dialog
+    // and the new address input field
     const [ newAddress, setNewAddress ] = useState( "" )
     const [ isAddressAdditionDialogOpen, setIsAddressAdditionDialogOpen ] = useState( false )
 
+    // get the authenticated user data using the useGetMeQuery hook
     const { data: user } = useGetMeQuery()
+
+    // fetch the user's orders using the useGetOrdersQuery hook,
+    // passing the current page and default limit as parameters.
     const { 
         data: ordersData, 
         isLoading: isOrdersLoading,
@@ -35,6 +52,10 @@ export function Component() {
         error: ordersError
     } = useGetOrdersQuery({ limit: defaultLimit, page })
 
+    // updateUser and useUpdateUserMutation to handle the 
+    // updating of user profile information, including name 
+    // and profile photo. It returns the updateUser function 
+    // and the loading and error states for the mutation.
     const [ 
         updateUser, 
         { 
@@ -43,6 +64,8 @@ export function Component() {
         } 
     ] = useUpdateUserMutation()
 
+    // deleteAddress and addAddress to handle the deletion 
+    // and addition of user addresses, respectively.
     const [ 
         deleteAddress, 
         { 
@@ -50,7 +73,6 @@ export function Component() {
             error: deleteAddressError 
         } 
     ] = useDeleteAddressMutation()
-    
     const [ 
         addAddress, 
         { 
@@ -59,16 +81,29 @@ export function Component() {
         } 
     ] = useAddAddressMutation()
 
+    // get the openToast function from the useToastActions hook to
+    // display toast notifications for success or error messages
     const { openToast } = useToastActions()
     
+    // get the openDialog and closeDialog functions from 
+    // the useDialogActions hook to display confirmation dialogs 
+    // for actions like deleting profile photos or addresses, and 
+    // to close those dialogs when necessary
     const { openDialog, closeDialog } = useDialogActions()
 
+    // useEffect to set the user's name in the profile form
+    // when the user data is fetched successfully. It updates 
+    // the name state with the user's name from the fetched data.
     useEffect( function() {
         if ( user?.data?.name ) {
             setName( user?.data?.name )
         }
     }, [ user ])
 
+    // log any errors that occur while fetching the user's orders
+    // using the app's dedicated logger providing context about the
+    // error, including the request ID and user ID for debugging and 
+    // tracking
     if ( ordersError ) {
         // log the error using the app's dedicated logger
         logger.error(
@@ -81,6 +116,14 @@ export function Component() {
         );
     }
 
+    // handleLoadMoreOrders()
+    // This function is responsible for loading more orders when the 
+    // user requests it. It checks if the current number of orders 
+    // displayed is less than the total number of orders available.
+    //  If so, it increments the page state to fetch the next set of 
+    // orders. This allows for pagination and ensures that users can 
+    // view all their orders without overwhelming the interface with 
+    // too much data at once.
     function handleLoadMoreOrders() {
         // perform bounds check to ensure that the 
         // next page of orders is within the total 
@@ -90,12 +133,21 @@ export function Component() {
         }
     }
 
+    // handleProfilePhotoDeletion()
+    // This function is responsible for handling the deletion of the
+    // user's profile photo. It calls the updateUser mutation with
+    // the delete_photo flag set to true. If the deletion is successful,
+    // it displays a success toast notification. If an error occurs during
+    // the deletion process, it logs the error and opens a dialog to inform
+    // the user of the failure, providing an option to retry the deletion.
     async function handleProfilePhotoDeletion() {
         try {
+            // call the updateUser mutation to delete the profile photo
             await updateUser({
                 delete_photo: true
             }).unwrap()
 
+            // display a success toast notification upon successful deletion
             openToast({
                 type: ToastTypes.success,
                 message: "Profile photo deleted successfully"
@@ -111,6 +163,8 @@ export function Component() {
                 }
             )
 
+            // open a dialog to inform the user of the deletion 
+            // failure and provide an option to retry
             let dialogId = openDialog({
                 title: "Profile Photo Deletion Error",
                 description: `An error occured while trying to delete
@@ -134,6 +188,14 @@ export function Component() {
         }
     }
 
+    // confirmProfilePhotoDeletion()
+    // This function is responsible for confirming the deletion 
+    // of the user's profile photo. It opens a confirmation dialog 
+    // asking the user if they are sure they want to delete their 
+    // profile photo. If the user confirms, it calls the 
+    // handleProfilePhotoDeletion function to proceed with the 
+    // deletion. This provides a safeguard against accidental 
+    // deletions by requiring user confirmation before performing the action.
     async function confirmProfilePhotoDeletion() {
         let dialogId = openDialog({
             title: "Confirm Deletion",
@@ -163,6 +225,8 @@ export function Component() {
         // prevent default form submission behavior
         event?.preventDefault()
 
+        // validate that the name field is not empty 
+        // before proceeding with the update
         if ( !name ) {
             return openToast({
                 type: ToastTypes.error,
@@ -171,10 +235,14 @@ export function Component() {
         }
 
         try {
+            // call the updateUser mutation to update the 
+            // user's profile info with the new name
             await updateUser({
                 name
             }).unwrap()
 
+            // display a success toast notification upon 
+            // successful update
             openToast({
                 type: ToastTypes.success,
                 message: "Profile info updated successfully"
@@ -190,6 +258,8 @@ export function Component() {
                 }
             )
 
+            // open a dialog to inform the user of the update failure and
+            // provide an option to retry the profile info update. 
             let dialogId = openDialog({
                 title: "Profile Info Update Error",
                 description: `An error occured while trying to update
@@ -213,15 +283,29 @@ export function Component() {
         }
     }
 
+    // handleDeleteAddress()
+    // This function is responsible for handling the 
+    // deletion of a user's address. It takes an address as 
+    // an argument and attempts to delete it using the 
+    // deleteAddress mutation. If the deletion is successful, 
+    // it displays a success toast notification. If an error 
+    // occurs during the deletion process, it logs the error 
+    // and opens a dialog to inform the user of the failure, 
+    // providing an option to retry the deletion. 
     async function handleDeleteAddress( address ) {
         try {
+            // call the deleteAddress mutation to delete 
+            // the specified address
             await deleteAddress( address ).unwrap()
 
+            // display a success toast notification upon 
+            // successful deletion
             openToast({
                 type: ToastTypes.success,
                 message: "Address deleted successfully"
             })
         } catch( error ) {
+            // log the error using the app's dedicated logger
             logger.error(
                 "Error deleting user's address",
                 error,
@@ -231,6 +315,8 @@ export function Component() {
                 }
             )
 
+            // open a dialog to inform the user of the deletion failure and
+            // provide an option to retry the address deletion.
             let dialogId = openDialog({
                 title: "Address Deletion Error",
                 description: `An error occured while trying to delete
@@ -251,6 +337,10 @@ export function Component() {
         }
     }
 
+    // confirmAddressDeletion()
+    // This function is responsible for confirming the deletion
+    // of a user's address. It opens a confirmation dialog asking the
+    // user if they are sure they want to delete the specified address.
     async function confirmAddressDeletion( address ) {
         let dialogId = openDialog({
             title: "Confirm Deletion",
@@ -276,10 +366,21 @@ export function Component() {
         })
     }
 
+    // handleAddAddress()
+    // This function is responsible for handling the addition 
+    // of a new address to the user's profile. It validates 
+    // that the new address is not empty before proceeding 
+    // with the addition. If the address is valid, it calls 
+    // the addAddress mutation to add the new address. Upon 
+    // successful addition, it displays a success toast notification. 
+    // If an error occurs during the addition process, it logs the 
+    // error and opens a dialog to inform the user of the failure, 
+    // providing an option to retry adding the address.
     async function handleAddAddress( event ) {
         // prevent default form submission behaviour
         event?.preventDefault()
 
+        // validate that the new address is not empty before proceeding
         if ( !newAddress ) {
             return openToast({
                 type: ToastTypes.error,
@@ -288,8 +389,10 @@ export function Component() {
         }
 
         try {
+            // call the addAddress mutation to add the new address
             await addAddress( newAddress ).unwrap()
 
+            // display a success toast notification upon successful addition
             openToast({
                 type: ToastTypes.success,
                 message: "Address added successfully"
@@ -305,6 +408,8 @@ export function Component() {
                 }
             )
 
+            // open a dialog to inform the user of the addition 
+            // failure and provide an option to retry adding the address.
             let dialogId = openDialog({
                 title: "Address Addition Error",
                 description: `An error occured while trying to add
@@ -325,12 +430,27 @@ export function Component() {
                 }
             })
         } finally {
+            // close the address addition dialog and reset 
+            // the new address input field
             setIsAddressAdditionDialogOpen( false )
             setNewAddress( "" )
         }
     }
 
+    // handleProfilePhotoUpdate()
+    // This function is responsible for handling the update 
+    // of the user's profile photo. It checks if a profile 
+    // photo has been selected before proceeding with the 
+    // update. If a photo is selected, it calls the updateUser 
+    // mutation to upload the new profile photo. Upon 
+    // successful update, it displays a success toast 
+    // notification. If an error occurs during the update 
+    // process, it logs the error and opens a dialog to inform 
+    // the user of the failure, providing an option to retry 
+    // the profile photo update.
     async function handleProfilePhotoUpdate() {
+        // validate that a profile photo has been selected 
+        // before proceeding
         if ( !profilePhoto ) {
             return openToast({
                 type: ToastTypes.error,
@@ -339,10 +459,13 @@ export function Component() {
         }
 
         try {
+            // call the updateUser mutation to upload the new 
+            // profile photo
             await updateUser({
                 photo: profilePhoto
             }).unwrap()
 
+            // display a success toast notification upon successful update
             openToast({
                 type: ToastTypes.success,
                 message: "Profile photo updated successfully"
@@ -358,6 +481,8 @@ export function Component() {
                 }
             )
 
+            // open a dialog to inform the user of the update failure and
+            // provide an option to retry the profile photo update.
             let dialogId = openDialog({
                 title: "Profile Photo Update Error",
                 description: `An error occured while trying to update
@@ -378,6 +503,8 @@ export function Component() {
                 }
             })
         } finally {
+            // close the profile photo update dialog and reset
+            // the profile photo state to null after the update attempt
             setIsPhotoUpdateDialogOpen( false )
             setProfilePhoto( null )
         }
@@ -393,6 +520,7 @@ export function Component() {
                 pb-8
             "
             >
+                {/* Profile Navigation */}
                 <aside
                     className="
                     hidden lg:flex
@@ -410,6 +538,13 @@ export function Component() {
                     *:rounded-lg
                 "
                 >
+                    {/* 
+                        Profile Navigation Links - includes a scrollspy 
+                        to track the functionality of the links and highlight 
+                        the active section as the user scrolls through the 
+                        profile page guiding the user through the different 
+                        sections of their profile
+                    */}
                     <ScrollSpy
                         activeClass="
                             bg-instabooks-blue
@@ -422,16 +557,20 @@ export function Component() {
                     </ScrollSpy>
                 </aside>
 
+                {/* Profile Content */}
                 <section
                     className="
                     max-w-lg
                 "
                 >
+                    {/* Profile Section */}
                     <div>
                         <Heading as="h2" id="profile">your profile</Heading>
 
+                        {/* Profile Photo Dropdown */}
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
+                                {/* Profile photo avatar */}
                                 <UserAvatar
                                     className="
                                     h-40
@@ -445,6 +584,7 @@ export function Component() {
                             </DropdownMenu.Trigger>
 
                             <DropdownMenu.Portal>
+                                {/* dropdown options */}
                                 <DropdownMenu.Content
                                     side="right"
                                     sideOffset={8}
@@ -469,6 +609,7 @@ export function Component() {
                                     *:cursor-pointer
                                 "
                                 >
+                                    {/* upload new photo option */}
                                     <DropdownMenu.Item
                                         onSelect={ () => setIsPhotoUpdateDialogOpen( true ) }
                                     >
@@ -476,6 +617,7 @@ export function Component() {
                                         upload new photo
                                     </DropdownMenu.Item>
 
+                                    {/* remove photo option */}
                                     <DropdownMenu.Item
                                         onSelect={ confirmProfilePhotoDeletion }
                                     >
@@ -536,6 +678,7 @@ export function Component() {
                                 Email can't be updated since you signed up with Google.
                             </p>
 
+                            {/* submit button */}
                             <Form.Submit asChild>
                                 <Button 
                                     className={`
@@ -596,6 +739,7 @@ export function Component() {
                                 }
                             </div>
 
+                            {/* add new address button */}
                             <Button 
                                 className="
                                     capitalize 
@@ -611,10 +755,13 @@ export function Component() {
                         </div>
                     </div>
 
+                    {/* Orders Section */}
                     <div>
                         <Heading className="mt-12" id="orders">your orders</Heading>
 
                         {
+                            // empty orders message displayed when the user 
+                            // has not placed any orders yet
                             ordersData?.data?.orders.length === 0 && <p
                                 className="
                                     text-gray-600
@@ -627,6 +774,8 @@ export function Component() {
 
                         {/* order preview list */}
                         {
+                            // display the list of orders if there are any 
+                            // orders available/placed by the user
                             ordersData?.data?.orders.length != 0 && 
                             <div
                                 className="
@@ -638,6 +787,8 @@ export function Component() {
                             >
                                 {/* order preview item*/}
                                 {
+                                    // map through the user's orders and render an OrderPreview
+                                    // component for each order in the list 
                                     ordersData?.data?.orders?.map( function( order ) {
                                         let orderDate = new Date( order.createdAt ).toLocaleDateString( "en-US", {
                                             year: "numeric",
@@ -656,6 +807,10 @@ export function Component() {
                                                 totalPaid={`$${ order.price_at_purchase }`}
                                                 paymentStatus={ order.payment_status }
                                                 items={
+                                                    // map over the products in the order and return an array of objects
+                                                    // to specifically the format for the OrderPreview component, 
+                                                    // containing the title, quantity, price, and photoUrl 
+                                                    // of each product
                                                     order.products.map( function( product ) {
                                                         return {
                                                             title: product.title,
@@ -674,6 +829,8 @@ export function Component() {
 
                         {/* load more orders button */}
                         {
+                            // only display the button when there are more orders to load, i.e., when the number of
+                            // orders displayed is less than the total number of orders available for the user
                             ordersData?.data.orders.length < ordersData?.data.totalOrders && (
                                 <Button
                                     className="
@@ -712,6 +869,7 @@ export function Component() {
                 open={ isPhotoUpdateDialogOpen }
                 onOpenChange={ setIsPhotoUpdateDialogOpen }
             >
+                {/* file input for selecting a new profile photo */}
                 <input 
                     type="file" 
                     accept="image/*" 
@@ -731,6 +889,7 @@ export function Component() {
                     disabled={ isUpdateUserLoading }
                 />
 
+                {/* profile photo preview */}
                 { profilePhoto && 
                     <img 
                         src={ 
@@ -748,6 +907,7 @@ export function Component() {
                     /> 
                 }
 
+                {/* upload button */}
                 <Button
                     className="mt-4 w-full"
                     onClick={ () => handleProfilePhotoUpdate() }
@@ -767,6 +927,7 @@ export function Component() {
                 onOpenChange={ setIsAddressAdditionDialogOpen }
             >
                 <Form.Root onSubmit={ handleAddAddress }>
+                    {/* address input field */}
                     <TextField
                         name="newAddress"
                         label="New Address: "
@@ -776,6 +937,7 @@ export function Component() {
                         onChange={ (e) => setNewAddress( e.target.value ) }
                     />
 
+                    {/* submit button */}
                     <Form.Submit asChild>
                         <Button
                             className={`

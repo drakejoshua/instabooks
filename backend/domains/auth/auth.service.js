@@ -135,6 +135,10 @@ export async function verifyGoogleAuthService(authId, req = null) {
     };
 }
 
+// logoutAuthService()
+// This service function handles the logout process for an authenticated user.
+// It clears the refresh token from the user's record in the database, effectively
+// invalidating any existing sessions, and returns a success message.
 export async function logoutAuthService(user) {
     // clear refresh_token from user data on the database
     user.refresh_token = null;
@@ -147,6 +151,11 @@ export async function logoutAuthService(user) {
     };
 }
 
+// refreshAuthService()
+// This service function handles the refresh of authentication tokens.
+// It verifies the provided refresh token, retrieves the associated user,
+// generates a new access token, and returns the new access token along
+// with its expiration time.
 export async function refreshAuthService(token, req = null) {
     try {
         // check if the token is valid JWT and not expired
@@ -200,6 +209,10 @@ export async function refreshAuthService(token, req = null) {
     }
 }
 
+// profileUpdateAuthService()
+// This service function handles the update of the authenticated user's profile information.
+// It updates the user's name and/or profile photo in the database, handles photo uploads
+// and deletions using Cloudinary, and returns the updated user profile data.
 export async function profileUpdateAuthService(
     user,
     updateData,

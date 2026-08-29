@@ -11,6 +11,13 @@ import { paystackInitialize, paystackVerify } from "./orders.utils.js";
 import mongoose from "mongoose";
 
 
+// checkoutOrderService()
+// This function is a service that handles the checkout of an order. It receives 
+// the shipping address and user data, validates the shipping address, calculates
+// the total price of the order, creates a new order document in the database,
+// generates a payment authorization link using the paystackInitialize() utility 
+// function, clears the user's cart, updates the cache for the user data, and logs
+// the order checkout event using the backend logger.
 export async function checkoutOrderService(shippingAddress, user, req) {
     // check if the shipping address is valid
     if (!user.addresses.includes(shippingAddress)) {
@@ -77,6 +84,14 @@ export async function checkoutOrderService(shippingAddress, user, req) {
     return paymentData.data;
 }
 
+// confirmOrderPaymentService()
+// This function is a service that handles the confirmation of an order payment. 
+// It receives the order reference and request object, verifies the payment using
+// the paystackVerify() utility function, checks if the order exists and has not
+// already been confirmed, updates the order status and payment status accordingly,
+// updates the store inventory data for each book in the order, sends a purchase 
+// event to Google Analytics, and logs the order payment confirmation event using 
+// the backend logger.
 export async function confirmOrderPaymentService(reference, req) {
     // verify the payment using the paystackVerify()
     // utility function
@@ -165,6 +180,13 @@ export async function confirmOrderPaymentService(reference, req) {
     return verificationData.data;
 }
 
+// revalidateOrderPaymentService()
+// This function is a service that handles the revalidation of an order payment. 
+// It receives the order id and user data, retrieves the existing order from the
+// database, duplicates the order to create a new order with a new reference,
+// deletes the old order from the database, generates a payment authorization link
+// using the paystackInitialize() utility function, and logs the order revalidation
+// event using the backend logger.
 export async function revalidateOrderPaymentService(orderId, userData) {
     // get the existing order from the database
     let orderToRevalidate = await Orders.findById(orderId);
@@ -211,6 +233,13 @@ export async function revalidateOrderPaymentService(orderId, userData) {
     return paymentData.data;
 }
 
+// cancelOrderService()
+// This function is a service that handles the cancellation of an order. 
+// It receives the order id and request object, retrieves the existing
+// order from the database, updates the order status to cancelled, updates
+// the store inventory data for each book in the order, saves the updated
+// order to the database, sends an order cancellation event to Google 
+// Analytics, and logs the order cancellation event using the backend logger.
 export async function cancelOrderService(orderId, req) {
     // get the existing order from the database
     let orderToCancel = await Orders.findById(orderId);
@@ -249,6 +278,11 @@ export async function cancelOrderService(orderId, req) {
     );
 }
 
+// getOrderDetailsService()
+// This function is a service that handles the retrieval of order details. 
+// It receives the user id and order id, retrieves the existing order from 
+// the database, checks if the order exists and belongs to the user, and 
+// returns the order details.
 export async function getOrderDetailsService(userId, orderId) {
     // find the order by user id and order id
     let order = await Orders.findOne({ _id: orderId, user_id: userId });
@@ -262,6 +296,11 @@ export async function getOrderDetailsService(userId, orderId) {
     return await order.getOrderDetails();
 }
 
+// getAllOrdersService()
+// This function is a service that handles the retrieval of all orders for a user. 
+// It receives the user id, limit, and page, retrieves all the orders for the user 
+// from the database with the specified limit and page, counts the total number of 
+// orders for the user, and returns the orders and total count.
 export async function getAllOrdersService(userId, limit, page) {
     // find all orders for the user with the
     // specified limit
@@ -276,6 +315,11 @@ export async function getAllOrdersService(userId, limit, page) {
     };
 }
 
+// getAllOrdersForAdminService()
+// This function is a service that handles the retrieval of all orders for an admin. 
+// It receives the limit, page, and request object, retrieves all the orders from the 
+// database with the specified limit and page, counts the total number of orders, and 
+// returns the orders and total count.
 export async function getAllOrdersForAdminService(limit, page, req) {
     // find all orders for the user with the
     // specified limit

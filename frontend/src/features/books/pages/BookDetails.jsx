@@ -10,8 +10,13 @@ import { useAuthUserData } from "../../../shared/hooks/useAuthUserData";
 import { useEffect } from "react";
 import { useRouteLogger } from "../../../shared/hooks/useRouteLogger";
 
+
 export function Component() {
+    // get the book id from the URL parameters
     const { id } = useParams()
+
+    // fetch the book details using the 
+    // useGetBookDetailsQuery hook
     let { 
         data: book, 
         isLoading, 
@@ -19,14 +24,20 @@ export function Component() {
         refetch 
     } = useGetBookDetailsQuery( id )
 
+    // get the authenticated user data using the 
+    // useAuthUserData hook
     const { data } = useAuthUserData();
 
+    // log any errors that occur while fetching the 
+    // book details
     useRouteLogger( 
         "Error fetching book details for user",
         error, 
         data 
     )
 
+    // track the book view event in google analytics when 
+    // the book details are successfully fetched
     useEffect(function() {
         if ( book ) {
             // since a book was successfully fetched, send a book view 
@@ -35,6 +46,7 @@ export function Component() {
         }
     }, [ book ])
     
+    // show loading state while the book details are being fetched
     if ( isLoading ) {
         return (
             <RouteLoading
@@ -43,6 +55,7 @@ export function Component() {
         )
     }
 
+    // show error state if there is an error while fetching the book details
     if ( error ) {
         return (
             <RouteError
@@ -57,6 +70,7 @@ export function Component() {
         )
     }
 
+    // show error state if the book does not exist
     if ( book.data == null ) {
         return (
             <RouteError
@@ -69,6 +83,7 @@ export function Component() {
         )
     }
 
+    // show the book details if the book exists and there are no errors
     return (
         <BookDetailsLayout
             src={ book.data.cover_photo_url }
@@ -80,6 +95,7 @@ export function Component() {
             author={ book.data.author }
             pages={ book.data.pages }
         >
+            {/* show book actions if there's a currently authenticated user */}
             {
                 data && 
                 <BookActions 
@@ -91,6 +107,10 @@ export function Component() {
                 />
             }
 
+            {/* 
+                show add to cart button if there's no currently authenticated user 
+                redirecting the user to the login page if they click on the button
+            */}
             {
                 !data &&
                 <Button

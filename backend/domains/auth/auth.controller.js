@@ -94,6 +94,10 @@ export async function logoutAuthController(req, res, next) {
     }
 }
 
+// profileAuthController()
+// This controller handles the retrieval of the authenticated user's profile data.
+// It invokes the getProfileData method on the user model to fetch the user's profile
+// information and sends it back in the response.
 export async function profileAuthController(req, res, next) {
     // return profile details from authenticated user by passport
     // in request
