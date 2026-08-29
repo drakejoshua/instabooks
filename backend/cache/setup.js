@@ -13,7 +13,7 @@ const redisClient = redis.createClient({
     url: process.env.REDIS_URL,
     socket: {
         reconnectStrategy: function( retries ) {
-            if ( retries > 5 ) {
+            if ( retries > 3 ) {
                 return new Error("Too many retries, Redis server unavailable")
             }
 
