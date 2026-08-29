@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { RateLimitExceededError } from "../shared/utils/errors";
+import { RateLimitExceededError } from "../shared/utils/errors.js";
 
 export const publicBooksLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
