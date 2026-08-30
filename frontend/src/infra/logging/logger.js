@@ -49,8 +49,11 @@ export async function logEvent( level, message, context = {} ) {
         }
     } else if ( appEnv === "production" ) {
         try {
+            // get backend url from .env variables
+            const backendUrl = import.meta.env.VITE_BACKEND_URL
+
             // send log payload to backend API
-            const response = await fetch('/logger', {
+            const response = await fetch(`${backendUrl}/logger`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
