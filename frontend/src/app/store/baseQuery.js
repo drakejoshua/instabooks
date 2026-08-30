@@ -20,7 +20,7 @@ export const baseQuery = fetchBaseQuery({
         const token = getState().auth.token || localStorage.getItem( LocalStorageAuthKey )
 
         // get client ID from Google Analytics ( or use mock value in development )
-        const clientId = await getClientId() 
+        const clientId = getClientId() 
 
         // generate request id to be used for logging and 
         // debugging purposes
@@ -121,8 +121,7 @@ const baseQueryWithAdminAuth = fetchBaseQuery({
         let adminKey = import.meta.env.VITE_INSTABOOKS_ADMIN_KEY
 
         // get client ID from Google Analytics ( or use mock value in development )
-        // const clientId = await getClientId() 
-        const clientId = "mock-client-id-for-admin-operations"
+        const clientId = getClientId() 
 
         // generate request id to be used for logging and 
         // debugging purposes

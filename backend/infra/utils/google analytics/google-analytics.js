@@ -1,9 +1,16 @@
 import { logGoogleAnalyticsError, logInvalidAnalyticsClientId, logInvalidAnalyticsEvent } from "../logging/logFunctions.js"
 
 export async function trackServerEvent(clientId, event, params) {
+    // exit the function early if the clientId is not yet 
+    // initialized, this is to prevent sending events to 
+    // google analytics
+    if (clientId === "uninitialized") {
+        return
+    }
+
     // check for clientId is valid if invalid, log error and
     // exit function early
-    if ( !clientId ) {
+    if ( !clientId || clientId !== "uninitialized" ) {
         logInvalidAnalyticsClientId()
         return
     }
