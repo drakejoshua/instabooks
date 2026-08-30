@@ -41,11 +41,11 @@ export function Component() {
     // track the book listings view event in google analytics when 
     // the search results are successfully fetched
     useEffect( function() {
-        if ( searchResults.data ) {
+        if ( searchResults?.data ) {
             // send book listings view event to google analytics
             trackBookListingsView( searchResults.data, "search" )
         }
-    }, [ searchResults.data ])
+    }, [ searchResults ])
 
     // log any errors that occur while searching for books using 
     // the useRouteLogger hook

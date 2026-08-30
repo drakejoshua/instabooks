@@ -22,7 +22,7 @@ export async function paystackInitialize(userData, orderData) {
             currency: paystackCurrency,
             // convert amount to kobo/cents ( paystack expects
             // amount in subcurrency )
-            amount: orderData.price_at_purchase * 100,
+            amount: ( orderData.price_at_purchase * 100 ).toFixed(0),
             callback_url: `${backendURL}/orders/confirm`,
         }),
     });
